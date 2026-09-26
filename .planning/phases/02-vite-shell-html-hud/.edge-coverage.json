@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "requirement_id": "VIS-02",
+      "category": "unclassified",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "tests/shell.hud-layout.test.ts asserts monetary controls live under #hud-bar and #game-canvas-host has no data-action/data-field monetary controls (D-04); full play loop remains manual-only",
+      "reason": null,
+      "probe": "HTML-owned monetary chrome + empty reserved canvas host"
+    },
+    {
+      "requirement_id": "WALT-03",
+      "category": "boundary",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "chips.test.ts probes inclusive bounds 10 and 1000: presets contain 10, omit 1000 (facade max), reject one-step outside (9, 1001)",
+      "reason": null,
+      "probe": "What happens exactly at each min/max/threshold — and one step either side?"
+    },
+    {
+      "requirement_id": "WALT-03",
+      "category": "precision",
+      "status": "resolved",
+      "verification": "backstop",
+      "resolution": "SKIP — N/A for integer chip presets; chips.ts has no float/rounding/tie-break; GameLogic owns cents conversion via placeBet",
+      "reason": "Chip values are integer display units only; inventing float tests would not probe real HUD behavior",
+      "probe": "Where can precision loss, overflow, or rounding/tie-breaking occur — and what is the exact contract?"
+    },
+    {
+      "requirement_id": "WALT-05",
+      "category": "unclassified",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "historyStrip.test.ts covers newest-first order and class thresholds (pre-existing)",
+      "reason": null,
+      "probe": "unclassified — history from snapshot only"
+    }
+  ],
+  "coverage": {
+    "applicable": 4,
+    "resolved": 4,
+    "unresolved": 0,
+    "byVerification": {
+      "explicit": 3,
+      "backstop": 1
+    }
+  }
+}
