@@ -1,4 +1,5 @@
 import type { CrashGame, CrashSnapshot } from "../logic/index.js";
+import { PRESET_CHIPS } from "./chips.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
 
@@ -30,6 +31,7 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
   const phaseEl = root.querySelector("[data-field=phase]");
   const liveMultEl = root.querySelector("[data-field=live-mult]");
   const leftZone = root.querySelector("[data-zone=balance]");
+  const chipsHost = root.querySelector("[data-field=chips]");
 
   if (
     !betInput ||
@@ -42,12 +44,36 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     !balanceEl ||
     !phaseEl ||
     !liveMultEl ||
-    !leftZone
+    !leftZone ||
+    !chipsHost
   ) {
     throw new Error("CrashHud: required #hud-bar fields missing");
   }
 
   let lastPlaceReason: string | null = null;
+
+  // Chips: fill bet-input only — never call placeBet (Pitfall 4 / WALT-03).
+  const chipButtons: HTMLButtonElement[] = [];
+  for (const value of PRESET_CHIPS) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = String(value);
+    btn.dataset.chip = String(value);
+    btn.className = "chip";
+    btn.addEventListener("click", () => {
+      betInput.value = String(value);
+      syncChipSelection();
+    });
+    chipsHost.appendChild(btn);
+    chipButtons.push(btn);
+  }
+
+  function syncChipSelection(): void {
+    const current = betInput.value;
+    for (const btn of chipButtons) {
+      btn.classList.toggle("chip--selected", btn.dataset.chip === current);
+    }
+  }
 
   placeBetBtn.addEventListener("click", () => {
     const amount = Number(betInput.value);
@@ -85,6 +111,9 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     statusEl.textContent = "";
   });
 
+  betInput.addEventListener("input", syncChipSelection);
+  syncChipSelection();
+
   function render(snap: CrashSnapshot): void {
     balanceEl!.textContent = formatMoney(snap.balance);
     phaseEl!.textContent = snap.phase;
@@ -100,6 +129,10 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     cashOutBtn!.disabled = !en.canCashOut;
     betInput!.disabled = !en.canEditBet;
     autoInput!.disabled = !en.canEditAuto;
+    for (const btn of chipButtons) {
+      btn.disabled = !en.chipsEnabled;
+    }
+    syncChipSelection();
 
     const emphasizeBroke = en.showBroke || lastPlaceReason === "broke";
     leftZone!.classList.toggle("hud-zone--broke", emphasizeBroke);
