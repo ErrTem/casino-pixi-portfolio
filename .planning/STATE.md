@@ -2,16 +2,16 @@
 gsd_state_version: "1.0"
 current_phase: 1
 current_phase_name: GameLogic Core
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-09-26T15:37:59.620Z"
+status: planned
+stopped_at: Phase 1 plans created (01-01..01-04 + SKELETON)
+last_updated: "2026-09-26T16:45:00.000Z"
 last_activity: 2026-09-26
-last_activity_desc: v1 MVP roadmap created (5 phases, 21/21 REQs mapped)
+last_activity_desc: Phase 1 executable plans + Walking Skeleton written
 state_head: 87f61008d8afe0e612fb396e001961e989ac35bd
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 4
   completed_plans: 0
   percent: 0
 ---
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-26)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 1 — GameLogic Core
+**Current focus:** Phase 1 — GameLogic Core (planned; ready to execute)
 
 ## Current Position
 
 Phase: 1 of 5 (GameLogic Core)
-Plan: — of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-09-26 — v1 MVP roadmap created (5 phases, 21/21 REQs mapped)
+Plan: 01-01 of 4 in current phase
+Status: Ready to execute
+Last activity: 2026-09-26 — Phase 1 plans created (scaffold+tracer, wallet/FSM, resolveTick, Vitest gate)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - v1: HTML + Pixi only (no React/Angular); hybrid curve + rocket visual
 - v1: No DEMO badge UI — portfolio framing via README/title only if needed
 - Roadmap: Logic → HUD → Pixi → mobile → polish; WALT-03/WALT-05 mapped to Phase 2 (UI)
+- Phase 1 D-01..D-15 locked in 01-CONTEXT.md (wallet, crash feel, 5s auto-launch, spectator)
+- D-14 continuous auto-launch is one-way — checkpoint:decision in 01-01 before tracer
 
 ### Pending Todos
 
@@ -82,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T15:37:59.604Z
-Stopped at: Phase 1 context gathered
-Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\01-gamelogic-core\01-CONTEXT.md
+Last session: 2026-09-26T16:45:00.000Z
+Stopped at: Phase 1 plans created (01-01..01-04 + SKELETON)
+Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\01-gamelogic-core\01-01-PLAN.md

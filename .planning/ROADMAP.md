@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: GameLogic Core
-**Goal:** Authoritative Crash round loop in pure TypeScript — place bet, fly, cash out or crash, settle wallet — with seeded RNG and Vitest coverage, zero Pixi imports.
+**Goal:** As a GameLogic caller, I want to place a demo bet, advance a continuous round through flight and cash-out or crash, and see the wallet settle, so that the authoritative Crash loop is proven before any Pixi UI.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
 **Requirements:** PLAY-01, PLAY-02, PLAY-03, PLAY-04, PLAY-05, WALT-01, WALT-02, WALT-04, ARCH-01, ARCH-02, ARCH-04
@@ -34,10 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 4 plans
 
 Plans:
-- [ ] 01-01: Round FSM + seeded RNG (`crashAt` at round start) + time-driven multiplier
-- [ ] 01-02: Demo wallet + bet min/max validation + place-bet / waiting↔flying transitions
-- [ ] 01-03: Manual cash-out, crash settle, auto cash-out in single `resolveTick` authority
-- [ ] 01-04: Vitest suite for settlement, auto CO, wallet; enforce no Pixi in logic package
+- [ ] 01-01-PLAN.md — Wave 0 scaffold + D-14 checkpoint + Walking Skeleton tracer (bet→fly→settle)
+- [ ] 01-02-PLAN.md — Wallet bounds / hard-stop / resetWallet + spectator cadence
+- [ ] 01-03-PLAN.md — resolveTick manual CO, crash, auto CO (crash-before-auto)
+- [ ] 01-04-PLAN.md — ARCH-02 no-Pixi gate + multiplier curve + full Vitest suite
 
 ### Phase 2: Vite Shell + HTML HUD
 **Goal:** Vite app shell with a thin HTML overlay so a recruiter can play the full bet → fly → cash-out/crash → balance loop using numbers before art.

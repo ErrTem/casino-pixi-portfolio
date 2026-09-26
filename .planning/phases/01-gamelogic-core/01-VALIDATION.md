@@ -40,23 +40,17 @@ created: "2026-09-26"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 01-W0 | 01 | 0 | ARCH-04 | — | N/A | unit | `npx vitest run` | ❌ W0 | ⬜ pending |
-| PLAY-01 | — | 1 | PLAY-01 | — | N/A | unit | `npx vitest run tests/roundCadence.test.ts` | ❌ W0 | ⬜ pending |
-| PLAY-02 | — | 1 | PLAY-02 | — | N/A | unit | `npx vitest run tests/multiplierCurve.test.ts` | ❌ W0 | ⬜ pending |
-| PLAY-03 | — | 1 | PLAY-03 | T-01-01 | Finite stake×mult settle | unit | `npx vitest run tests/resolveTick.test.ts -t "manual cash-out"` | ❌ W0 | ⬜ pending |
-| PLAY-04 | — | 1 | PLAY-04 | — | N/A | unit | `npx vitest run tests/resolveTick.test.ts -t "crash"` | ❌ W0 | ⬜ pending |
-| PLAY-05 | — | 1 | PLAY-05 | — | N/A | unit | `npx vitest run tests/roundCadence.test.ts -t "returns to waiting"` | ❌ W0 | ⬜ pending |
-| WALT-01 | — | 1 | WALT-01 | T-01-02 | Integer cents wallet | unit | `npx vitest run tests/wallet.test.ts` | ❌ W0 | ⬜ pending |
-| WALT-02 | — | 1 | WALT-02 | T-01-02 | Reject NaN/OOB bets | unit | `npx vitest run tests/wallet.test.ts -t "validation"` | ❌ W0 | ⬜ pending |
-| WALT-04 | — | 1 | WALT-04 | T-01-01 | Crash before auto CO | unit | `npx vitest run tests/resolveTick.test.ts -t "auto"` | ❌ W0 | ⬜ pending |
-| ARCH-01 | — | 1 | ARCH-01 | T-01-03 | Demo RNG only | unit | `npx vitest run tests/crashRng.test.ts` | ❌ W0 | ⬜ pending |
-| ARCH-02 | — | 1 | ARCH-02 | T-01-04 | No pixi/DOM in logic | unit | `npx vitest run tests/architecture.no-pixi.test.ts` | ❌ W0 | ⬜ pending |
-| ARCH-04 | — | 1 | ARCH-04 | — | N/A | unit | `npx vitest run` | ❌ W0 | ⬜ pending |
-| D-15 | — | 1 | D-15 | — | Spectator no wallet change | unit | `npx vitest run tests/roundCadence.test.ts -t "spectator"` | ❌ W0 | ⬜ pending |
+| 01-01-T1 | 01-01 | 1 | ARCH-04 | T-01-SC | Pin vitest 3.2.7; no SUS latest | unit | Wave 0 scaffold (MISSING until package.json) | ❌ W0 | ⬜ pending |
+| 01-01-T2 | 01-01 | 1 | PLAY-01 | — | D-14 one-way confirm | checkpoint | — | — | ⬜ pending |
+| 01-01-T3 | 01-01 | 1 | ARCH-01, PLAY-01/02/04/05, WALT-01 | T-01-03 | Demo RNG; crashAt-at-start | unit | `npx vitest run tests/walkingSkeleton.test.ts tests/crashRng.test.ts` | ❌ W0 | ⬜ pending |
+| 01-02-T1 | 01-02 | 2 | WALT-01, WALT-02 | T-01-02 | Reject NaN/OOB; integer cents | unit | `npx vitest run tests/wallet.test.ts` | ❌ W0 | ⬜ pending |
+| 01-02-T2 | 01-02 | 2 | PLAY-01, PLAY-05, D-15 | T-01-05 | Spectator no wallet change | unit | `npx vitest run tests/roundCadence.test.ts` | ❌ W0 | ⬜ pending |
+| 01-03-T1 | 01-03 | 3 | PLAY-03, PLAY-04 | T-01-01 | Finite stake×mult settle; idempotent | unit | `npx vitest run tests/resolveTick.test.ts -t "manual cash-out"` | ❌ W0 | ⬜ pending |
+| 01-03-T2 | 01-03 | 3 | WALT-04 | T-01-01 | Crash before auto CO | unit | `npx vitest run tests/resolveTick.test.ts -t "auto"` | ❌ W0 | ⬜ pending |
+| 01-04-T1 | 01-04 | 4 | ARCH-02 | T-01-04 | No pixi/DOM in logic | unit | `npx vitest run tests/architecture.no-pixi.test.ts` | ❌ W0 | ⬜ pending |
+| 01-04-T2 | 01-04 | 4 | PLAY-02, ARCH-04 | — | Full suite green | unit | `npx vitest run` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
-
-*Planner will refine Task IDs / Plan columns when PLAN.md files are written.*
 
 ---
 
@@ -64,25 +58,27 @@ created: "2026-09-26"
 
 - [ ] `package.json` + `tsconfig.json` + `vitest.config.ts` (`environment: 'node'`)
 - [ ] `npm install -D typescript@~5.8.3 vitest@3.2.7 @types/seedrandom @types/node && npm install seedrandom@3.0.5`
-- [ ] `src/shared/money/cents.ts` + tests
+- [ ] `src/shared/money/cents.ts` + money helpers used by wallet
 - [ ] `src/shared/rng/createRng.ts` + `tests/crashRng.test.ts`
-- [ ] `src/games/crash/logic/*` facade + FSM + `tests/resolveTick.test.ts`
+- [ ] `src/games/crash/logic/*` facade + FSM + resolveTick
+- [ ] `tests/walkingSkeleton.test.ts` (tracer E2E)
 - [ ] `tests/roundCadence.test.ts` (5s auto-launch + spectator)
 - [ ] `tests/wallet.test.ts` (D-01..D-04)
-- [ ] `tests/architecture.no-pixi.test.ts` (grep/read sources for `pixi.js` / `document` / `window`)
+- [ ] `tests/resolveTick.test.ts` (manual / crash / auto)
+- [ ] `tests/architecture.no-pixi.test.ts`
 - [ ] `tests/multiplierCurve.test.ts`
 
 ---
 
 ## Manual-Only Verifications
 
-All phase behaviors have automated verification.
+All phase behaviors have automated verification. D-14 is a `checkpoint:decision` (not a runtime UAT).
 
 ---
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
+- [ ] All tasks have `<automated>` verify or Wave 0 / checkpoint dependencies
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
