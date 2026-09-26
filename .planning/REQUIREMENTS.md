@@ -9,8 +9,8 @@
 
 - [x] **PLAY-01**: Player can start a round from waiting phase after placing a valid bet
 - [ ] **PLAY-02**: Player sees a live rising multiplier while the round is flying
-- [ ] **PLAY-03**: Player can manually cash out mid-flight and receive stake × current multiplier
-- [ ] **PLAY-04**: Round ends in a crash when the seeded crash point is reached if the player has not cashed out
+- [x] **PLAY-03**: Player can manually cash out mid-flight and receive stake × current multiplier
+- [x] **PLAY-04**: Round ends in a crash when the seeded crash point is reached if the player has not cashed out
 - [x] **PLAY-05**: Round returns to waiting after cashed-out or crashed so another bet can be placed
 
 ### Wallet & Betting
@@ -18,7 +18,7 @@
 - [x] **WALT-01**: Player has a demo wallet with a starting balance that updates on win and loss
 - [x] **WALT-02**: Player can enter a free-form bet amount within min/max rules against current balance
 - [ ] **WALT-03**: Player can select bet amount via preset chips in addition to free-form input
-- [ ] **WALT-04**: Player can set an auto cash-out target multiplier that settles automatically when reached
+- [x] **WALT-04**: Player can set an auto cash-out target multiplier that settles automatically when reached
 - [ ] **WALT-05**: Player can see a history strip of the last N crash multipliers
 
 ### Visual & Controls
@@ -80,13 +80,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | PLAY-01 | 1 | Complete |
 | PLAY-02 | 1 | Pending |
-| PLAY-03 | 1 | Pending |
-| PLAY-04 | 1 | Pending |
+| PLAY-03 | 1 | Complete |
+| PLAY-04 | 1 | Complete |
 | PLAY-05 | 1 | Complete |
 | WALT-01 | 1 | Complete |
 | WALT-02 | 1 | Complete |
 | WALT-03 | 2 | Pending |
-| WALT-04 | 1 | Pending |
+| WALT-04 | 1 | Complete |
 | WALT-05 | 2 | Pending |
 | VIS-01 | 3 | Pending |
 | VIS-02 | 2 | Pending |

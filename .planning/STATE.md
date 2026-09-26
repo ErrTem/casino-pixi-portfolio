@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: GameLogic Core
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-09-26T17:32:56.517Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-09-26T17:39:27.642Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 01 execution started
-state_head: 8607347ade5cd4ded0142df25827360a2c1a21e1
+state_head: 208dd5728c5e739ecf1db9232ceb90b6c27737b1
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-26)
 ## Current Position
 
 Phase: 01 (GameLogic Core) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-09-26 — Phase 01 execution started
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-gamelogic-core P01 | 8 min | 2 tasks | 4 files |
 | Phase 01-gamelogic-core P02 | 4 min | 1 tasks | 13 files |
 | Phase 01-gamelogic-core P03 | 6 min | 2 tasks | 5 files |
+| Phase 01 P04 | 4 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Hard-stop returns reason broke before insufficient_balance when balance < min bet — D-03 HUD needs a stable broke code distinct from insufficient_balance
 - [Phase 01]: Non-finite placeBet amounts rejected at CrashGame boundary (ASVS V5) — Command-boundary validation before displayToCents keeps wallet integer cents
 - [Phase 01]: History ring drops non-finite crashAt to protect spectator history consumers — D-15 history must stay usable for HUD strip
+- [Phase 01]: Settlement compares use roundedMult on live m, crashAt, and autoCashOutAt (D-11) — Float edges like crashAt 2.004 at m=2.00 must settle; PITFALLS + plan ACs require hundredths compares
+- [Phase 01]: setAutoCashOut stores rounded 2dp targets on state — Snapshot and resolveTick share hundredths precision for WALT-04
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T17:32:56.493Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-09-26T17:39:27.618Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
