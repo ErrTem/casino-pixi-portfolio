@@ -1,4 +1,4 @@
-import { Application, Container, Graphics } from "pixi.js";
+import { Application } from "pixi.js";
 import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createCurveGraph } from "./CurveGraph.js";
@@ -8,6 +8,7 @@ import {
   plotScaleFor,
   type PlotRect,
 } from "./pathMapping.js";
+import { createRocket } from "./Rocket.js";
 import { createTheaterText, theaterTintForMult } from "./TheaterText.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
 import {
@@ -46,32 +47,11 @@ function samplePoints(
   return pts;
 }
 
-/** Geometric rocket: polygon nose along local +X (~ROCKET_LENGTH_PX). */
-function createRocketBody(): Container {
-  const rocket = new Container();
-  const body = new Graphics();
-  const L = VIEW_CONFIG.ROCKET_LENGTH_PX;
-  const halfW = L * 0.22;
-  body.poly([
-    L * 0.5,
-    0,
-    -L * 0.35,
-    -halfW,
-    -L * 0.2,
-    0,
-    -L * 0.35,
-    halfW,
-  ]);
-  body.fill({ color: 0xe8eef4 });
-  rocket.addChild(body);
-  return rocket;
-}
-
 export function createCrashScene(app: Application): CrashScene {
   const curve = createCurveGraph();
-  const rocket = createRocketBody();
+  const rocket = createRocket();
   const theater = createTheaterText();
-  app.stage.addChild(curve.container, rocket, theater.container);
+  app.stage.addChild(curve.container, rocket.container, theater.container);
 
   let viewMode: ViewModeState = createInitialViewMode();
   let plot = buildPlot(app.screen.width, app.screen.height);
@@ -110,7 +90,7 @@ export function createCrashScene(app: Application): CrashScene {
     const { mode, rocketVisible, trailAlpha, latchedCrashMult, latchedCashOut } =
       viewMode;
     curve.container.alpha = trailAlpha;
-    rocket.visible = rocketVisible;
+    rocket.container.visible = rocketVisible;
 
     if (mode === "climb") {
       holdDrawn = false;
@@ -119,9 +99,9 @@ export function createCrashScene(app: Application): CrashScene {
       curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
       const scale = plotScaleFor(tip);
       const pos = plotPoint(tip, plot, scale);
-      rocket.position.set(pos.x, pos.y);
-      rocket.rotation = pathTangentRadians(tip, plot, scale);
-      rocket.visible = true;
+      const rot = pathTangentRadians(tip, plot, scale);
+      rocket.syncPose(pos.x, pos.y, rot, true);
+      rocket.container.visible = true;
     } else if (mode === "crash_hold") {
       if (!holdDrawn) {
         const tip = latchedCrashMult ?? Math.max(1, snapshot.multiplier);
@@ -129,19 +109,18 @@ export function createCrashScene(app: Application): CrashScene {
         curve.redraw(pts, VIEW_CONFIG.CRASH_COLOR, true);
         holdDrawn = true;
       }
-      rocket.visible = false;
+      rocket.container.visible = false;
     } else if (mode === "crash_fade") {
       // Keep severed geometry; alpha from reducer.
-      rocket.visible = false;
+      rocket.container.visible = false;
     } else {
       // idle
       holdDrawn = false;
       curve.container.alpha = 0;
       const scale = plotScaleFor(1);
       const origin = plotPoint(1, plot, scale);
-      rocket.position.set(origin.x, origin.y);
-      rocket.rotation = 0;
-      rocket.visible = rocketVisible;
+      rocket.syncPose(origin.x, origin.y, 0, false);
+      rocket.container.visible = rocketVisible;
     }
 
     // Theater dual-read (D-13..D-16)
