@@ -76,9 +76,17 @@ Plans:
 
 Plans:
 
-- [ ] 02-01: Vite + TS bootstrap, composition root, GameLogic ↔ HUD command/snapshot bridge
-- [ ] 02-02: HTML overlay: balance, bet input, cash-out, auto CO, phase-aware button enablement
-- [ ] 02-03: Bet preset chips + history strip (last N) bound to logic history buffer
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — D-04 empty-slot checkpoint + Vite tracer (createGame ↔ HUD ↔ rAF)
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 02-02-PLAN.md — Enablement matrix, auto CO, Reset demo, phase-aware controls
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 02-03-PLAN.md — Preset chips (WALT-03) + history strip (WALT-05)
 
 ### Phase 3: Pixi Hybrid View
 
