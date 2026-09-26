@@ -106,7 +106,7 @@ Recent decisions affecting current work:
 - [Phase 03]: D-01 two-stroke halo/core Graphics without pixi-filters; D-03 log2-x linear-y plot; cashOutAt null until 03-02 — Plan 03-01 view contract for climb trail and sever; durable cashOutAt is Wave 2
 - [Phase 03]: D-16 durable cashed_out: credit once, climb until crashAt, history on crash only — CONTEXT one-way lock; settleOnce enterWaiting wiped the flight before snapshots could feed the theater dual-read
 - [Phase 03]: Streak dots live in rocket local -X so parent tangent rotation carries them — Keeps pathTangentRadians on parent only; streak does not need world-space offsets
-- [Phase 03]: Flash is alpha on full-canvas Graphics; stage.x/stage.y never written — D-10 and T-03-09 � flash must not move HUD hit targets
+- [Phase 03]: Flash is alpha on full-canvas Graphics; stage.x/stage.y never written — D-10 and T-03-09: flash must not move HUD hit targets
 - [Phase 03]: Backdrop rebuilds only on screen size change via rebuildIfNeeded — Avoid clear() retessellation every sync frame per RESEARCH Pattern 4
 
 ### Pending Todos
