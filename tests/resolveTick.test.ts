@@ -35,6 +35,21 @@ function flyingState(overrides: Partial<RoundState> = {}): RoundState {
   };
 }
 
+/** Advance a cashed_out state until crash or guard expires. */
+function tickUntilWaiting(
+  state: RoundState,
+  deps: ReturnType<typeof makeDeps>,
+  maxMs = 300_000,
+): RoundState {
+  let next = state;
+  let guard = 0;
+  while (next.phase !== "waiting" && guard < maxMs) {
+    next = resolveTick(next, CRASH_CONFIG.maxDeltaMs, deps);
+    guard += CRASH_CONFIG.maxDeltaMs;
+  }
+  return next;
+}
+
 describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)", () => {
   it("manual cash-out pays stake times rounded current multiplier (PLAY-03)", () => {
     const deps = makeDeps();
@@ -47,13 +62,21 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
       deps,
     );
 
-    expect(state.phase).toBe("waiting");
+    // D-16: cash-out stays durable cashed_out; history waits for crashAt
+    expect(state.phase).toBe("cashed_out");
     expect(state.settledRoundId).toBe(1);
-    expect(state.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(state.crashAt).toBe(10);
+    expect(state.lockedBetCents).toBeNull();
     // elapsed 2400+100 → multiplierAt ≈ 2.00
     const expectedPayout = payoutCents(10_000, toMultHundredths(2));
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
+    expect(deps.history.toArray()).toEqual([]);
+
+    const afterCrash = tickUntilWaiting(state, deps);
+    expect(afterCrash.phase).toBe("waiting");
+    expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
     expect(deps.history.toArray()).toEqual([10]);
+    expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
   });
 
   it("requestCashOut while waiting is a no-op", () => {
@@ -98,20 +121,12 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
     );
     const afterFirst = deps.wallet.getBalanceCents();
     expect(state.settledRoundId).toBe(1);
+    expect(state.phase).toBe("cashed_out");
 
-    // Force a second settle attempt for the same roundId
-    state = resolveTick(
-      flyingState({
-        cashOutRequested: true,
-        crashAt: 10,
-        settledRoundId: 1,
-        lockedBetCents: 10_000,
-      }),
-      CRASH_CONFIG.maxDeltaMs,
-      deps,
-    );
+    // Second tick while cashed_out must not credit again
+    state = resolveTick(state, CRASH_CONFIG.maxDeltaMs, deps);
     expect(deps.wallet.getBalanceCents()).toBe(afterFirst);
-    expect(state.phase).toBe("waiting");
+    expect(state.phase).toBe("cashed_out");
   });
 
   it("crash check compares rounded multipliers versus crashAt (D-11)", () => {
@@ -149,10 +164,17 @@ describe("resolveTick — auto cash-out (WALT-04)", () => {
       deps,
     );
 
-    expect(state.phase).toBe("waiting");
+    expect(state.phase).toBe("cashed_out");
     expect(state.settledRoundId).toBe(1);
+    expect(state.crashAt).toBe(10);
     const expectedPayout = payoutCents(10_000, toMultHundredths(2));
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
+    expect(deps.history.toArray()).toEqual([]);
+
+    const afterCrash = tickUntilWaiting(state, deps);
+    expect(afterCrash.phase).toBe("waiting");
+    expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(deps.history.toArray()).toEqual([10]);
   });
 
   it("setAutoCashOut(null) disables auto settle", () => {

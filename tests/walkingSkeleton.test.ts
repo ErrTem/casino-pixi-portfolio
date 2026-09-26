@@ -33,16 +33,26 @@ describe("walking skeleton — createGame → placeBet → wait → fly → sett
     expect(game.getSnapshot().phase).toBe("flying");
     expect(game.getSnapshot().multiplier).toBeGreaterThan(1);
 
-    // Cash out before crash (or tick until crash if already past)
+    // D-16: cash-out credits once and stays cashed_out; history waits for crash
     game.requestCashOut();
     game.tick(CRASH_CONFIG.maxDeltaMs);
+    const cashed = game.getSnapshot();
+    expect(cashed.phase).toBe("cashed_out");
+    expect(cashed.balance).toBeGreaterThan(4900);
+    expect(cashed.history.length).toBe(0);
+
+    // Spectator finish: climb until crashAt
+    let guard = 0;
+    while (game.getSnapshot().phase === "cashed_out" && guard < 200_000) {
+      game.tick(CRASH_CONFIG.maxDeltaMs);
+      guard += CRASH_CONFIG.maxDeltaMs;
+    }
     const settled = game.getSnapshot();
     expect(settled.phase).toBe("waiting");
     expect(settled.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
-    expect(settled.history.length).toBeGreaterThanOrEqual(1);
+    expect(settled.history.length).toBe(1);
     expect(settled.history[0]).toBe(crashAt);
-    expect(settled.balance).not.toBe(4900);
-    expect(settled.balance).toBeGreaterThan(4900); // cash-out win
+    expect(settled.balance).toBeGreaterThan(4900);
 
     const balanceAfterWin = settled.balance;
     const historyAfterWin = settled.history.length;
@@ -53,7 +63,7 @@ describe("walking skeleton — createGame → placeBet → wait → fly → sett
     const spectatorCrashAt = game.getSnapshot().crashAt!;
 
     // Tick until this round settles (avoid overshooting into the next auto-launch)
-    let guard = 0;
+    guard = 0;
     while (game.getSnapshot().phase === "flying" && guard < 200_000) {
       game.tick(CRASH_CONFIG.maxDeltaMs);
       guard += CRASH_CONFIG.maxDeltaMs;
