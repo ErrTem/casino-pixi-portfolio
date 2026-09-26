@@ -664,17 +664,17 @@ No `Assets.load` in this phase.
 | A5 | Lazy `BitmapText` atlas from `Arial`/`Segoe UI` works without `BitmapFont.install`, and `tint` recolors white glyphs without rebuilding the atlas. Cited from the bitmap-text skill, not a runtime probe. | Pattern 6 | If tint is ignored, set `fill` once to white at construction and tint; do not change `fontSize` per frame. |
 | A6 | `moduleResolution: "NodeNext"` accepts `import from "pixi.js"` because `exports["."].import` exists. Not compiled in this session. | Standard Stack | If `tsc` fails, switch app tsconfig `module`/`moduleResolution` to `ESNext`/`bundler` for the Vite project only. Do not weaken the logic import ban. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Human verify before `npm install pixi.js`**
    - What we know: `npm view` reports 8.21.0, repo `github.com/pixijs/pixijs`, `postinstall` null, weekly downloads 1,234,217. Seam verdict SUS only because the latest publish is `too-new`.
    - What's unclear: nothing technical. The seam still requires a checkpoint.
-   - Recommendation: one `checkpoint:human-verify` in plan 03-01, then install `pixi.js@8.21.0`. Do not block planning on a different renderer.
+   - RESOLVED: Plan 03-01 Task 1 is `checkpoint:human-verify` (blocking) — approve only when `npm view pixi.js version` is exactly `8.21.0` and `repository.url` is `git+https://github.com/pixijs/pixijs.git` (github.com/pixijs/pixijs). Task 2 then pins exactly `pixi.js@8.21.0`. Do not install a substitute renderer.
 
 2. **NodeNext vs Pixi types**
    - What we know: package exports include `import.types`. Repo tsconfig is `NodeNext` / `NodeNext`. `[VERIFIED: tsconfig.json]`
    - What's unclear: whether TS 5.8 selects `types@<6.0` legacy typings and whether those include `BitmapText` and `resizeTo`.
-   - Recommendation: first compile task runs `npx tsc --noEmit`. Fix module resolution only if that command fails. Do not pre-edit tsconfig.
+   - RESOLVED: Do not pre-edit tsconfig. First compile with `npx tsc --noEmit` (03-01 Task 2). Only if that fails on the `pixi.js` import, set app `module` / `moduleResolution` to `ESNext` / `bundler` and re-run tsc. Keep the logic/shared pixi ban.
 
 ## Environment Availability
 
