@@ -1,6 +1,7 @@
-import { Application } from "pixi.js";
+import { Application, Graphics } from "pixi.js";
 import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
+import { createBackdrop } from "./Backdrop.js";
 import { createCurveGraph } from "./CurveGraph.js";
 import {
   pathTangentRadians,
@@ -47,17 +48,43 @@ function samplePoints(
   return pts;
 }
 
+function drawFlashRect(g: Graphics, w: number, h: number): void {
+  g.clear();
+  g.rect(0, 0, w, h).fill({ color: VIEW_CONFIG.CRASH_COLOR });
+}
+
 export function createCrashScene(app: Application): CrashScene {
+  const backdrop = createBackdrop(app.screen.width, app.screen.height);
   const curve = createCurveGraph();
+  const ghost = new Graphics();
+  ghost.circle(0, 0, 14).stroke({
+    width: 2,
+    color: 0xffffff,
+    alpha: 0.28,
+  });
+  ghost.visible = false;
   const rocket = createRocket();
   const theater = createTheaterText();
-  app.stage.addChild(curve.container, rocket.container, theater.container);
+  const flash = new Graphics();
+  drawFlashRect(flash, app.screen.width, app.screen.height);
+  flash.alpha = 0;
+
+  // Backdrop behind trail; flash above spectacle (D-04, D-10). No stage.x/y.
+  app.stage.addChild(
+    backdrop.container,
+    curve.container,
+    ghost,
+    rocket.container,
+    theater.container,
+    flash,
+  );
 
   let viewMode: ViewModeState = createInitialViewMode();
   let plot = buildPlot(app.screen.width, app.screen.height);
   let lastW = app.screen.width;
   let lastH = app.screen.height;
   let holdDrawn = false;
+  let idleElapsedMs = 0;
 
   theater.layout(lastW, lastH);
 
@@ -70,6 +97,8 @@ export function createCrashScene(app: Application): CrashScene {
       plot = buildPlot(w, h);
       holdDrawn = false;
       theater.layout(w, h);
+      backdrop.rebuildIfNeeded(w, h);
+      drawFlashRect(flash, w, h);
     }
   }
 
@@ -87,13 +116,32 @@ export function createCrashScene(app: Application): CrashScene {
       deltaMS,
     );
 
-    const { mode, rocketVisible, trailAlpha, latchedCrashMult, latchedCashOut } =
-      viewMode;
+    const {
+      mode,
+      modeElapsedMs,
+      rocketVisible,
+      trailAlpha,
+      latchedCrashMult,
+      latchedCashOut,
+    } = viewMode;
     curve.container.alpha = trailAlpha;
     rocket.container.visible = rocketVisible;
 
+    // Flash from crash_hold clock only (D-10). Never write stage.x / stage.y.
+    if (
+      mode === "crash_hold" &&
+      modeElapsedMs < VIEW_CONFIG.FLASH_MS
+    ) {
+      const t = modeElapsedMs / VIEW_CONFIG.FLASH_MS;
+      flash.alpha = VIEW_CONFIG.FLASH_PEAK_ALPHA * (1 - t);
+    } else {
+      flash.alpha = 0;
+    }
+
     if (mode === "climb") {
       holdDrawn = false;
+      idleElapsedMs = 0;
+      ghost.visible = false;
       const tip = Math.max(1, snapshot.multiplier);
       const pts = samplePoints(tip, plot);
       curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
@@ -103,6 +151,8 @@ export function createCrashScene(app: Application): CrashScene {
       rocket.syncPose(pos.x, pos.y, rot, true);
       rocket.container.visible = true;
     } else if (mode === "crash_hold") {
+      idleElapsedMs = 0;
+      ghost.visible = false;
       if (!holdDrawn) {
         const tip = latchedCrashMult ?? Math.max(1, snapshot.multiplier);
         const pts = samplePoints(tip, plot);
@@ -111,19 +161,28 @@ export function createCrashScene(app: Application): CrashScene {
       }
       rocket.container.visible = false;
     } else if (mode === "crash_fade") {
+      idleElapsedMs = 0;
+      ghost.visible = false;
       // Keep severed geometry; alpha from reducer.
       rocket.container.visible = false;
     } else {
-      // idle
+      // idle: ghost origin + bobbing parked rocket (D-17, D-19)
       holdDrawn = false;
       curve.container.alpha = 0;
+      idleElapsedMs += Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       const scale = plotScaleFor(1);
       const origin = plotPoint(1, plot, scale);
-      rocket.syncPose(origin.x, origin.y, 0, false);
+      ghost.position.set(origin.x, origin.y);
+      ghost.visible = true;
+      const bob =
+        Math.sin(
+          (idleElapsedMs * 2 * Math.PI) / VIEW_CONFIG.BOB_PERIOD_MS,
+        ) * VIEW_CONFIG.BOB_AMPLITUDE_PX;
+      rocket.syncPose(origin.x, origin.y + bob, 0, false);
       rocket.container.visible = rocketVisible;
     }
 
-    // Theater dual-read (D-13..D-16)
+    // Theater dual-read (D-13..D-16, D-20 idle dim last crash ×)
     let liveText: string;
     let liveTint: number;
     let liveAlpha: number;
