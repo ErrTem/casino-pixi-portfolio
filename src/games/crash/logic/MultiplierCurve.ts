@@ -5,12 +5,14 @@ import {
 import { CRASH_CONFIG } from "./config.js";
 
 /**
- * Smooth exponential climb (D-10): e^(growthRatePerMs · t), rounded to 2dp (D-11).
+ * TEMP RED: linear climb — prove PLAY-02 tests reject non-exponential shape.
  */
 export function multiplierAt(
   elapsedMs: number,
   growthRatePerMs: number = CRASH_CONFIG.growthRatePerMs,
 ): number {
-  const raw = Math.exp(growthRatePerMs * Math.max(0, elapsedMs));
+  void growthRatePerMs;
+  const t = Math.max(0, elapsedMs);
+  const raw = 1 + (2 - 1) * (t / 2500);
   return fromMultHundredths(toMultHundredths(raw));
 }
