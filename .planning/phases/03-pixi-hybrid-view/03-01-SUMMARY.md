@@ -113,7 +113,7 @@ status: complete
 1. **Task 1: Confirm pixi.js@8.21.0 registry identity** - (checkpoint:human-verify, approved — no code commit)
 2. **Task 2: Ticker-driven neon trail, rocket on the path, and crash sever** - `da82ea4` (feat)
 
-**Plan metadata:** (this commit)
+**Plan metadata:** `0c391cd` (docs: complete plan)
 
 ## Deviations
 
