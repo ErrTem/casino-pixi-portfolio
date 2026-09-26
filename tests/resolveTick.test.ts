@@ -31,6 +31,7 @@ function flyingState(overrides: Partial<RoundState> = {}): RoundState {
     cashOutRequested: false,
     autoCashOutAt: null,
     settledRoundId: null,
+    cashOutAt: null,
     ...overrides,
   };
 }
@@ -66,6 +67,7 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
     expect(state.phase).toBe("cashed_out");
     expect(state.settledRoundId).toBe(1);
     expect(state.crashAt).toBe(10);
+    expect(state.cashOutAt).toBe(2);
     expect(state.lockedBetCents).toBeNull();
     // elapsed 2400+100 → multiplierAt ≈ 2.00
     const expectedPayout = payoutCents(10_000, toMultHundredths(2));
@@ -75,6 +77,7 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
     const afterCrash = tickUntilWaiting(state, deps);
     expect(afterCrash.phase).toBe("waiting");
     expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(afterCrash.cashOutAt).toBeNull();
     expect(deps.history.toArray()).toEqual([10]);
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
   });
@@ -167,6 +170,7 @@ describe("resolveTick — auto cash-out (WALT-04)", () => {
     expect(state.phase).toBe("cashed_out");
     expect(state.settledRoundId).toBe(1);
     expect(state.crashAt).toBe(10);
+    expect(state.cashOutAt).toBe(2);
     const expectedPayout = payoutCents(10_000, toMultHundredths(2));
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
     expect(deps.history.toArray()).toEqual([]);
@@ -174,6 +178,7 @@ describe("resolveTick — auto cash-out (WALT-04)", () => {
     const afterCrash = tickUntilWaiting(state, deps);
     expect(afterCrash.phase).toBe("waiting");
     expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(afterCrash.cashOutAt).toBeNull();
     expect(deps.history.toArray()).toEqual([10]);
   });
 

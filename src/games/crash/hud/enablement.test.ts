@@ -16,6 +16,7 @@ function snap(partial: Partial<CrashSnapshot>): CrashSnapshot {
     history: [],
     roundId: 1,
     autoCashOutAt: null,
+    cashOutAt: null,
     ...partial,
   };
 }

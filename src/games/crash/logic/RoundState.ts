@@ -10,6 +10,8 @@ export interface RoundState {
   multiplier: number;
   /** Sampled once in startRound; null while waiting before first launch. */
   crashAt: number | null;
+  /** Paid cash-out multiplier while spectator-finishing; null otherwise (D-16). */
+  cashOutAt: number | null;
   roundId: number;
   /** Stake locked for the current/next round (deducted from wallet on place). */
   lockedBetCents: Cents | null;
@@ -27,6 +29,8 @@ export interface CrashSnapshot {
   /** Display units, or null if no locked bet. */
   bet: number | null;
   crashAt: number | null;
+  /** Paid cash-out × while cashed_out; null after enterWaiting / unsettled flight. */
+  cashOutAt: number | null;
   waitRemainingMs: number;
   history: readonly number[];
   roundId: number;
@@ -40,6 +44,7 @@ export function createInitialRoundState(): RoundState {
     elapsedMs: 0,
     multiplier: 1,
     crashAt: null,
+    cashOutAt: null,
     roundId: 0,
     lockedBetCents: null,
     cashOutRequested: false,

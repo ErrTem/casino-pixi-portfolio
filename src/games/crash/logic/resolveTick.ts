@@ -36,6 +36,7 @@ function enterWaiting(state: RoundState): RoundState {
     elapsedMs: 0,
     multiplier: 1,
     crashAt: null,
+    cashOutAt: null,
     lockedBetCents: null,
     cashOutRequested: false,
     // autoCashOutAt persists across rounds unless cleared by facade
@@ -51,39 +52,18 @@ function startRound(state: RoundState, deps: ResolveDeps): RoundState {
     elapsedMs: 0,
     multiplier: 1,
     crashAt,
+    cashOutAt: null,
     roundId: state.roundId + 1,
     cashOutRequested: false,
   };
 }
 
-function settleOnce(
-  state: RoundState,
-  deps: ResolveDeps,
-  terminalPhase: "crashed" | "cashed_out",
-  settleMult: number,
-): RoundState {
-  if (state.settledRoundId === state.roundId) {
-    return enterWaiting(state);
-  }
-
-  const crashAt = state.crashAt ?? settleMult;
-  if (state.lockedBetCents != null && state.lockedBetCents > 0) {
-    if (terminalPhase === "cashed_out") {
-      const payout = payoutCents(
-        state.lockedBetCents,
-        toMultHundredths(settleMult),
-      );
-      deps.wallet.credit(payout);
-    }
-    // crash: stake already deducted on placeBet — no credit
-  }
-
+/** Crash transition: push crashAt once, then waiting. No credit. */
+function crashIntoWaiting(state: RoundState, deps: ResolveDeps, crashAt: number): RoundState {
   deps.history.push(crashAt);
-
   return enterWaiting({
     ...state,
-    phase: terminalPhase,
-    multiplier: settleMult,
+    multiplier: crashAt,
     settledRoundId: state.roundId,
     lockedBetCents: null,
     cashOutRequested: false,
@@ -91,9 +71,43 @@ function settleOnce(
 }
 
 /**
+ * Flying → cashed_out: credit once, latch paid ×, keep climb until crashAt (D-16).
+ * Does not push history and does not enterWaiting.
+ */
+function cashOutToSpectator(
+  state: RoundState,
+  deps: ResolveDeps,
+  settleMult: number,
+  elapsed: number,
+  m: number,
+): RoundState {
+  if (state.settledRoundId !== state.roundId) {
+    if (state.lockedBetCents != null && state.lockedBetCents > 0) {
+      const payout = payoutCents(
+        state.lockedBetCents,
+        toMultHundredths(settleMult),
+      );
+      deps.wallet.credit(payout);
+    }
+  }
+
+  return {
+    ...state,
+    phase: "cashed_out",
+    elapsedMs: elapsed,
+    multiplier: m,
+    cashOutAt: settleMult,
+    settledRoundId: state.roundId,
+    lockedBetCents: null,
+    cashOutRequested: false,
+  };
+}
+
+/**
  * Single settlement authority.
  * Order: clamp dt → waiting countdown → startRound (bet optional) →
- * flying → crash before auto CO before manual → settle → waiting (D-13).
+ * flying → crash before auto CO before manual → durable cashed_out climb →
+ * crash into waiting (D-16).
  */
 export function resolveTick(
   state: RoundState,
@@ -102,7 +116,8 @@ export function resolveTick(
 ): RoundState {
   const step = clampDt(dt);
 
-  if (state.phase === "cashed_out" || state.phase === "crashed") {
+  // Non-durable crashed member: wipe if ever published (should not happen).
+  if (state.phase === "crashed") {
     return enterWaiting(state);
   }
 
@@ -114,7 +129,7 @@ export function resolveTick(
     return { ...state, waitRemainingMs: wait };
   }
 
-  // flying
+  // flying | cashed_out: advance multiplier the same way
   if (state.crashAt == null) {
     return state;
   }
@@ -123,17 +138,33 @@ export function resolveTick(
   const m = roundedMult(multiplierAt(elapsed, CRASH_CONFIG.growthRatePerMs));
   const crashAt = roundedMult(state.crashAt);
 
+  if (state.phase === "cashed_out") {
+    if (m >= crashAt) {
+      return crashIntoWaiting(
+        { ...state, elapsedMs: elapsed, multiplier: m },
+        deps,
+        crashAt,
+      );
+    }
+    return { ...state, elapsedMs: elapsed, multiplier: m };
+  }
+
+  // flying
   if (m >= crashAt) {
-    return settleOnce(state, deps, "crashed", crashAt);
+    return crashIntoWaiting(
+      { ...state, elapsedMs: elapsed, multiplier: m },
+      deps,
+      crashAt,
+    );
   }
   if (state.autoCashOutAt != null) {
     const autoAt = roundedMult(state.autoCashOutAt);
     if (m >= autoAt) {
-      return settleOnce(state, deps, "cashed_out", autoAt);
+      return cashOutToSpectator(state, deps, autoAt, elapsed, m);
     }
   }
   if (state.cashOutRequested) {
-    return settleOnce(state, deps, "cashed_out", m);
+    return cashOutToSpectator(state, deps, m, elapsed, m);
   }
 
   return { ...state, elapsedMs: elapsed, multiplier: m };

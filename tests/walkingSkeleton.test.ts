@@ -38,6 +38,7 @@ describe("walking skeleton — createGame → placeBet → wait → fly → sett
     game.tick(CRASH_CONFIG.maxDeltaMs);
     const cashed = game.getSnapshot();
     expect(cashed.phase).toBe("cashed_out");
+    expect(cashed.cashOutAt).not.toBeNull();
     expect(cashed.balance).toBeGreaterThan(4900);
     expect(cashed.history.length).toBe(0);
 

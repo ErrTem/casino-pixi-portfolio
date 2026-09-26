@@ -96,6 +96,7 @@ export function createGame(options: CreateGameOptions): CrashGame {
             ? centsToDisplay(state.lockedBetCents)
             : null,
         crashAt: state.crashAt,
+        cashOutAt: state.cashOutAt,
         waitRemainingMs: state.waitRemainingMs,
         history: history.toArray(),
         roundId: state.roundId,
