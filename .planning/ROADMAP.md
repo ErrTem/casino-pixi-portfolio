@@ -14,7 +14,7 @@ Ship a recruiter-ready Crash demo in five vertical slices: pure GameLogic (FSM, 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: GameLogic Core** - Pure TS round FSM, wallet, seeded RNG, settlement, auto cash-out, Vitest (completed 2026-09-26)
-- [ ] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic
+- [x] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic (completed 2026-09-26)
 - [ ] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots
 - [ ] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls
 - [ ] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out
@@ -72,7 +72,7 @@ Plans:
   3. History strip shows the last N crash multipliers after rounds complete
   4. Pixi does not own monetary controls — HTML overlay drives GameLogic commands; canvas region is reserved
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 
@@ -161,7 +161,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
-| 2. Vite Shell + HTML HUD | 3/3 | In Progress|  |
+| 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
 | 3. Pixi Hybrid View | 0/3 | Not started | - |
 | 4. Mobile Harden | 0/3 | Not started | - |
 | 5. Polish | 0/4 | Not started | - |
