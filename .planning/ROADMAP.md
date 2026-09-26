@@ -101,7 +101,7 @@ Plans:
   2. On crash, player sees a clear visual break (path/rocket interrupt) matching the logic crash event
   3. Ticker feeds `GameLogic.update(deltaMS)` only; outcome never driven by sprite position
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 
@@ -111,7 +111,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-02-PLAN.md — Durable cashed_out spectator finish + theater dual ×
+- [x] 03-02-PLAN.md — Durable cashed_out spectator finish + theater dual ×
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -170,6 +170,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
-| 3. Pixi Hybrid View | 1/3 | In Progress|  |
+| 3. Pixi Hybrid View | 2/3 | In Progress|  |
 | 4. Mobile Harden | 0/3 | Not started | - |
 | 5. Polish | 0/4 | Not started | - |

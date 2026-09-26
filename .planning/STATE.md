@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 03
 current_phase_name: Pixi Hybrid View
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-09-26T22:22:00.959Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-09-26T22:29:34.218Z"
 last_activity: 2026-09-27
 last_activity_desc: Completed 03-01 Pixi neon trail tracer
-state_head: 0c391cdb37ac4dc38dbf6d55fd8c08f23b050e92
+state_head: 0cfa3973afb957dbeecbe3457d76c74ab460c44f
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
   percent: 40
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 ## Current Position
 
 Phase: 03 (Pixi Hybrid View) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-09-27 — Completed 03-01 Pixi neon trail tracer
 
@@ -68,6 +68,7 @@ Progress: [████░░░░░░] 40%
 | Phase 02 P02 | 2 min | 2 tasks | 5 files |
 | Phase 02-vite-shell-html-hud P03 | 2 min | 2 tasks | 7 files |
 | Phase 03 P01 | 5 | 2 tasks | 14 files |
+| Phase 03-pixi-hybrid-view P02 | 5 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,7 @@ Recent decisions affecting current work:
 - [Phase 02]: History from snapshot.history only; createElement + textContent (no innerHTML) — WALT-05 single source; XSS mitigate T-02-10
 - [Phase 03]: Task 1 human-approved pixi.js@8.21.0 from github.com/pixijs/pixijs before install — T-03-SC supply-chain gate; registry identity matched RESEARCH pin
 - [Phase 03]: D-01 two-stroke halo/core Graphics without pixi-filters; D-03 log2-x linear-y plot; cashOutAt null until 03-02 — Plan 03-01 view contract for climb trail and sever; durable cashOutAt is Wave 2
+- [Phase 03]: D-16 durable cashed_out: credit once, climb until crashAt, history on crash only — CONTEXT one-way lock; settleOnce enterWaiting wiped the flight before snapshots could feed the theater dual-read
 
 ### Pending Todos
 
@@ -119,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T22:22:00.911Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-09-26T22:29:34.173Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
