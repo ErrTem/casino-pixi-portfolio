@@ -115,7 +115,7 @@ Each task was committed atomically:
 3. **Task 2:** `af62188` — `test(03-02): lock cashed_out out of place and cash-out`
 4. **Task 3:** `0cfa397` — `feat(03-02): theater BitmapText live and frozen cash-out dual-read`
 
-**Plan metadata:** (this commit)
+**Plan metadata:** `d270fbe`
 
 _Note: TDD Task 1 used RED then GREEN commits; no separate refactor commit (no cleanup needed)._
 
