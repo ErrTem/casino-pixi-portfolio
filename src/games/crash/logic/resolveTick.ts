@@ -153,5 +153,11 @@ export function setAutoCashOutTarget(
   state: RoundState,
   target: number | null,
 ): RoundState {
-  return { ...state, autoCashOutAt: target };
+  if (target == null) {
+    return { ...state, autoCashOutAt: null };
+  }
+  if (!Number.isFinite(target)) {
+    return state;
+  }
+  return { ...state, autoCashOutAt: roundedMult(target) };
 }
