@@ -14,16 +14,17 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 
 - ✓ Playable Crash round loop: waiting → flying → cashed out / crashed — Phase 1 (GameLogic)
 - ✓ Demo wallet with start balance, bet amount, win/loss settlement — Phase 1
-- ✓ Auto cash-out at a target multiplier — Phase 1 (logic settle path)
+- ✓ Auto cash-out at a target multiplier — Phase 1 (logic) + Phase 2 (HUD chrome)
 - ✓ Seeded/demo RNG so rounds are testable and reproducible — Phase 1
 - ✓ Clean architecture: pure TS GameLogic separate from Pixi view — Phase 1 (ARCH-02 gate)
+- ✓ Vite shell + thin HTML overlay (bet, cash-out, balance, presets, auto CO, history) — Phase 2 (VIS-02)
+- ✓ Bet amount presets (chips) fill-only + free-form input — Phase 2 (WALT-03)
+- ✓ Round history strip from snapshot.history newest-first — Phase 2 (WALT-05)
+- ✓ Empty reserved `#game-canvas-host` for Phase 3 Pixi mount (D-04)
 
 ### Active
 
 - [ ] Live multiplier display with hybrid visual (rising curve + small rocket on path)
-- [ ] Thin HTML controls overlay: bet, cash out, balance, presets, history
-- [ ] Round history strip (last N crash multipliers)
-- [ ] Bet amount presets (chips) plus free amount input
 - [ ] Mobile-friendly canvas layout
 - [ ] Waiting countdown, SFX+mute, seed replay, session stats, keyboard cash-out
 - [ ] Ready to extend later with more casino games (shell optional later)
@@ -65,17 +66,17 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| PixiJS v8 + TS + Vite | Portfolio stack already chosen; Pixi skills available | — Pending (Phase 2+) |
-| HTML controls + Pixi canvas (no React/Angular v1) | Fastest path to a playable single-game demo; shell deferred | — Pending (Phase 2) |
+| PixiJS v8 + TS + Vite | Portfolio stack already chosen; Pixi skills available | ✓ Phase 2 — Vite 6.4.3 shell; Pixi deferred to Phase 3 |
+| HTML controls + Pixi canvas (no React/Angular v1) | Fastest path to a playable single-game demo; shell deferred | ✓ Phase 2 — full HUD overlay; canvas host empty for Pixi |
 | Hybrid visual (curve + rocket on path) | Polished Crash look without heavy art dependency | — Pending (Phase 3) |
 | Seeded/demo RNG | Testable rounds without backend or certification | ✓ Phase 1 — seedrandom behind Rng; ARCH-01 |
 | D-14 continuous auto-launch | Live Crash cadence + spectator rounds | ✓ Phase 1 — option-continuous locked |
 | Single-authority resolveTick | Crash before auto before manual; idempotent settle | ✓ Phase 1 |
-| v1 includes history, auto cash-out, bet presets | Table-stakes Crash UX for a credible portfolio demo | Partial — history + auto CO logic in P1; presets/HUD in P2 |
+| v1 includes history, auto cash-out, bet presets | Table-stakes Crash UX for a credible portfolio demo | ✓ Phase 2 — HUD presets + history + auto CO chrome |
 | v1 includes polish (countdown, SFX, seed, stats, keyboard) | Differentiator polish after core loop | — Pending (Phase 5) |
 | No DEMO badge UI | Product owner preference; avoid badge chrome | — Pending |
 | Single game page only | Ship Crash first; lobby/multi-game later | — Pending |
-| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 1 complete; Phase 2 next |
+| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 2 complete; Phase 3 next |
 
 ## Evolution
 
@@ -95,4 +96,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-26 after Phase 1*
+*Last updated: 2026-09-26 after Phase 2*

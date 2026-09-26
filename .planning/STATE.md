@@ -23,7 +23,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 02 — Vite Shell + HTML HUD
+**Current focus:** Phase 3 — Pixi Hybrid View
 
 ## Current Position
 
