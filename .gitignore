@@ -1,0 +1,11 @@
+# IDE
+.idea/
+
+# Dependencies / build
+node_modules/
+dist/
+*.local
+
+# Env
+.env
+.env.*
