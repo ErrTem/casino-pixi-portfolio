@@ -1,25 +1,38 @@
-import { startRafClock } from "./app/rafClock.js";
 import { mountCrashHud } from "./games/crash/hud/CrashHud.js";
 import { createGame } from "./games/crash/logic/index.js";
+import { mountCrashView } from "./games/crash/view/mountCrashView.js";
 import "./styles/hud.css";
 
-function main(): void {
-  const game = createGame({ seed: "portfolio-demo" });
-  const root = document.querySelector("#hud-bar");
-  if (!root) throw new Error("#hud-bar missing");
+async function main(): Promise<void> {
+  const hudRoot = document.querySelector("#hud-bar");
+  if (!hudRoot) throw new Error("#hud-bar missing");
+  const host = document.querySelector("#game-canvas-host");
+  if (!host) throw new Error("#game-canvas-host missing");
 
-  const hud = mountCrashHud(root, game);
+  const game = createGame({ seed: "portfolio-demo" });
+  const hud = mountCrashHud(hudRoot, game);
+  const { app, scene } = await mountCrashView(host as HTMLElement);
+
   hud.render(game.getSnapshot());
 
-  // Phase 3: stop() then bind app.ticker to the same tick + render site
-  const stopClock = startRafClock((deltaMs) => {
-    game.tick(deltaMs);
-    hud.render(game.getSnapshot());
-  });
+  app.ticker.minFPS = 10;
+  const onTick = (ticker: { deltaMS: number }): void => {
+    game.tick(ticker.deltaMS);
+    const snap = game.getSnapshot();
+    hud.render(snap);
+    scene.sync(snap, ticker.deltaMS);
+  };
+  app.ticker.add(onTick);
 
   if (import.meta.hot) {
-    import.meta.hot.dispose(() => stopClock());
+    import.meta.hot.dispose(() => {
+      app.ticker.remove(onTick);
+      app.destroy(
+        { removeView: true, releaseGlobalResources: true },
+        { children: true },
+      );
+    });
   }
 }
 
-main();
+void main();

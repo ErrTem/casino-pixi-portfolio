@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "pixi.js": "8.21.0",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
