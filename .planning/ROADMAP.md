@@ -13,7 +13,7 @@ Ship a recruiter-ready Crash demo in five vertical slices: pure GameLogic (FSM, 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: GameLogic Core** - Pure TS round FSM, wallet, seeded RNG, settlement, auto cash-out, Vitest
+- [x] **Phase 1: GameLogic Core** - Pure TS round FSM, wallet, seeded RNG, settlement, auto cash-out, Vitest (completed 2026-09-26)
 - [ ] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic
 - [ ] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots
 - [ ] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls
@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Same seed always yields the same crash point; auto cash-out settles in `resolveTick` when the target is reached
   5. Vitest covers settlement, auto cash-out, and wallet rules with no `pixi.js` imports in GameLogic
 
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. GameLogic Core | 5/5 | In Progress|  |
+| 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
 | 2. Vite Shell + HTML HUD | 0/3 | Not started | - |
 | 3. Pixi Hybrid View | 0/3 | Not started | - |
 | 4. Mobile Harden | 0/3 | Not started | - |
