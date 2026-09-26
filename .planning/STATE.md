@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Vite Shell + HTML HUD
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-09-26T18:51:30.457Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-09-26T18:55:10.027Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 02 execution started
-state_head: 034bc859a4fd66fe95155bc31f1e604f937f3bb9
+state_head: 36fa3dc1ad49f88cfe5176b11686f0b032e3e094
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
+  completed_plans: 7
   percent: 20
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 ## Current Position
 
 Phase: 02 (Vite Shell + HTML HUD) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-09-26 — Phase 02 execution started
 
@@ -64,6 +64,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01 P04 | 4 min | 2 tasks | 2 files |
 | Phase 01-gamelogic-core P05 | 5 min | 2 tasks | 3 files |
 | Phase 02-vite-shell-html-hud P01 | 3 min | 2 tasks | 11 files |
+| Phase 02 P02 | 2 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 - [Phase 01]: package.json must not list pixi.js or vite in Phase 1 (Phase 2 adds them) — Supply-chain boundary for ARCH-02 until shell phase
 - [Phase 02]: D-04 locked option-empty-slot: empty reserved #game-canvas-host (quiet Game view label only); no HTML theater/monetary controls in host — User confirmed checkpoint Task 1 with option-empty-slot; one-way door per CONTEXT for Phase 3 Pixi mount
 - [Phase 02]: Phase 2 installs vite@6.4.3 only; pixi.js deferred to Phase 3 — Plan/RESEARCH pin mature Vite 6.x for shell; Application/spectacle remain Phase 3
+- [Phase 02]: Enablement drives from waiting|flying only; terminal phases not durable chrome — RESEARCH A2: settle returns via enterWaiting; enablement matrix is waiting|flying + bet/balance
+- [Phase 02]: canEditAuto always true; auto CO syncs from snapshot when input not focused — setAutoCashOut persists across rounds per Phase 1 enterWaiting; avoid clobbering while typing
+- [Phase 02]: Broke UX emphasizes Reset demo; never auto-calls resetWallet — Phase 1 D-03/D-04: explicit user Reset only; HUD must not auto-refill
 
 ### Pending Todos
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T18:51:30.420Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-09-26T18:55:09.987Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

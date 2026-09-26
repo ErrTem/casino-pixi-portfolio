@@ -72,7 +72,7 @@ Plans:
   3. History strip shows the last N crash multipliers after rounds complete
   4. Pixi does not own monetary controls — HTML overlay drives GameLogic commands; canvas region is reserved
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 
@@ -82,7 +82,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 02-02-PLAN.md — Enablement matrix, auto CO, Reset demo, phase-aware controls
+- [x] 02-02-PLAN.md — Enablement matrix, auto CO, Reset demo, phase-aware controls
 
 **Wave 3** *(blocked on Wave 2)*
 
@@ -161,7 +161,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
-| 2. Vite Shell + HTML HUD | 1/3 | In Progress|  |
+| 2. Vite Shell + HTML HUD | 2/3 | In Progress|  |
 | 3. Pixi Hybrid View | 0/3 | Not started | - |
 | 4. Mobile Harden | 0/3 | Not started | - |
 | 5. Polish | 0/4 | Not started | - |
