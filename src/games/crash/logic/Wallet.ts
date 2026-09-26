@@ -24,6 +24,10 @@ export class Wallet {
     if (!Number.isFinite(amountCents) || !Number.isInteger(amountCents)) {
       return { ok: false, reason: "invalid_amount" };
     }
+    // D-03 hard-stop: below min balance rejects before other amount rules
+    if (this.balanceCents < CRASH_CONFIG.minBetCents) {
+      return { ok: false, reason: "broke" };
+    }
     if (amountCents < CRASH_CONFIG.minBetCents) {
       return { ok: false, reason: "below_min" };
     }
@@ -32,9 +36,6 @@ export class Wallet {
     }
     if (amountCents > this.balanceCents) {
       return { ok: false, reason: "insufficient_balance" };
-    }
-    if (this.balanceCents < CRASH_CONFIG.minBetCents) {
-      return { ok: false, reason: "broke" };
     }
     this.balanceCents -= amountCents;
     return { ok: true };

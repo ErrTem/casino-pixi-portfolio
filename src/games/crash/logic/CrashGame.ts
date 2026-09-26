@@ -58,6 +58,10 @@ export function createGame(options: CreateGameOptions): CrashGame {
       if (state.lockedBetCents != null) {
         return { ok: false, reason: "bet_already_placed" };
       }
+      // ASVS V5: reject non-finite display at command boundary before cents convert
+      if (!Number.isFinite(amountDisplay)) {
+        return { ok: false, reason: "invalid_amount" };
+      }
       const amountCents = displayToCents(amountDisplay);
       const result = wallet.placeBet(amountCents);
       if (!result.ok) return result;
