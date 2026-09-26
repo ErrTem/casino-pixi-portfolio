@@ -20,10 +20,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-09-26)
+See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 01 — GameLogic Core
+**Current focus:** Phase 2 — Vite Shell + HTML HUD
 
 ## Current Position
 
