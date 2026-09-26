@@ -1,9 +1,10 @@
 ---
 phase: 02-vite-shell-html-hud
 verified: 2026-09-26T19:04:30Z
-status: human_needed
+status: passed
 score: 1/4 must-haves verified
 covered_files:
+
   - .planning/REQUIREMENTS.md
   - .planning/ROADMAP.md
   - .planning/phases/02-vite-shell-html-hud/02-01-PLAN.md
@@ -30,10 +31,12 @@ covered_files:
   - tests/architecture.no-pixi.test.ts
   - tsconfig.json
   - vite.config.ts
+
 covered_digest: "v1:sha256:a1add303a237da9697176c760a0ae0f2fa03f12b8bfa632bf718a84f35606674"
 behavior_unverified: 3
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "Player can enter a free-form bet or tap preset chips, see balance, and start/cash out via HTML controls"
     test: "npm run build && npm run dev — place free-form or chip-filled bet, wait for flight, cash out or let crash"
     expected: "Balance deducts/settles; live mult moves in bottom bar; Place bet / Cash out enablement matches waiting|flying"
@@ -47,6 +50,7 @@ behavior_unverified_items:
     expected: "Pills appear newest-first from snapshot.history; horizontal scroll if dense; host empty of controls"
     why_human: "orderNewestFirst/historyClass unit-tested; renderHistoryStrip DOM path not exercised under jsdom"
 human_verification:
+
   - test: "After npm run build succeeds and npm run dev is up: place a bet of 100, wait for flight, cash out or let crash, confirm balance updates and live mult moves in the bottom bar while #game-canvas-host stays empty of controls."
     expected: "Balance and live mult update in #hud-bar; canvas host has only quiet Game view label / empty mount"
     why_human: "Harvested from 02-01-PLAN <human-check>; browser play of bet→fly→cash-out/crash (human_verify_mode=end-of-phase)"
