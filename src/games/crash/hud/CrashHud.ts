@@ -53,6 +53,21 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     throw new Error("CrashHud: required #hud-bar fields missing");
   }
 
+  // Narrowed aliases so closures keep non-null types under strictNullChecks.
+  const bet = betInput;
+  const auto = autoInput;
+  const placeBet = placeBetBtn;
+  const cashOut = cashOutBtn;
+  const clearAuto = clearAutoBtn;
+  const reset = resetBtn;
+  const status = statusEl;
+  const balance = balanceEl;
+  const phase = phaseEl;
+  const liveMult = liveMultEl;
+  const balanceZone = leftZone;
+  const chips = chipsHost;
+  const history = historyHost;
+
   let lastPlaceReason: string | null = null;
 
   // Chips: fill bet-input only — never call placeBet (Pitfall 4 / WALT-03).
@@ -64,87 +79,87 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     btn.dataset.chip = String(value);
     btn.className = "chip";
     btn.addEventListener("click", () => {
-      betInput.value = String(value);
+      bet.value = String(value);
       syncChipSelection();
     });
-    chipsHost.appendChild(btn);
+    chips.appendChild(btn);
     chipButtons.push(btn);
   }
 
   function syncChipSelection(): void {
-    const current = betInput.value;
+    const current = bet.value;
     for (const btn of chipButtons) {
       btn.classList.toggle("chip--selected", btn.dataset.chip === current);
     }
   }
 
-  placeBetBtn.addEventListener("click", () => {
-    const amount = Number(betInput.value);
+  placeBet.addEventListener("click", () => {
+    const amount = Number(bet.value);
     const result = game.placeBet(amount);
     if (!result.ok) {
       lastPlaceReason = result.reason;
-      statusEl.textContent = result.reason;
+      status.textContent = result.reason;
     } else {
       lastPlaceReason = null;
-      statusEl.textContent = "";
+      status.textContent = "";
     }
   });
 
-  cashOutBtn.addEventListener("click", () => {
+  cashOut.addEventListener("click", () => {
     game.requestCashOut();
   });
 
   const applyAutoCo = () => {
-    const raw = autoInput.value.trim();
+    const raw = auto.value.trim();
     if (raw === "") game.setAutoCashOut(null);
     else game.setAutoCashOut(Number(raw));
   };
 
-  autoInput.addEventListener("change", applyAutoCo);
-  autoInput.addEventListener("blur", applyAutoCo);
+  auto.addEventListener("change", applyAutoCo);
+  auto.addEventListener("blur", applyAutoCo);
 
-  clearAutoBtn.addEventListener("click", () => {
-    autoInput.value = "";
+  clearAuto.addEventListener("click", () => {
+    auto.value = "";
     game.setAutoCashOut(null);
   });
 
-  resetBtn.addEventListener("click", () => {
+  reset.addEventListener("click", () => {
     game.resetWallet();
     lastPlaceReason = null;
-    statusEl.textContent = "";
+    status.textContent = "";
   });
 
-  betInput.addEventListener("input", syncChipSelection);
+  bet.addEventListener("input", syncChipSelection);
   syncChipSelection();
 
   function render(snap: CrashSnapshot): void {
-    balanceEl!.textContent = formatMoney(snap.balance);
-    phaseEl!.textContent = snap.phase;
-    liveMultEl!.textContent = formatMult(snap.multiplier);
+    balance.textContent = formatMoney(snap.balance);
+    phase.textContent = snap.phase;
+    liveMult.textContent = formatMult(snap.multiplier);
 
-    if (document.activeElement !== autoInput) {
-      autoInput!.value =
+    if (document.activeElement !== auto) {
+      auto.value =
         snap.autoCashOutAt == null ? "" : String(snap.autoCashOutAt);
     }
 
     const en = enablementFrom(snap);
-    placeBetBtn!.disabled = !en.canPlaceBet;
-    cashOutBtn!.disabled = !en.canCashOut;
-    betInput!.disabled = !en.canEditBet;
-    autoInput!.disabled = !en.canEditAuto;
+    placeBet.disabled = !en.canPlaceBet;
+    cashOut.disabled = !en.canCashOut;
+    bet.disabled = !en.canEditBet;
+    auto.disabled = !en.canEditAuto;
     for (const btn of chipButtons) {
       btn.disabled = !en.chipsEnabled;
     }
     syncChipSelection();
 
     // History from snapshot only — never push from button handlers (WALT-05).
-    renderHistoryStrip(historyHost!, snap.history);
+    renderHistoryStrip(history, snap.history);
 
     const emphasizeBroke = en.showBroke || lastPlaceReason === "broke";
-    leftZone!.classList.toggle("hud-zone--broke", emphasizeBroke);
-    resetBtn!.classList.toggle("reset-demo--emphasize", emphasizeBroke);
-    if (emphasizeBroke && !statusEl!.textContent) {
-      statusEl!.textContent = "broke — Reset demo to continue";
+    balanceZone.classList.toggle("hud-zone--broke", emphasizeBroke);
+    reset.classList.toggle("reset-demo--emphasize", emphasizeBroke);
+    if (emphasizeBroke && !status.textContent) {
+      status.textContent = "broke — Reset demo to continue";
     }
   }
 
