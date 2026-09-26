@@ -486,19 +486,22 @@ export default defineConfig({
 
 **If wrong:** Adjust constants only; do not change locked D-* decisions.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Expose `crashAt` in live snapshots during flight?**
    - What we know: Tests need it; commercial UIs often hide until crash.
    - Recommendation: Include in snapshot for Phase 1; HUD may omit display until Phase 2/5.
+   - RESOLVED: Phase 1 snapshots expose `crashAt` (01-02 Walking Skeleton `getSnapshot`; HUD may hide display later).
 
 2. **Settle beat vs immediate waiting?**
    - What we know: D-13 makes waiting the 5s open-bet window (no separate result-only beat).
    - Recommendation: On terminal, push history, settle once, set phase `waiting` with `waitRemainingMs = 5000` immediately (cashed_out/crashed can be event flags on the transition).
+   - RESOLVED: Terminal settle enters `waiting` immediately with `waitRemainingMs = 5000` (01-02 resolveTick / D-13; cadence edges in 01-03).
 
 3. **Should `placeBet` after auto-launch mid-flight be allowed?**
    - What we know: Commercial Crash usually locks bets before takeoff.
    - Recommendation: Reject place-bet unless `phase === 'waiting'`; locked bet clears after settle.
+   - RESOLVED: `placeBet` only succeeds when `phase === 'waiting'` (01-02 facade gate; flying reject asserted in 01-03).
 
 ## Environment Availability
 
@@ -605,7 +608,7 @@ Minimum green path before expanding tables:
 ### Primary (HIGH confidence)
 - `.planning/phases/01-gamelogic-core/01-CONTEXT.md` — locked D-01..D-15 `[VERIFIED: read this session]`
 - `.planning/REQUIREMENTS.md` — PLAY/WALT/ARCH IDs `[VERIFIED: read this session]`
-- `.planning/ROADMAP.md` — Phase 1 goal, plans 01-01..01-04 `[VERIFIED: read this session]`
+- `.planning/ROADMAP.md` — Phase 1 goal, plans 01-01..01-05 `[VERIFIED: read this session]`
 - `.planning/research/ARCHITECTURE.md` — folder seams, facade, tick authority `[VERIFIED: read this session]`
 - `.planning/research/STACK.md` — seedrandom + Vitest + no Pixi in logic `[VERIFIED: read this session]`
 - `.planning/research/PITFALLS.md` — float/race/timing pitfalls `[VERIFIED: read this session]`

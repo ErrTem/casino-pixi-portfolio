@@ -42,13 +42,13 @@ created: "2026-09-26"
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 01-01-T1 | 01-01 | 1 | ARCH-04 | T-01-SC | Pin vitest 3.2.7; no SUS latest | unit | Wave 0 scaffold (MISSING until package.json) | ❌ W0 | ⬜ pending |
 | 01-01-T2 | 01-01 | 1 | PLAY-01 | — | D-14 one-way confirm | checkpoint | — | — | ⬜ pending |
-| 01-01-T3 | 01-01 | 1 | ARCH-01, PLAY-01/02/04/05, WALT-01 | T-01-03 | Demo RNG; crashAt-at-start | unit | `npx vitest run tests/walkingSkeleton.test.ts tests/crashRng.test.ts` | ❌ W0 | ⬜ pending |
-| 01-02-T1 | 01-02 | 2 | WALT-01, WALT-02 | T-01-02 | Reject NaN/OOB; integer cents | unit | `npx vitest run tests/wallet.test.ts` | ❌ W0 | ⬜ pending |
-| 01-02-T2 | 01-02 | 2 | PLAY-01, PLAY-05, D-15 | T-01-05 | Spectator no wallet change | unit | `npx vitest run tests/roundCadence.test.ts` | ❌ W0 | ⬜ pending |
-| 01-03-T1 | 01-03 | 3 | PLAY-03, PLAY-04 | T-01-01 | Finite stake×mult settle; idempotent | unit | `npx vitest run tests/resolveTick.test.ts -t "manual cash-out"` | ❌ W0 | ⬜ pending |
-| 01-03-T2 | 01-03 | 3 | WALT-04 | T-01-01 | Crash before auto CO | unit | `npx vitest run tests/resolveTick.test.ts -t "auto"` | ❌ W0 | ⬜ pending |
-| 01-04-T1 | 01-04 | 4 | ARCH-02 | T-01-04 | No pixi/DOM in logic | unit | `npx vitest run tests/architecture.no-pixi.test.ts` | ❌ W0 | ⬜ pending |
-| 01-04-T2 | 01-04 | 4 | PLAY-02, ARCH-04 | — | Full suite green | unit | `npx vitest run` | ❌ W0 | ⬜ pending |
+| 01-02-T1 | 01-02 | 2 | ARCH-01, PLAY-01/02/04/05, WALT-01 | T-01-03 | Demo RNG; crashAt-at-start | unit | `npx vitest run tests/walkingSkeleton.test.ts tests/crashRng.test.ts` | ❌ W0 | ⬜ pending |
+| 01-03-T1 | 01-03 | 3 | WALT-01, WALT-02 | T-01-02 | Reject NaN/OOB; integer cents | unit | `npx vitest run tests/wallet.test.ts` | ❌ W0 | ⬜ pending |
+| 01-03-T2 | 01-03 | 3 | PLAY-01, PLAY-05, D-15 | T-01-05 | Spectator no wallet change | unit | `npx vitest run tests/roundCadence.test.ts` | ❌ W0 | ⬜ pending |
+| 01-04-T1 | 01-04 | 4 | PLAY-03, PLAY-04 | T-01-01 | Finite stake×mult settle; idempotent | unit | `npx vitest run tests/resolveTick.test.ts -t "manual cash-out"` | ❌ W0 | ⬜ pending |
+| 01-04-T2 | 01-04 | 4 | WALT-04 | T-01-01 | Crash before auto CO | unit | `npx vitest run tests/resolveTick.test.ts -t "auto"` | ❌ W0 | ⬜ pending |
+| 01-05-T1 | 01-05 | 5 | ARCH-02 | T-01-04 | No pixi/DOM in logic | unit | `npx vitest run tests/architecture.no-pixi.test.ts` | ❌ W0 | ⬜ pending |
+| 01-05-T2 | 01-05 | 5 | PLAY-02, ARCH-04 | — | Full suite green | unit | `npx vitest run` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

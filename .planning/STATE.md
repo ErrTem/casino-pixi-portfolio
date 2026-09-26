@@ -3,15 +3,15 @@ gsd_state_version: "1.0"
 current_phase: 1
 current_phase_name: GameLogic Core
 status: planned
-stopped_at: Phase 1 plans created (01-01..01-04 + SKELETON)
-last_updated: "2026-09-26T16:45:00.000Z"
+stopped_at: Phase 1 plans revised (01-01..01-05 + SKELETON; scope split)
+last_updated: "2026-09-26T19:45:00.000Z"
 last_activity: 2026-09-26
-last_activity_desc: Phase 1 executable plans + Walking Skeleton written
+last_activity_desc: Phase 1 plan revision — Wave 0 / Walking Skeleton split; RESEARCH RESOLVED
 state_head: 87f61008d8afe0e612fb396e001961e989ac35bd
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 4
+  total_plans: 5
   completed_plans: 0
   percent: 0
 ---
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-09-26)
 ## Current Position
 
 Phase: 1 of 5 (GameLogic Core)
-Plan: 01-01 of 4 in current phase
+Plan: 01-01 of 5 in current phase
 Status: Ready to execute
-Last activity: 2026-09-26 — Phase 1 plans created (scaffold+tracer, wallet/FSM, resolveTick, Vitest gate)
+Last activity: 2026-09-26 — Phase 1 plans revised (Wave 0, tracer, wallet/FSM, resolveTick, Vitest gate)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -66,7 +66,7 @@ Recent decisions affecting current work:
 - v1: No DEMO badge UI — portfolio framing via README/title only if needed
 - Roadmap: Logic → HUD → Pixi → mobile → polish; WALT-03/WALT-05 mapped to Phase 2 (UI)
 - Phase 1 D-01..D-15 locked in 01-CONTEXT.md (wallet, crash feel, 5s auto-launch, spectator)
-- D-14 continuous auto-launch is one-way — checkpoint:decision in 01-01 before tracer
+- D-14 continuous auto-launch is one-way — checkpoint:decision in 01-01 before 01-02 tracer
 
 ### Pending Todos
 
@@ -84,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T16:45:00.000Z
-Stopped at: Phase 1 plans created (01-01..01-04 + SKELETON)
+Last session: 2026-09-26T19:45:00.000Z
+Stopped at: Phase 1 plans revised (01-01..01-05 + SKELETON)
 Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\01-gamelogic-core\01-01-PLAN.md

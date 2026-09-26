@@ -55,7 +55,7 @@ Authoritative Crash round loop in pure TypeScript — continuous waiting→flyin
 ### Project scope
 - `.planning/PROJECT.md` — Product vision, stack locks, GameLogic≠Pixi, out-of-scope (no real money, no multiplayer, seeded demo RNG only)
 - `.planning/REQUIREMENTS.md` — PLAY-01..05, WALT-01/02/04, ARCH-01/02/04 mapped to Phase 1; note D-14 reinterprets start cadence vs naive reading of PLAY-01
-- `.planning/ROADMAP.md` — Phase 1 goal, success criteria, plans 01-01..01-04
+- `.planning/ROADMAP.md` — Phase 1 goal, success criteria, plans 01-01..01-05
 - `.planning/STATE.md` — Current position / session continuity
 
 ### Research (implementation constraints)

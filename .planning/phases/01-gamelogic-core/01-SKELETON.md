@@ -27,6 +27,7 @@ A Vitest caller can `createGame({ seed })`, `placeBet`, advance the 5s waiting w
 ## Stack Touched in Phase 1
 
 - [x] Project scaffold (package.json, tsconfig, Vitest node) — plan 01-01
+- [x] Walking Skeleton tracer (createGame → bet→fly→settle) — plan 01-02
 - [ ] Routing — N/A (no HTTP app in Phase 1; deferred to Phase 2 Vite shell)
 - [ ] Database — N/A (session-local wallet only)
 - [x] “UI” interaction stand-in — Vitest drives CrashGame commands (placeBet / tick / cash-out)

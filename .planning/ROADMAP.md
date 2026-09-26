@@ -31,13 +31,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. After cashed-out or crashed, the round returns to waiting and the demo wallet balance reflects win or loss
   4. Same seed always yields the same crash point; auto cash-out settles in `resolveTick` when the target is reached
   5. Vitest covers settlement, auto cash-out, and wallet rules with no `pixi.js` imports in GameLogic
-**Plans:** 4 plans
+**Plans:** 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Wave 0 scaffold + D-14 checkpoint + Walking Skeleton tracer (bet→fly→settle)
-- [ ] 01-02-PLAN.md — Wallet bounds / hard-stop / resetWallet + spectator cadence
-- [ ] 01-03-PLAN.md — resolveTick manual CO, crash, auto CO (crash-before-auto)
-- [ ] 01-04-PLAN.md — ARCH-02 no-Pixi gate + multiplier curve + full Vitest suite
+- [ ] 01-01-PLAN.md — Wave 0 scaffold (package/tsconfig/vitest) + D-14 checkpoint
+- [ ] 01-02-PLAN.md — Walking Skeleton tracer (createGame → bet→fly→settle)
+- [ ] 01-03-PLAN.md — Wallet bounds / hard-stop / resetWallet + spectator cadence
+- [ ] 01-04-PLAN.md — resolveTick manual CO, crash, auto CO (crash-before-auto)
+- [ ] 01-05-PLAN.md — ARCH-02 no-Pixi gate + multiplier curve + full Vitest suite
 
 ### Phase 2: Vite Shell + HTML HUD
 **Goal:** Vite app shell with a thin HTML overlay so a recruiter can play the full bet → fly → cash-out/crash → balance loop using numbers before art.
