@@ -1,4 +1,5 @@
 import { Application, Container, Graphics } from "pixi.js";
+import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createCurveGraph } from "./CurveGraph.js";
 import {
@@ -7,6 +8,7 @@ import {
   plotScaleFor,
   type PlotRect,
 } from "./pathMapping.js";
+import { createTheaterText, theaterTintForMult } from "./TheaterText.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
 import {
   createInitialViewMode,
@@ -68,13 +70,16 @@ function createRocketBody(): Container {
 export function createCrashScene(app: Application): CrashScene {
   const curve = createCurveGraph();
   const rocket = createRocketBody();
-  app.stage.addChild(curve.container, rocket);
+  const theater = createTheaterText();
+  app.stage.addChild(curve.container, rocket, theater.container);
 
   let viewMode: ViewModeState = createInitialViewMode();
   let plot = buildPlot(app.screen.width, app.screen.height);
   let lastW = app.screen.width;
   let lastH = app.screen.height;
   let holdDrawn = false;
+
+  theater.layout(lastW, lastH);
 
   function ensurePlot(): void {
     const w = app.screen.width;
@@ -84,6 +89,7 @@ export function createCrashScene(app: Application): CrashScene {
       lastH = h;
       plot = buildPlot(w, h);
       holdDrawn = false;
+      theater.layout(w, h);
     }
   }
 
@@ -95,13 +101,14 @@ export function createCrashScene(app: Application): CrashScene {
       {
         phase: snapshot.phase,
         multiplier: snapshot.multiplier,
-        cashOutAt: null, // plan 03-02 adds snapshot.cashOutAt
+        cashOutAt: snapshot.cashOutAt,
         history: snapshot.history,
       },
       deltaMS,
     );
 
-    const { mode, rocketVisible, trailAlpha, latchedCrashMult } = viewMode;
+    const { mode, rocketVisible, trailAlpha, latchedCrashMult, latchedCashOut } =
+      viewMode;
     curve.container.alpha = trailAlpha;
     rocket.visible = rocketVisible;
 
@@ -136,6 +143,48 @@ export function createCrashScene(app: Application): CrashScene {
       rocket.rotation = 0;
       rocket.visible = rocketVisible;
     }
+
+    // Theater dual-read (D-13..D-16)
+    let liveText: string;
+    let liveTint: number;
+    let liveAlpha: number;
+
+    if (mode === "crash_hold" || mode === "crash_fade") {
+      const liveMult =
+        latchedCrashMult != null && Number.isFinite(latchedCrashMult)
+          ? latchedCrashMult
+          : snapshot.multiplier;
+      liveText = formatMult(liveMult);
+      liveTint = VIEW_CONFIG.CRASH_COLOR;
+      liveAlpha = 1;
+    } else if (mode === "idle") {
+      if (latchedCrashMult != null && Number.isFinite(latchedCrashMult)) {
+        liveText = formatMult(latchedCrashMult);
+        liveTint = VIEW_CONFIG.CRASH_COLOR;
+        liveAlpha = VIEW_CONFIG.IDLE_CRASH_ALPHA;
+      } else {
+        liveText = "";
+        liveTint = 0xffffff;
+        liveAlpha = 0;
+      }
+    } else {
+      // climb
+      liveText = formatMult(snapshot.multiplier);
+      liveTint = theaterTintForMult(snapshot.multiplier);
+      liveAlpha = 1;
+    }
+
+    const frozenText =
+      latchedCashOut != null && Number.isFinite(latchedCashOut)
+        ? formatMult(latchedCashOut)
+        : null;
+
+    theater.sync({
+      liveText,
+      liveTint,
+      liveAlpha,
+      frozenText,
+    });
   }
 
   return { sync };
