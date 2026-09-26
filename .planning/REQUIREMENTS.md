@@ -23,7 +23,7 @@
 
 ### Visual & Controls
 
-- [ ] **VIS-01**: Player sees a hybrid visual: rising curve/graph with a small rocket traveling the path, and a clear crash break
+- [x] **VIS-01**: Player sees a hybrid visual: rising curve/graph with a small rocket traveling the path, and a clear crash break
 - [x] **VIS-02**: Player uses a thin HTML overlay for bet, cash-out, balance, presets, auto cash-out, and history (Pixi owns the canvas)
 
 ### Architecture & Quality
@@ -88,7 +88,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WALT-03 | 2 | Complete |
 | WALT-04 | 1 | Complete |
 | WALT-05 | 2 | Complete |
-| VIS-01 | 3 | Pending |
+| VIS-01 | 3 | Complete |
 | VIS-02 | 2 | Complete |
 | ARCH-01 | 1 | Complete |
 | ARCH-02 | 1 | Complete |
