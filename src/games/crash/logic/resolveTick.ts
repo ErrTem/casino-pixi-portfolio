@@ -1,4 +1,5 @@
 import {
+  fromMultHundredths,
   payoutCents,
   toMultHundredths,
   type Cents,
@@ -10,6 +11,11 @@ import type { History } from "./History.js";
 import { multiplierAt } from "./MultiplierCurve.js";
 import type { RoundState } from "./RoundState.js";
 import type { Wallet } from "./Wallet.js";
+
+/** D-11: compare multipliers only after hundredths rounding. */
+function roundedMult(m: number): number {
+  return fromMultHundredths(toMultHundredths(m));
+}
 
 export interface ResolveDeps {
   rng: Rng;
@@ -114,13 +120,17 @@ export function resolveTick(
   }
 
   const elapsed = state.elapsedMs + step;
-  const m = multiplierAt(elapsed, CRASH_CONFIG.growthRatePerMs);
+  const m = roundedMult(multiplierAt(elapsed, CRASH_CONFIG.growthRatePerMs));
+  const crashAt = roundedMult(state.crashAt);
 
-  if (m >= state.crashAt) {
-    return settleOnce(state, deps, "crashed", state.crashAt);
+  if (m >= crashAt) {
+    return settleOnce(state, deps, "crashed", crashAt);
   }
-  if (state.autoCashOutAt != null && m >= state.autoCashOutAt) {
-    return settleOnce(state, deps, "cashed_out", state.autoCashOutAt);
+  if (state.autoCashOutAt != null) {
+    const autoAt = roundedMult(state.autoCashOutAt);
+    if (m >= autoAt) {
+      return settleOnce(state, deps, "cashed_out", autoAt);
+    }
   }
   if (state.cashOutRequested) {
     return settleOnce(state, deps, "cashed_out", m);
