@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crash Demo — Portfolio</title>
+    <link rel="stylesheet" href="/src/styles/hud.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <!-- Reserved Pixi mount — keep empty (D-04) -->
+      <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
+        <p class="canvas-placeholder">Game view</p>
+      </div>
+
+      <footer id="hud-bar" class="hud-bar">
+        <div class="hud-zone hud-zone--left" data-zone="balance">
+          <div class="balance" data-field="balance">—</div>
+        </div>
+
+        <div class="hud-zone hud-zone--center" data-zone="actions">
+          <span data-field="phase"></span>
+          <span data-field="live-mult" class="live-mult">1.00×</span>
+          <label>
+            Bet
+            <input
+              data-field="bet-input"
+              type="number"
+              min="10"
+              max="1000"
+              step="1"
+              value="100"
+            />
+          </label>
+          <button type="button" data-action="place-bet">Place bet</button>
+          <button type="button" data-action="cash-out">Cash out</button>
+          <span data-field="status" class="hud-status" aria-live="polite"></span>
+        </div>
+
+        <div class="hud-zone hud-zone--right" data-zone="chips-history">
+          <!-- chips + history strip land in later Phase 2 plans -->
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

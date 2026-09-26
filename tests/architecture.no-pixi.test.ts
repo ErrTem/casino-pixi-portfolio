@@ -46,7 +46,7 @@ describe("architecture — ARCH-02 pure logic boundary", () => {
     expect(violations, violations.join("\n")).toEqual([]);
   });
 
-  it("package.json must not list pixi.js or vite dependencies", () => {
+  it("package.json must not list pixi.js (vite allowed for Phase 2 shell)", () => {
     const pkg = JSON.parse(
       readFileSync(join(ROOT, "package.json"), "utf8"),
     ) as {
@@ -58,6 +58,6 @@ describe("architecture — ARCH-02 pure logic boundary", () => {
       ...Object.keys(pkg.devDependencies ?? {}),
     ]);
     expect(names.has("pixi.js")).toBe(false);
-    expect(names.has("vite")).toBe(false);
+    // vite is allowed starting Phase 2 shell; pixi.js remains Phase 3
   });
 });

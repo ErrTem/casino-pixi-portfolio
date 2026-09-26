@@ -1,0 +1,135 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #0f1419;
+  color: #e8eef4;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.canvas-host {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  background: #1a222c;
+}
+
+.canvas-placeholder {
+  margin: 0;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7a8a;
+  opacity: 0.7;
+}
+
+.hud-bar {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #121820;
+  border-top: 1px solid #2a3542;
+}
+
+.hud-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.hud-zone--left {
+  justify-content: flex-start;
+}
+
+.hud-zone--center {
+  justify-content: center;
+}
+
+.hud-zone--right {
+  justify-content: flex-end;
+  min-height: 2rem;
+}
+
+.balance {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.live-mult {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 4.5ch;
+}
+
+.hud-status {
+  font-size: 0.8125rem;
+  color: #c9a227;
+  min-height: 1.25em;
+}
+
+.hud-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.hud-bar input[type="number"] {
+  width: 5.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #0f1419;
+  color: inherit;
+}
+
+.hud-bar button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #243040;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hud-bar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hud-bar button:not(:disabled):hover {
+  background: #2e3d50;
+}
+
+@media (max-width: 720px) {
+  .hud-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .hud-zone--left,
+  .hud-zone--center,
+  .hud-zone--right {
+    justify-content: center;
+  }
+}
