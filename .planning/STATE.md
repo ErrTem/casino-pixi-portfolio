@@ -4,10 +4,10 @@ current_phase: 03
 current_phase_name: Pixi Hybrid View
 status: verifying
 stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-09-26T22:33:21.394Z"
+last_updated: "2026-09-26T22:33:40.652Z"
 last_activity: 2026-09-27
 last_activity_desc: Completed 03-01 Pixi neon trail tracer
-state_head: 3d2078c497a314ae99e911be7d40f284affd2808
+state_head: 476a0e9644ec5b4c35fc74be2a3b7f01fbb06a5a
 progress:
   total_phases: 5
   completed_phases: 2
@@ -105,6 +105,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Task 1 human-approved pixi.js@8.21.0 from github.com/pixijs/pixijs before install — T-03-SC supply-chain gate; registry identity matched RESEARCH pin
 - [Phase 03]: D-01 two-stroke halo/core Graphics without pixi-filters; D-03 log2-x linear-y plot; cashOutAt null until 03-02 — Plan 03-01 view contract for climb trail and sever; durable cashOutAt is Wave 2
 - [Phase 03]: D-16 durable cashed_out: credit once, climb until crashAt, history on crash only — CONTEXT one-way lock; settleOnce enterWaiting wiped the flight before snapshots could feed the theater dual-read
+- [Phase 03]: Streak dots live in rocket local -X so parent tangent rotation carries them — Keeps pathTangentRadians on parent only; streak does not need world-space offsets
+- [Phase 03]: Flash is alpha on full-canvas Graphics; stage.x/stage.y never written — D-10 and T-03-09 � flash must not move HUD hit targets
+- [Phase 03]: Backdrop rebuilds only on screen size change via rebuildIfNeeded — Avoid clear() retessellation every sync frame per RESEARCH Pattern 4
 
 ### Pending Todos
 

@@ -110,7 +110,7 @@ Each task was committed atomically:
 1. **Task 1: Tangent rocket with texture-swap seam and tail streak** - `b5dd836` (feat)
 2. **Task 2: Backdrop, crash flash, ghost origin, and idle bob** - `3d2078c` (feat)
 
-**Plan metadata:** _(pending this commit)_
+**Plan metadata:** `476a0e9` (docs: complete plan)
 
 ## Files Created/Modified
 
