@@ -6,7 +6,7 @@ A browser-based demo Crash game (Aviator-like) built as a frontend portfolio pie
 
 ## Core Value
 
-A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update — with clear DEMO / portfolio labeling.
+A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
 
 ## Requirements
 
@@ -19,17 +19,19 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 - [ ] Playable Crash round loop: waiting → flying → cashed out / crashed
 - [ ] Demo wallet with start balance, bet amount, win/loss settlement
 - [ ] Live multiplier display with hybrid visual (rising curve + small rocket on path)
-- [ ] Thin HTML controls overlay: bet, cash out, balance, DEMO badge
+- [ ] Thin HTML controls overlay: bet, cash out, balance, presets, history
 - [ ] Round history strip (last N crash multipliers)
 - [ ] Auto cash-out at a target multiplier
 - [ ] Bet amount presets (chips) plus free amount input
 - [ ] Seeded/demo RNG so rounds are testable and reproducible
 - [ ] Mobile-friendly canvas layout
 - [ ] Clean architecture: pure TS GameLogic separate from Pixi view
+- [ ] Waiting countdown, SFX+mute, seed replay, session stats, keyboard cash-out
 - [ ] Ready to extend later with more casino games (shell optional later)
 
 ### Out of Scope
 
+- Persistent DEMO / portfolio badge UI — declined by product owner (README/page title framing OK)
 - Real-money gambling, payments, KYC — portfolio demo only
 - User accounts / auth — not needed for v1 demo
 - Live multiplayer / shared rounds — client-only single player
@@ -69,7 +71,10 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 | Hybrid visual (curve + rocket on path) | Polished Crash look without heavy art dependency | — Pending |
 | Seeded/demo RNG | Testable rounds without backend or certification | — Pending |
 | v1 includes history, auto cash-out, bet presets | Table-stakes Crash UX for a credible portfolio demo | — Pending |
+| v1 includes polish (countdown, SFX, seed, stats, keyboard) | Differentiator polish after core loop | — Pending |
+| No DEMO badge UI | Product owner preference; avoid badge chrome | — Pending |
 | Single game page only | Ship Crash first; lobby/multi-game later | — Pending |
+| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | — Pending |
 
 ## Evolution
 

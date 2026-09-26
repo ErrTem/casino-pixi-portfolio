@@ -78,33 +78,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PLAY-01 | — | Pending |
-| PLAY-02 | — | Pending |
-| PLAY-03 | — | Pending |
-| PLAY-04 | — | Pending |
-| PLAY-05 | — | Pending |
-| WALT-01 | — | Pending |
-| WALT-02 | — | Pending |
-| WALT-03 | — | Pending |
-| WALT-04 | — | Pending |
-| WALT-05 | — | Pending |
-| VIS-01 | — | Pending |
-| VIS-02 | — | Pending |
-| ARCH-01 | — | Pending |
-| ARCH-02 | — | Pending |
-| ARCH-03 | — | Pending |
-| ARCH-04 | — | Pending |
-| PLSH-01 | — | Pending |
-| PLSH-02 | — | Pending |
-| PLSH-03 | — | Pending |
-| PLSH-04 | — | Pending |
-| PLSH-05 | — | Pending |
+| PLAY-01 | 1 | Pending |
+| PLAY-02 | 1 | Pending |
+| PLAY-03 | 1 | Pending |
+| PLAY-04 | 1 | Pending |
+| PLAY-05 | 1 | Pending |
+| WALT-01 | 1 | Pending |
+| WALT-02 | 1 | Pending |
+| WALT-03 | 2 | Pending |
+| WALT-04 | 1 | Pending |
+| WALT-05 | 2 | Pending |
+| VIS-01 | 3 | Pending |
+| VIS-02 | 2 | Pending |
+| ARCH-01 | 1 | Pending |
+| ARCH-02 | 1 | Pending |
+| ARCH-03 | 4 | Pending |
+| ARCH-04 | 1 | Pending |
+| PLSH-01 | 5 | Pending |
+| PLSH-02 | 5 | Pending |
+| PLSH-03 | 5 | Pending |
+| PLSH-04 | 5 | Pending |
+| PLSH-05 | 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 (filled by roadmap)
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-09-26*
-*Last updated: 2026-09-26 after initial definition*
+*Last updated: 2026-09-26 after roadmap mapping*

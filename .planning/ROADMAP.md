@@ -1,0 +1,124 @@
+# Roadmap: Casino Crash Portfolio (PixiJS)
+
+## Overview
+
+Ship a recruiter-ready Crash demo in five vertical slices: pure GameLogic (FSM, wallet, seeded RNG, settlement) first, then a headless-playable HTML HUD, then the hybrid Pixi curve/rocket view, mobile hardening, and polish (countdown, SFX, seed replay, session stats, keyboard cash-out). Every phase ends with something demoable — tests, number loop, spectacle, phone-ready, or shareable polish — without React/Angular or a DEMO badge UI.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: GameLogic Core** - Pure TS round FSM, wallet, seeded RNG, settlement, auto cash-out, Vitest
+- [ ] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic
+- [ ] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots
+- [ ] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls
+- [ ] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out
+
+## Phase Details
+
+### Phase 1: GameLogic Core
+**Goal:** Authoritative Crash round loop in pure TypeScript — place bet, fly, cash out or crash, settle wallet — with seeded RNG and Vitest coverage, zero Pixi imports.
+**Mode:** mvp
+**Depends on:** Nothing (first phase)
+**Requirements:** PLAY-01, PLAY-02, PLAY-03, PLAY-04, PLAY-05, WALT-01, WALT-02, WALT-04, ARCH-01, ARCH-02, ARCH-04
+**Success Criteria** (what must be TRUE):
+  1. Caller can place a valid bet from waiting and start a flying round that advances a live multiplier from elapsed time
+  2. Caller can cash out mid-flight and receive stake × multiplier, or the round crashes at the seeded crash point when not cashed out
+  3. After cashed-out or crashed, the round returns to waiting and the demo wallet balance reflects win or loss
+  4. Same seed always yields the same crash point; auto cash-out settles in `resolveTick` when the target is reached
+  5. Vitest covers settlement, auto cash-out, and wallet rules with no `pixi.js` imports in GameLogic
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01: Round FSM + seeded RNG (`crashAt` at round start) + time-driven multiplier
+- [ ] 01-02: Demo wallet + bet min/max validation + place-bet / waiting↔flying transitions
+- [ ] 01-03: Manual cash-out, crash settle, auto cash-out in single `resolveTick` authority
+- [ ] 01-04: Vitest suite for settlement, auto CO, wallet; enforce no Pixi in logic package
+
+### Phase 2: Vite Shell + HTML HUD
+**Goal:** Vite app shell with a thin HTML overlay so a recruiter can play the full bet → fly → cash-out/crash → balance loop using numbers before art.
+**Mode:** mvp
+**Depends on:** Phase 1
+**Requirements:** VIS-02, WALT-03, WALT-05
+**UI hint**: yes
+**Success Criteria** (what must be TRUE):
+  1. Player can enter a free-form bet or tap preset chips, see balance, and start/cash out via HTML controls
+  2. Player can set an auto cash-out target in the overlay and see it applied when flying
+  3. History strip shows the last N crash multipliers after rounds complete
+  4. Pixi does not own monetary controls — HTML overlay drives GameLogic commands; canvas region is reserved
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01: Vite + TS bootstrap, composition root, GameLogic ↔ HUD command/snapshot bridge
+- [ ] 02-02: HTML overlay: balance, bet input, cash-out, auto CO, phase-aware button enablement
+- [ ] 02-03: Bet preset chips + history strip (last N) bound to logic history buffer
+
+### Phase 3: Pixi Hybrid View
+**Goal:** PixiJS v8 hybrid spectacle — rising curve/graph with a small rocket on the path and a clear crash break — driven only by GameLogic snapshots.
+**Mode:** mvp
+**Depends on:** Phase 2
+**Requirements:** VIS-01
+**UI hint**: yes
+**Success Criteria** (what must be TRUE):
+  1. While flying, player sees a rising curve with a rocket traveling the path synced to the live multiplier
+  2. On crash, player sees a clear visual break (path/rocket interrupt) matching the logic crash event
+  3. Ticker feeds `GameLogic.update(deltaMS)` only; outcome never driven by sprite position
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01: Pixi Application init (async), resize to game region, ticker → logic tick
+- [ ] 03-02: CurveGraph + rocket sprite path follow from multiplier snapshots
+- [ ] 03-03: Crash break FX and waiting/idle visual reset between rounds
+
+### Phase 4: Mobile Harden
+**Goal:** Playable on phones — responsive canvas layout and touch-usable HTML controls without overlay hit conflicts.
+**Mode:** mvp
+**Depends on:** Phase 3
+**Requirements:** ARCH-03
+**UI hint**: yes
+**Success Criteria** (what must be TRUE):
+  1. On a phone-sized viewport, canvas fills the game region without clipping critical HUD controls
+  2. Player can place bet, cash out, and use presets/auto CO with touch (adequate tap targets)
+  3. Canvas does not steal taps from monetary controls (stacking / pointer-events correct)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01: Responsive layout CSS — canvas + overlay stacking for narrow viewports
+- [ ] 04-02: Touch-sized controls, safe areas, DPR-capped resize hardening
+- [ ] 04-03: Mobile QA pass — overlay hit conflicts, history strip readability
+
+### Phase 5: Polish
+**Goal:** Shareable polish — waiting countdown, SFX placeholders + mute, seed URL/display, soft session stats, desktop keyboard cash-out.
+**Mode:** mvp
+**Depends on:** Phase 4
+**Requirements:** PLSH-01, PLSH-02, PLSH-03, PLSH-04, PLSH-05
+**UI hint**: yes
+**Success Criteria** (what must be TRUE):
+  1. Player sees a waiting-phase countdown before the next flight starts
+  2. Key events play SFX placeholders with a working mute toggle
+  3. Player can reproduce a round via `?seed=` and/or read the active seed on screen
+  4. Soft session stats (e.g. average / max crash) appear from history; desktop keyboard shortcut cashes out mid-flight
+**Plans:** 4 plans
+
+Plans:
+- [ ] 05-01: Waiting-phase countdown UX wired to round timing
+- [ ] 05-02: AudioPort + SFX placeholders + mute toggle
+- [ ] 05-03: `?seed=` parse + on-screen seed display for round replay
+- [ ] 05-04: Session stats from history + desktop keyboard cash-out shortcut
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. GameLogic Core | 0/4 | Not started | - |
+| 2. Vite Shell + HTML HUD | 0/3 | Not started | - |
+| 3. Pixi Hybrid View | 0/3 | Not started | - |
+| 4. Mobile Harden | 0/3 | Not started | - |
+| 5. Polish | 0/4 | Not started | - |
