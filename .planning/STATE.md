@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: GameLogic Core
-status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-09-26T17:39:27.642Z"
+status: verifying
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-09-26T17:46:42.481Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 01 execution started
-state_head: 208dd5728c5e739ecf1db9232ceb90b6c27737b1
+state_head: ddd4b3f864387f87ab330d30388c27e24ae94b42
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-09-26)
 
 Phase: 01 (GameLogic Core) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-09-26 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-gamelogic-core P02 | 4 min | 1 tasks | 13 files |
 | Phase 01-gamelogic-core P03 | 6 min | 2 tasks | 5 files |
 | Phase 01 P04 | 4 min | 2 tasks | 2 files |
+| Phase 01-gamelogic-core P05 | 5 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 01]: History ring drops non-finite crashAt to protect spectator history consumers — D-15 history must stay usable for HUD strip
 - [Phase 01]: Settlement compares use roundedMult on live m, crashAt, and autoCashOutAt (D-11) — Float edges like crashAt 2.004 at m=2.00 must settle; PITFALLS + plan ACs require hundredths compares
 - [Phase 01]: setAutoCashOut stores rounded 2dp targets on state — Snapshot and resolveTick share hundredths precision for WALT-04
+- [Phase 01]: ARCH-02 enforced via fs read + import/DOM regex deny-list, not browser execution — Phase 1 quality gate must fail closed before Vite/Pixi land in Phase 2
+- [Phase 01]: package.json must not list pixi.js or vite in Phase 1 (Phase 2 adds them) — Supply-chain boundary for ARCH-02 until shell phase
 
 ### Pending Todos
 
@@ -101,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T17:39:27.618Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-09-26T17:46:42.455Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None

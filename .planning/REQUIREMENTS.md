@@ -8,7 +8,7 @@
 ### Core Play
 
 - [x] **PLAY-01**: Player can start a round from waiting phase after placing a valid bet
-- [ ] **PLAY-02**: Player sees a live rising multiplier while the round is flying
+- [x] **PLAY-02**: Player sees a live rising multiplier while the round is flying
 - [x] **PLAY-03**: Player can manually cash out mid-flight and receive stake × current multiplier
 - [x] **PLAY-04**: Round ends in a crash when the seeded crash point is reached if the player has not cashed out
 - [x] **PLAY-05**: Round returns to waiting after cashed-out or crashed so another bet can be placed
@@ -29,9 +29,9 @@
 ### Architecture & Quality
 
 - [x] **ARCH-01**: Rounds use seeded/demo RNG so the same seed produces a reproducible crash point
-- [ ] **ARCH-02**: Game rules (round FSM, wallet, RNG, settlement, auto cash-out) live in pure TypeScript GameLogic with no Pixi imports
+- [x] **ARCH-02**: Game rules (round FSM, wallet, RNG, settlement, auto cash-out) live in pure TypeScript GameLogic with no Pixi imports
 - [ ] **ARCH-03**: Layout works on mobile: responsive canvas and touch-usable HTML controls
-- [ ] **ARCH-04**: GameLogic settlement, auto cash-out, and wallet rules are covered by Vitest unit tests
+- [x] **ARCH-04**: GameLogic settlement, auto cash-out, and wallet rules are covered by Vitest unit tests
 
 ### Polish
 
@@ -79,7 +79,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PLAY-01 | 1 | Complete |
-| PLAY-02 | 1 | Pending |
+| PLAY-02 | 1 | Complete |
 | PLAY-03 | 1 | Complete |
 | PLAY-04 | 1 | Complete |
 | PLAY-05 | 1 | Complete |
@@ -91,9 +91,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-01 | 3 | Pending |
 | VIS-02 | 2 | Pending |
 | ARCH-01 | 1 | Complete |
-| ARCH-02 | 1 | Pending |
+| ARCH-02 | 1 | Complete |
 | ARCH-03 | 4 | Pending |
-| ARCH-04 | 1 | Pending |
+| ARCH-04 | 1 | Complete |
 | PLSH-01 | 5 | Pending |
 | PLSH-02 | 5 | Pending |
 | PLSH-03 | 5 | Pending |
