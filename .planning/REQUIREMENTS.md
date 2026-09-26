@@ -28,7 +28,7 @@
 
 ### Architecture & Quality
 
-- [ ] **ARCH-01**: Rounds use seeded/demo RNG so the same seed produces a reproducible crash point
+- [x] **ARCH-01**: Rounds use seeded/demo RNG so the same seed produces a reproducible crash point
 - [ ] **ARCH-02**: Game rules (round FSM, wallet, RNG, settlement, auto cash-out) live in pure TypeScript GameLogic with no Pixi imports
 - [ ] **ARCH-03**: Layout works on mobile: responsive canvas and touch-usable HTML controls
 - [ ] **ARCH-04**: GameLogic settlement, auto cash-out, and wallet rules are covered by Vitest unit tests
@@ -90,7 +90,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WALT-05 | 2 | Pending |
 | VIS-01 | 3 | Pending |
 | VIS-02 | 2 | Pending |
-| ARCH-01 | 1 | Pending |
+| ARCH-01 | 1 | Complete |
 | ARCH-02 | 1 | Pending |
 | ARCH-03 | 4 | Pending |
 | ARCH-04 | 1 | Pending |
@@ -101,6 +101,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLSH-05 | 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 21 total
 - Mapped to phases: 21
 - Unmapped: 0

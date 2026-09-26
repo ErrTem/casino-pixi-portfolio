@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: GameLogic Core
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-09-26T17:20:12.814Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-09-26T17:25:54.563Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 01 execution started
-state_head: bb7b084bb5bdf57a891f01f0740ff148dca17daf
+state_head: 065dada546aab2307414c423be8bcf21a702b3f8
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-26)
 ## Current Position
 
 Phase: 01 (GameLogic Core) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-09-26 — Phase 01 execution started
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01-gamelogic-core P01 | 8 min | 2 tasks | 4 files |
+| Phase 01-gamelogic-core P02 | 4 min | 1 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - Phase 1 D-01..D-15 locked in 01-CONTEXT.md (wallet, crash feel, 5s auto-launch, spectator)
 - D-14 continuous auto-launch is one-way — checkpoint:decision in 01-01 before 01-02 tracer
 - [Phase 01]: D-14 locked as option-continuous: waiting waitRemainingMs hits zero always calls startRound (spectator rounds allowed); PLAY-01 reinterpreted as timed waiting not idle-until-click — User confirmed checkpoint Task 2 with option-continuous before 01-02 tracer implements WAIT_MS expiry startRound; one-way door per CONTEXT
+- [Phase 01]: placeBet accepts display units (e.g. 100 to 10000 cents); snapshot balance/bet expose display — Plan allowed display or cents; display matches HUD-facing API and walking skeleton placeBet(100)
+- [Phase 01]: CrashGame.tick sub-steps at maxDeltaMs so large deltas advance waiting/flight correctly — resolveTick clamps each step to maxDeltaMs; without facade sub-stepping tick(5000) would only consume 100ms of waiting
+- [Phase 01]: History always records round crashAt (including cash-out and spectator) — D-15 and plan require push crashAt to History on terminal settle for every completed round
 
 ### Pending Todos
 
@@ -90,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T17:20:02.716Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-09-26T17:25:38.015Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
