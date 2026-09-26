@@ -16,6 +16,9 @@
       <footer id="hud-bar" class="hud-bar">
         <div class="hud-zone hud-zone--left" data-zone="balance">
           <div class="balance" data-field="balance">—</div>
+          <button type="button" data-action="reset-wallet" class="reset-demo">
+            Reset demo
+          </button>
         </div>
 
         <div class="hud-zone hud-zone--center" data-zone="actions">
@@ -34,6 +37,17 @@
           </label>
           <button type="button" data-action="place-bet">Place bet</button>
           <button type="button" data-action="cash-out">Cash out</button>
+          <label>
+            Auto CO
+            <input
+              data-field="auto-co"
+              type="number"
+              min="1.01"
+              step="0.01"
+              placeholder="Off"
+            />
+          </label>
+          <button type="button" data-action="clear-auto-co">Clear</button>
           <span data-field="status" class="hud-status" aria-live="polite"></span>
         </div>
 

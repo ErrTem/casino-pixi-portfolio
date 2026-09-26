@@ -88,6 +88,20 @@ body {
   min-height: 1.25em;
 }
 
+.hud-zone--broke .balance {
+  color: #e07070;
+}
+
+.reset-demo--emphasize {
+  border-color: #c9a227;
+  background: #3a3420;
+  color: #f0e6b0;
+}
+
+.reset-demo--emphasize:not(:disabled):hover {
+  background: #4a4328;
+}
+
 .hud-bar label {
   display: inline-flex;
   align-items: center;
