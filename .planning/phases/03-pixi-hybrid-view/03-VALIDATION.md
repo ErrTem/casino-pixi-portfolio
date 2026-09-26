@@ -40,12 +40,13 @@ created: "2026-09-27"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 03-01-01 | 01 | 1 | VIS-01 | — | `pixi.js` allowed in package.json; still forbidden under `logic/` and `shared/` | unit | `npx vitest run tests/architecture.no-pixi.test.ts` | ✅ | ⬜ pending |
-| 03-01-02 | 01 | 1 | VIS-01 | T-03-01 | Cash-out sets `cashOutAt`, phase stays `cashed_out`, multiplier still increases, wallet credits once, history unchanged until crash, then one history row and `waiting` | unit | `npx vitest run tests/resolveTick.test.ts tests/walkingSkeleton.test.ts` | ✅ | ⬜ pending |
-| 03-01-03 | 01 | 1 | VIS-01 | — | `cashed_out` cannot place bet or cash out | unit | `npx vitest run src/games/crash/hud/enablement.test.ts` | ✅ | ⬜ pending |
-| 03-02-01 | 02 | 2 | VIS-01 | T-03-02 | Path is left→right and steeper after 2× than from 1× to 2×; m=1 is the origin; non-finite does not produce NaN | unit | `npx vitest run tests/pathMapping.test.ts` | ❌ W0 | ⬜ pending |
-| 03-03-01 | 03 | 3 | VIS-01 | — | climb→waiting enters crash_hold; rocket flag hidden; fade clears latched cash-out ×; boot waiting is idle; dim crash × kept until next flying | unit | `npx vitest run tests/viewMode.test.ts` | ❌ W0 | ⬜ pending |
-| 03-03-02 | 03 | 3 | VIS-01 | — | Recruiter sees neon trail, tangent rocket, red sever, flash, hold, fade, idle bob, dual × after cash-out | manual | `npm run dev` | — | ⬜ pending |
+| 03-01-01 | 01 | 1 | VIS-01 | T-03-SC | Human confirms `pixi.js` version `8.21.0` and repo `git+https://github.com/pixijs/pixijs.git` before install | checkpoint | `npm view pixi.js version` and `npm view pixi.js repository.url` (human gate, no install) | — | ⬜ pending |
+| 03-01-02 | 01 | 1 | VIS-01 | T-03-01, T-03-02 | `pixi.js@8.21.0` allowed in package.json; still forbidden under `logic/` and `shared/`. Path steeper after 2×; m=1 is origin; non-finite has no NaN. climb→waiting enters crash_hold; boot waiting is idle | unit | `npx vitest run tests/architecture.no-pixi.test.ts` then `npx vitest run tests/pathMapping.test.ts tests/viewMode.test.ts` | ❌ W0 for path/viewMode; architecture file exists | ⬜ pending |
+| 03-02-01 | 02 | 2 | VIS-01 | T-03-05, T-03-06 | Cash-out sets `cashOutAt`, phase stays `cashed_out`, multiplier still increases, wallet credits once, history unchanged until crash, then one history row and `waiting` | unit | `npx vitest run tests/resolveTick.test.ts tests/walkingSkeleton.test.ts` | ✅ | ⬜ pending |
+| 03-02-02 | 02 | 2 | VIS-01 | — | `cashed_out` cannot place bet or cash out | unit | `npx vitest run src/games/crash/hud/enablement.test.ts tests/roundCadence.test.ts` | ✅ | ⬜ pending |
+| 03-02-03 | 02 | 2 | VIS-01 | T-03-07 | Theater strings go to `BitmapText.text` via `formatMult`; latch still covered by viewMode tests | unit | `npx vitest run tests/viewMode.test.ts tests/architecture.no-pixi.test.ts` | ❌ W0 viewMode | ⬜ pending |
+| 03-03-01 | 03 | 3 | VIS-01 | T-03-08 | Rocket seam has no `Assets.load`; logic/shared stay free of pixi | unit | `npx tsc --noEmit` and `npx vitest run tests/pathMapping.test.ts tests/architecture.no-pixi.test.ts` | ✅ architecture; pathMapping created in 03-01 | ⬜ pending |
+| 03-03-02 | 03 | 3 | VIS-01 | T-03-09 | Recruiter sees neon trail, tangent rocket, red sever, flash, hold, fade, idle bob, dual × after cash-out | manual | `npm run dev` (plus `npx vitest run tests/viewMode.test.ts tests/pathMapping.test.ts tests/architecture.no-pixi.test.ts`) | — | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

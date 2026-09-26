@@ -101,13 +101,21 @@ Plans:
   2. On crash, player sees a clear visual break (path/rocket interrupt) matching the logic crash event
   3. Ticker feeds `GameLogic.update(deltaMS)` only; outcome never driven by sprite position
 
-**Plans:** 3 plans
+**Plans:** 0/3 plans executed
 
 Plans:
 
-- [ ] 03-01: Pixi Application init (async), resize to game region, ticker → logic tick
-- [ ] 03-02: CurveGraph + rocket sprite path follow from multiplier snapshots
-- [ ] 03-03: Crash break FX and waiting/idle visual reset between rounds
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Legitimacy checkpoint, then ticker + neon trail + rocket + crash sever
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Durable cashed_out spectator finish + theater dual ×
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — Rocket texture seam, backdrop, flash, idle bob
 
 ### Phase 4: Mobile Harden
 
