@@ -132,3 +132,94 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
     expect(deps.history.length).toBe(1);
   });
 });
+
+describe("resolveTick — auto cash-out (WALT-04)", () => {
+  it("auto cash-out settles when rounded multiplier reaches target before crash", () => {
+    const deps = makeDeps();
+    expect(deps.wallet.placeBet(10_000)).toEqual({ ok: true });
+    const balBefore = deps.wallet.getBalanceCents();
+
+    const state = resolveTick(
+      flyingState({
+        crashAt: 10,
+        autoCashOutAt: 2,
+        cashOutRequested: false,
+      }),
+      CRASH_CONFIG.maxDeltaMs,
+      deps,
+    );
+
+    expect(state.phase).toBe("waiting");
+    expect(state.settledRoundId).toBe(1);
+    const expectedPayout = payoutCents(10_000, toMultHundredths(2));
+    expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
+  });
+
+  it("setAutoCashOut(null) disables auto settle", () => {
+    const deps = makeDeps();
+    expect(deps.wallet.placeBet(10_000)).toEqual({ ok: true });
+    const balBefore = deps.wallet.getBalanceCents();
+
+    const state = resolveTick(
+      flyingState({
+        crashAt: 10,
+        autoCashOutAt: null,
+        cashOutRequested: false,
+      }),
+      CRASH_CONFIG.maxDeltaMs,
+      deps,
+    );
+
+    // At ~2.00 with no auto and no manual — still flying
+    expect(state.phase).toBe("flying");
+    expect(deps.wallet.getBalanceCents()).toBe(balBefore);
+  });
+
+  it("crash-before-auto: when autoCashOutAt equals crashAt, crash wins with no payout", () => {
+    const deps = makeDeps();
+    expect(deps.wallet.placeBet(10_000)).toEqual({ ok: true });
+    const balBefore = deps.wallet.getBalanceCents();
+
+    const state = resolveTick(
+      flyingState({
+        crashAt: 2,
+        autoCashOutAt: 2,
+        cashOutRequested: false,
+      }),
+      CRASH_CONFIG.maxDeltaMs,
+      deps,
+    );
+
+    expect(state.phase).toBe("waiting");
+    expect(state.settledRoundId).toBe(1);
+    expect(deps.wallet.getBalanceCents()).toBe(balBefore); // no payout
+    expect(deps.history.toArray()).toEqual([2]);
+  });
+
+  it("manual cash-out intent still loses to crash on the same tick", () => {
+    const deps = makeDeps();
+    expect(deps.wallet.placeBet(10_000)).toEqual({ ok: true });
+    const balBefore = deps.wallet.getBalanceCents();
+
+    const state = resolveTick(
+      flyingState({
+        crashAt: 2,
+        autoCashOutAt: null,
+        cashOutRequested: true,
+      }),
+      CRASH_CONFIG.maxDeltaMs,
+      deps,
+    );
+
+    expect(state.phase).toBe("waiting");
+    expect(deps.wallet.getBalanceCents()).toBe(balBefore); // crash, not cash-out
+  });
+
+  it("setAutoCashOut stores target rounded to 2dp", () => {
+    const game = createGame({ seed: "auto-2dp" });
+    game.setAutoCashOut(2.004);
+    expect(game.getSnapshot().autoCashOutAt).toBe(2);
+    game.setAutoCashOut(null);
+    expect(game.getSnapshot().autoCashOutAt).toBeNull();
+  });
+});
