@@ -4,10 +4,10 @@ current_phase: 1
 current_phase_name: GameLogic Core
 status: planned
 stopped_at: Phase 1 plans verified
-last_updated: "2026-09-26T16:51:55.880Z"
+last_updated: "2026-09-26T16:52:24.664Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 1 plan revision — Wave 0 / Walking Skeleton split; RESEARCH RESOLVED
-state_head: a625e65d5dc22c67212d8e39d7a383f47956e2dc
+state_head: 793f9292bb84f833f1fce1203f68e2f06e712fdb
 progress:
   total_phases: 5
   completed_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-09-26)
 
 ## Current Position
 
-Phase: 1 of 5 (GameLogic Core)
+Phase: 1 (GameLogic Core) — READY TO EXECUTE
 Plan: 01-01 of 5 in current phase
 Status: Ready to execute
 Last activity: 2026-09-26 — Phase 1 plans revised (Wave 0, tracer, wallet/FSM, resolveTick, Vitest gate)
