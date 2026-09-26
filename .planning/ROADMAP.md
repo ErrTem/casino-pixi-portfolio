@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Same seed always yields the same crash point; auto cash-out settles in `resolveTick` when the target is reached
   5. Vitest covers settlement, auto cash-out, and wallet rules with no `pixi.js` imports in GameLogic
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 **Wave 1**
@@ -48,7 +48,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03-PLAN.md — Wallet bounds / hard-stop / resetWallet + spectator cadence
+- [x] 01-03-PLAN.md — Wallet bounds / hard-stop / resetWallet + spectator cadence
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. GameLogic Core | 2/5 | In Progress|  |
+| 1. GameLogic Core | 3/5 | In Progress|  |
 | 2. Vite Shell + HTML HUD | 0/3 | Not started | - |
 | 3. Pixi Hybrid View | 0/3 | Not started | - |
 | 4. Mobile Harden | 0/3 | Not started | - |
