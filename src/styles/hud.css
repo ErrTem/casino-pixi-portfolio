@@ -90,6 +90,39 @@ body {
   background: #1e3a52;
 }
 
+.history-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+}
+
+.history-strip .hist {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.hist--low {
+  background: #3a2a2a;
+  color: #e07070;
+}
+
+.hist--mid {
+  background: #2a3542;
+  color: #c8d4e0;
+}
+
+.hist--high {
+  background: #243a2a;
+  color: #7dca8e;
+}
+
 .balance {
   font-variant-numeric: tabular-nums;
   font-size: 1.125rem;

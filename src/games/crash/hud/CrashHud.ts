@@ -2,6 +2,7 @@ import type { CrashGame, CrashSnapshot } from "../logic/index.js";
 import { PRESET_CHIPS } from "./chips.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
+import { renderHistoryStrip } from "./historyStrip.js";
 
 export interface CrashHud {
   render(snap: CrashSnapshot): void;
@@ -32,6 +33,7 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
   const liveMultEl = root.querySelector("[data-field=live-mult]");
   const leftZone = root.querySelector("[data-zone=balance]");
   const chipsHost = root.querySelector("[data-field=chips]");
+  const historyHost = root.querySelector("[data-field=history]");
 
   if (
     !betInput ||
@@ -45,7 +47,8 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     !phaseEl ||
     !liveMultEl ||
     !leftZone ||
-    !chipsHost
+    !chipsHost ||
+    !historyHost
   ) {
     throw new Error("CrashHud: required #hud-bar fields missing");
   }
@@ -133,6 +136,9 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
       btn.disabled = !en.chipsEnabled;
     }
     syncChipSelection();
+
+    // History from snapshot only — never push from button handlers (WALT-05).
+    renderHistoryStrip(historyHost!, snap.history);
 
     const emphasizeBroke = en.showBroke || lastPlaceReason === "broke";
     leftZone!.classList.toggle("hud-zone--broke", emphasizeBroke);
