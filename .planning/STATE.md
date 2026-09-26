@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 current_phase: 02
-current_phase_name: vite-shell-html-hud
+current_phase_name: Vite Shell + HTML HUD
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-09-26T18:39:42.055Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-09-26T18:51:30.457Z"
 last_activity: 2026-09-26
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: 5cca2edbf4d0b23a6ce29d7024c395a1663359b4
+last_activity_desc: Phase 02 execution started
+state_head: 034bc859a4fd66fe95155bc31f1e604f937f3bb9
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 20
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 2 — Vite Shell + HTML HUD
+**Current focus:** Phase 02 — Vite Shell + HTML HUD
 
 ## Current Position
 
-Phase: 02 (vite-shell-html-hud) — READY TO EXECUTE
-Plan: Not started
+Phase: 02 (Vite Shell + HTML HUD) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-09-26 — Phase 01 complete, transitioned to Phase 2
+Last activity: 2026-09-26 — Phase 02 execution started
 
 Progress: [██░░░░░░░░] 20%
 
@@ -63,6 +63,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-gamelogic-core P03 | 6 min | 2 tasks | 5 files |
 | Phase 01 P04 | 4 min | 2 tasks | 2 files |
 | Phase 01-gamelogic-core P05 | 5 min | 2 tasks | 3 files |
+| Phase 02-vite-shell-html-hud P01 | 3 min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 01]: setAutoCashOut stores rounded 2dp targets on state — Snapshot and resolveTick share hundredths precision for WALT-04
 - [Phase 01]: ARCH-02 enforced via fs read + import/DOM regex deny-list, not browser execution — Phase 1 quality gate must fail closed before Vite/Pixi land in Phase 2
 - [Phase 01]: package.json must not list pixi.js or vite in Phase 1 (Phase 2 adds them) — Supply-chain boundary for ARCH-02 until shell phase
+- [Phase 02]: D-04 locked option-empty-slot: empty reserved #game-canvas-host (quiet Game view label only); no HTML theater/monetary controls in host — User confirmed checkpoint Task 1 with option-empty-slot; one-way door per CONTEXT for Phase 3 Pixi mount
+- [Phase 02]: Phase 2 installs vite@6.4.3 only; pixi.js deferred to Phase 3 — Plan/RESEARCH pin mature Vite 6.x for shell; Application/spectacle remain Phase 3
 
 ### Pending Todos
 
@@ -104,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T18:14:49.993Z
-Stopped at: Phase 2 context gathered
-Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\02-vite-shell-html-hud\02-CONTEXT.md
+Last session: 2026-09-26T18:51:30.420Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None
