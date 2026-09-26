@@ -1,3 +1,4 @@
+import "pixi.js"; // TEMP RED: prove architecture gate fails closed
 /** Named tunables for Crash GameLogic (D-01..D-14, D-12). */
 export const CRASH_CONFIG = {
   startingBalanceCents: 500_000, // 5000.00 display
