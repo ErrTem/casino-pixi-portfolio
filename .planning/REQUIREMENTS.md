@@ -17,14 +17,14 @@
 
 - [x] **WALT-01**: Player has a demo wallet with a starting balance that updates on win and loss
 - [x] **WALT-02**: Player can enter a free-form bet amount within min/max rules against current balance
-- [ ] **WALT-03**: Player can select bet amount via preset chips in addition to free-form input
+- [x] **WALT-03**: Player can select bet amount via preset chips in addition to free-form input
 - [x] **WALT-04**: Player can set an auto cash-out target multiplier that settles automatically when reached
-- [ ] **WALT-05**: Player can see a history strip of the last N crash multipliers
+- [x] **WALT-05**: Player can see a history strip of the last N crash multipliers
 
 ### Visual & Controls
 
 - [ ] **VIS-01**: Player sees a hybrid visual: rising curve/graph with a small rocket traveling the path, and a clear crash break
-- [ ] **VIS-02**: Player uses a thin HTML overlay for bet, cash-out, balance, presets, auto cash-out, and history (Pixi owns the canvas)
+- [x] **VIS-02**: Player uses a thin HTML overlay for bet, cash-out, balance, presets, auto cash-out, and history (Pixi owns the canvas)
 
 ### Architecture & Quality
 
@@ -85,11 +85,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAY-05 | 1 | Complete |
 | WALT-01 | 1 | Complete |
 | WALT-02 | 1 | Complete |
-| WALT-03 | 2 | Pending |
+| WALT-03 | 2 | Complete |
 | WALT-04 | 1 | Complete |
-| WALT-05 | 2 | Pending |
+| WALT-05 | 2 | Complete |
 | VIS-01 | 3 | Pending |
-| VIS-02 | 2 | Pending |
+| VIS-02 | 2 | Complete |
 | ARCH-01 | 1 | Complete |
 | ARCH-02 | 1 | Complete |
 | ARCH-03 | 4 | Pending |

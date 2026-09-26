@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Vite Shell + HTML HUD
-status: executing
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-09-26T18:55:10.027Z"
+status: verifying
+stopped_at: Completed 02-03-PLAN.md
+last_updated: "2026-09-26T18:58:38.775Z"
 last_activity: 2026-09-26
 last_activity_desc: Phase 02 execution started
-state_head: 36fa3dc1ad49f88cfe5176b11686f0b032e3e094
+state_head: 528b87993d9066c633172bd84e1a6f69be3bacb1
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 20
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 
 Phase: 02 (Vite Shell + HTML HUD) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-09-26 — Phase 02 execution started
 
 Progress: [██░░░░░░░░] 20%
@@ -65,6 +65,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-gamelogic-core P05 | 5 min | 2 tasks | 3 files |
 | Phase 02-vite-shell-html-hud P01 | 3 min | 2 tasks | 11 files |
 | Phase 02 P02 | 2 min | 2 tasks | 5 files |
+| Phase 02-vite-shell-html-hud P03 | 2 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Enablement drives from waiting|flying only; terminal phases not durable chrome — RESEARCH A2: settle returns via enterWaiting; enablement matrix is waiting|flying + bet/balance
 - [Phase 02]: canEditAuto always true; auto CO syncs from snapshot when input not focused — setAutoCashOut persists across rounds per Phase 1 enterWaiting; avoid clobbering while typing
 - [Phase 02]: Broke UX emphasizes Reset demo; never auto-calls resetWallet — Phase 1 D-03/D-04: explicit user Reset only; HUD must not auto-refill
+- [Phase 02]: PRESET_CHIPS omit 1000; free-form still allows max via facade — Reduce all-in mis-taps; placeBet still accepts up to 1000
+- [Phase 02]: Chip click fills input only — Place bet sole placeBet path — Pitfall 4 double-place; WALT-03 fill-only contract
+- [Phase 02]: History from snapshot.history only; createElement + textContent (no innerHTML) — WALT-05 single source; XSS mitigate T-02-10
 
 ### Pending Todos
 
@@ -111,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-26T18:55:09.987Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-09-26T18:58:38.737Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
