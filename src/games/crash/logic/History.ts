@@ -10,6 +10,7 @@ export class History {
   }
 
   push(crashAt: number): void {
+    if (!Number.isFinite(crashAt)) return;
     this.items.push(crashAt);
     if (this.items.length > this.maxSize) {
       this.items.shift();
