@@ -46,7 +46,7 @@ describe("round cadence — PLAY-01 / PLAY-05 / D-13..D-15", () => {
     expect(game.getSnapshot().phase).toBe("flying");
     game.requestCashOut();
     game.tick(CRASH_CONFIG.maxDeltaMs);
-    // May still be flying if cash-out processed next step, or waiting if settled
+    // Cash-out tick is durable cashed_out (D-16); wait until real crash → waiting
     let guard = 0;
     while (
       game.getSnapshot().phase !== "waiting" &&

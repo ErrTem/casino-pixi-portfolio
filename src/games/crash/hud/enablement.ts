@@ -12,7 +12,8 @@ export interface HudEnablement {
 
 /**
  * Phase-aware disabled flags for HUD controls.
- * Durable phases are waiting | flying only (settle → waiting).
+ * Actionable phases are waiting | flying only.
+ * cashed_out is a durable spectator phase and is not actionable (D-16).
  * Broke threshold uses display min (minBetCents / 100).
  */
 export function enablementFrom(snap: CrashSnapshot): HudEnablement {

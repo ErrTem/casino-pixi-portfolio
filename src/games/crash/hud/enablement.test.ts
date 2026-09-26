@@ -71,4 +71,19 @@ describe("enablementFrom — waiting/flying/broke matrix", () => {
     expect(en.chipsEnabled).toBe(false);
     expect(en.canEditAuto).toBe(true);
   });
+
+  it("cashed_out with a bet → canPlaceBet false and canCashOut false", () => {
+    const en = enablementFrom(
+      snap({
+        phase: "cashed_out",
+        bet: 100,
+        cashOutAt: 1.8,
+        multiplier: 2.5,
+      }),
+    );
+    expect(en.canPlaceBet).toBe(false);
+    expect(en.canCashOut).toBe(false);
+    expect(en.canEditBet).toBe(false);
+    expect(en.chipsEnabled).toBe(false);
+  });
 });
