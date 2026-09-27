@@ -3,6 +3,7 @@ import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createBackdrop } from "./Backdrop.js";
 import { createCurveGraph } from "./CurveGraph.js";
+import { formatWaitCountdown } from "./formatWaitCountdown.js";
 import {
   pathTangentRadians,
   plotPoint,
@@ -182,12 +183,20 @@ export function createCrashScene(app: Application): CrashScene {
       rocket.container.visible = rocketVisible;
     }
 
-    // Theater dual-read (D-13..D-16, D-20 idle dim last crash ×)
+    // Theater dual-read (D-13..D-16, D-20 idle dim last crash ×;
+    // Phase 5 D-01..D-04: waiting+idle shows continuous tenths countdown)
     let liveText: string;
     let liveTint: number;
     let liveAlpha: number;
 
-    if (mode === "crash_hold" || mode === "crash_fade") {
+    const showCountdown =
+      snapshot.phase === "waiting" && mode === "idle";
+
+    if (showCountdown) {
+      liveText = formatWaitCountdown(snapshot.waitRemainingMs);
+      liveTint = 0xffffff;
+      liveAlpha = 1;
+    } else if (mode === "crash_hold" || mode === "crash_fade") {
       const liveMult =
         latchedCrashMult != null && Number.isFinite(latchedCrashMult)
           ? latchedCrashMult
@@ -196,6 +205,7 @@ export function createCrashScene(app: Application): CrashScene {
       liveTint = VIEW_CONFIG.CRASH_COLOR;
       liveAlpha = 1;
     } else if (mode === "idle") {
+      // Non-waiting idle safety — dimmed last-crash × (Phase 3 D-20)
       if (latchedCrashMult != null && Number.isFinite(latchedCrashMult)) {
         liveText = formatMult(latchedCrashMult);
         liveTint = VIEW_CONFIG.CRASH_COLOR;
@@ -206,7 +216,7 @@ export function createCrashScene(app: Application): CrashScene {
         liveAlpha = 0;
       }
     } else {
-      // climb
+      // climb — countdown cleared on flight (D-03)
       liveText = formatMult(snapshot.multiplier);
       liveTint = theaterTintForMult(snapshot.multiplier);
       liveAlpha = 1;
