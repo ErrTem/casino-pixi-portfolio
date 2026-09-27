@@ -4,11 +4,21 @@ import type { SfxEvent } from "./AudioPort.js";
 /**
  * Pure prev→next snapshot edge detector for takeoff / cash_out / crash.
  * bet_lock is owned by the HUD placeBet handler — never emitted here.
- * RED stub: returns [] so edge tests fail until GREEN.
  */
 export function sfxEventsFromTransition(
-  _prev: CrashSnapshot | null,
-  _next: CrashSnapshot,
+  prev: CrashSnapshot | null,
+  next: CrashSnapshot,
 ): SfxEvent[] {
-  return [];
+  if (!prev) return [];
+  const out: SfxEvent[] = [];
+  if (prev.phase === "waiting" && next.phase === "flying") out.push("takeoff");
+  if (prev.cashOutAt == null && next.cashOutAt != null) out.push("cash_out");
+  if (
+    prev.phase !== "waiting" &&
+    next.phase === "waiting" &&
+    next.history.length > prev.history.length
+  ) {
+    out.push("crash");
+  }
+  return out;
 }
