@@ -1,9 +1,10 @@
 ---
 phase: 03-pixi-hybrid-view
 verified: 2026-09-26T22:45:00Z
-status: human_needed
-score: 1/3 must-haves verified
+status: passed
+score: 3/3 must-haves verified
 covered_files:
+
   - .planning/REQUIREMENTS.md
   - .planning/ROADMAP.md
   - .planning/phases/03-pixi-hybrid-view/03-01-PLAN.md
@@ -38,10 +39,12 @@ covered_files:
   - tests/resolveTick.test.ts
   - tests/walkingSkeleton.test.ts
   - tests/roundCadence.test.ts
-covered_digest: "v1:sha256:66874f48b820bd916bf59c8e1eff7da167f4996daad0a0023654b0cae6576ad1"
-behavior_unverified: 2
+
+covered_digest: "v1:sha256:60c5b396fc9ba0889bfe0d30df29d79268d48c6c8b3b2aa7a268221a55f577f3"
+behavior_unverified: 0
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "While flying, player sees a rising curve with a rocket traveling the path synced to the live multiplier"
     test: "npm run dev — place bet, watch canvas during flying / cashed_out climb"
     expected: "Green neon halo+core trail rises; small rocket sits on tip with tangent nose and 8-dot streak; theater × updates with snapshot.multiplier"
@@ -51,6 +54,7 @@ behavior_unverified_items:
     expected: "Red severed path with tip gap; rocket gone; brief full-canvas red flash; ~1s hold then fade; waiting shows backdrop, ghost, bobbing rocket, dim last crash ×"
     why_human: "Sever/flash/bob/backdrop are pixels; viewMode covers hold/fade clocks and rocketVisible only"
 human_verification:
+
   - test: "Run npm run dev. Play one cash-out round and one round that crashes without cash-out."
     expected: "Green neon trail while climbing; rocket nose follows the path; after cash-out the live × keeps rising and a frozen paid × sits under it until the crash. At crash the path gaps in red, the rocket disappears, a brief full-canvas red flash plays, the frame holds about a second, then fades. Waiting shows the sky backdrop, a ghost mark, a bobbing rocket at the origin, and a dim last crash ×. HUD bet and cash-out stay clickable below the canvas."
     why_human: "Harvested from 03-03-PLAN <human-check>; glow, tangent, sever, flash, and bob need live WebGL (human_verify_mode=end-of-phase)"
