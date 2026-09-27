@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: Polish
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-09-27T13:59:20.388Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-09-27T14:04:58.600Z"
 last_activity: 2026-09-27
 last_activity_desc: Phase 05 execution started
-state_head: 61f5e500c68d697a5b10757672f9d853ff1e8589
+state_head: 0d161cd50c99a3a70423f4fc97fbbd5898d794b5
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 18
-  completed_plans: 16
+  completed_plans: 17
   percent: 80
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 ## Current Position
 
 Phase: 05 (Polish) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-09-27 — Phase 05 execution started
 Progress: [████████░░] 80%
@@ -76,6 +76,7 @@ Progress: [████████░░] 80%
 | Phase 04 P03 | 5min | 2 tasks | 1 files |
 | Phase 05 P01 | 4min | 2 tasks | 3 files |
 | Phase 05 P02 | 7min | 3 tasks | 10 files |
+| Phase 05 P03 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Web Audio oscillators behind AudioPort — no Howler in Phase 5 — D-08 synthetic beeps; RESEARCH A2; keep port for future file adapter
 - [Phase 05]: SFX edges in main ticker; bet_lock from HUD placeBet ok only — Composition-root edge detect keeps GameLogic pure; RESEARCH Pattern 2
 - [Phase 05]: Mute preference key crash-demo:mute only (1|0) — T-5-02 — never persist wallet or seed under mute key
+- [Phase 05]: Seed retained at composition root for chip (not CrashSnapshot) — RESEARCH A4 — avoid logic surface; composition root passes seed into mountCrashHud
+- [Phase 05]: Invalid ?seed= quiet using default note on Seed chip — RESEARCH Q4 discretion — silent fallback plus brief expanded-chip note
 
 ### Pending Todos
 
@@ -142,6 +145,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-27T13:59:20.312Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-09-27T14:04:48.936Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
