@@ -23,10 +23,13 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 - ✓ Empty reserved `#game-canvas-host` for Phase 3 Pixi mount (D-04)
 - ✓ Live multiplier display with hybrid visual (rising curve + small rocket on path) — Phase 3 (VIS-01)
 - ✓ Mobile-friendly canvas layout and touch-usable HTML controls — Phase 4 (ARCH-03)
+- ✓ Waiting theater countdown (continuous tenths) — Phase 5 (PLSH-01)
+- ✓ Oscillator SFX + mute preference — Phase 5 (PLSH-02)
+- ✓ Boot `?seed=` + Seed chip reveal/copy — Phase 5 (PLSH-03)
+- ✓ Soft session avg/max stats + Space/Enter cash-out — Phase 5 (PLSH-04 / PLSH-05)
 
 ### Active
 
-- [ ] Waiting countdown, SFX+mute, seed replay, session stats, keyboard cash-out
 - [ ] Ready to extend later with more casino games (shell optional later)
 
 ### Out of Scope
@@ -75,10 +78,10 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 | v1 includes history, auto cash-out, bet presets | Table-stakes Crash UX for a credible portfolio demo | ✓ Phase 2 — HUD presets + history + auto CO chrome |
 | Fixed HUD chrome + leftover canvas on ≤720px | Phone playability without bar stealing curve space | ✓ Phase 4 — 15.5rem budget; pointer-events isolation |
 | Phase-promoted Cash out through cashed_out | Mid-flight / spectator finish touch target (D-08) | ✓ Phase 4 — chromeModeFrom(flying\|cashed_out) |
-| v1 includes polish (countdown, SFX, seed, stats, keyboard) | Differentiator polish after core loop | — Pending (Phase 5) |
-| No DEMO badge UI | Product owner preference; avoid badge chrome | ✓ Confirmed Phase 4 QA — no DEMO badge |
-| Single game page only | Ship Crash first; lobby/multi-game later | — Pending |
-| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 4 complete; Phase 5 polish next |
+| v1 includes polish (countdown, SFX, seed, stats, keyboard) | Differentiator polish after core loop | ✓ Phase 5 — PLSH-01..05 shipped + UAT |
+| No DEMO badge UI | Product owner preference; avoid badge chrome | ✓ Confirmed Phase 4–5 — no DEMO badge |
+| Single game page only | Ship Crash first; lobby/multi-game later | — Pending (next milestone) |
+| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 5 complete — milestone MVP done |
 
 ## Evolution
 
@@ -98,4 +101,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-27 after Phase 4*
+*Last updated: 2026-09-27 after Phase 5*
