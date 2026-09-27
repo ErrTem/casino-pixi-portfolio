@@ -26,8 +26,7 @@ function memoryStore(): MuteStore {
 function resolveStore(store?: MuteStore): MuteStore {
   if (store) return store;
   try {
-    // Prefer injectable store in tests; localStorage only when available.
-    // Avoid `window.` / `document.` identifiers so ARCH-02 shared scan stays green.
+    // Prefer injectable store in tests; localStorage via globalThis (no browser globals).
     const g = globalThis as { localStorage?: MuteStore };
     if (g.localStorage && typeof g.localStorage.getItem === "function") {
       // Probe — private mode may throw on access
