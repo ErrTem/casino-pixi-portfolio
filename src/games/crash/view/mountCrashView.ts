@@ -5,6 +5,8 @@ import { VIEW_CONFIG } from "./viewConfig.js";
 export interface MountedCrashView {
   app: Application;
   scene: CrashScene;
+  /** Removes orientation / visualViewport listeners. Call before app.destroy. */
+  dispose: () => void;
 }
 
 /**
@@ -27,6 +29,24 @@ export async function mountCrashView(
   });
   host.replaceChildren(app.canvas);
   app.resize();
+
+  // Harden: orientation / iOS chrome show-hide may miss ResizePlugin alone.
+  const refresh = (): void => {
+    const next = Math.min(window.devicePixelRatio || 1, 2);
+    if (app.renderer.resolution !== next) {
+      app.renderer.resolution = next;
+    }
+    app.resize();
+  };
+  window.addEventListener("orientationchange", refresh);
+  const vv = window.visualViewport;
+  vv?.addEventListener("resize", refresh);
+
+  const dispose = (): void => {
+    window.removeEventListener("orientationchange", refresh);
+    vv?.removeEventListener("resize", refresh);
+  };
+
   const scene = createCrashScene(app);
-  return { app, scene };
+  return { app, scene, dispose };
 }

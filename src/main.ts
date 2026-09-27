@@ -11,7 +11,7 @@ async function main(): Promise<void> {
 
   const game = createGame({ seed: "portfolio-demo" });
   const hud = mountCrashHud(hudRoot, game);
-  const { app, scene } = await mountCrashView(host as HTMLElement);
+  const { app, scene, dispose } = await mountCrashView(host as HTMLElement);
 
   hud.render(game.getSnapshot());
 
@@ -27,6 +27,7 @@ async function main(): Promise<void> {
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
       app.ticker.remove(onTick);
+      dispose();
       app.destroy(
         { removeView: true, releaseGlobalResources: true },
         { children: true },
