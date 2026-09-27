@@ -1,0 +1,64 @@
+TAP version 13
+1..8
+ok 1 - exports DEFAULT_DEMO_SEED as portfolio-demo
+not ok 2 - missing seed param falls back with fromQuery false
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'portfolio-demo', …(2) }"
+actual: "RED-STUB"
+expected: "portfolio-demo"
+...
+not ok 3 - empty seed falls back with fromQuery false
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'portfolio-demo', …(2) }"
+actual: "RED-STUB"
+expected: "portfolio-demo"
+...
+not ok 4 - whitespace-only seed falls back as invalid
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'portfolio-demo', …(2) }"
+actual: "RED-STUB"
+expected: "portfolio-demo"
+...
+not ok 5 - control chars set invalid true and use fallback
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'portfolio-demo', …(2) }"
+actual: "RED-STUB"
+expected: "portfolio-demo"
+...
+not ok 6 - length over 128 sets invalid true and uses fallback
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'portfolio-demo', …(2) }"
+actual: "RED-STUB"
+expected: "portfolio-demo"
+...
+not ok 7 - valid non-empty trimmed seed is returned unchanged (opaque string)
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'demo-a', …(2) }"
+actual: "RED-STUB"
+expected: "demo-a"
+...
+not ok 8 - accepts custom fallback when provided
+---
+error:
+name: "AssertionError"
+message: "expected { seed: 'RED-STUB', …(2) } to deeply equal { seed: 'custom-fallback', …(2) }"
+actual: "RED-STUB"
+expected: "custom-fallback"
+...
+
+# tests 8
+# pass 1
+# fail 7
+# cancelled 0
