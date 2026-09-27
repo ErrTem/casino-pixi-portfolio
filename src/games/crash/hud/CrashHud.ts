@@ -6,6 +6,7 @@ import { PRESET_CHIPS } from "./chips.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
 import { renderHistoryStrip } from "./historyStrip.js";
+import { mountSeedChip } from "./seedChip.js";
 
 export interface CrashHud {
   render(snap: CrashSnapshot): void;
@@ -14,6 +15,10 @@ export interface CrashHud {
 export interface MountCrashHudOptions {
   /** Optional AudioPort — mute + bet_lock when provided (05-02). */
   audio?: AudioPort;
+  /** Boot seed for collapsible Seed chip (05-03 / D-09–D-11). */
+  seed?: string;
+  /** True when ?seed= was present but invalid — quiet "using default" note. */
+  invalid?: boolean;
 }
 
 /**
@@ -26,6 +31,8 @@ export function mountCrashHud(
   options: MountCrashHudOptions = {},
 ): CrashHud {
   const audio = options.audio;
+  const bootSeed = options.seed;
+  const seedInvalid = options.invalid === true;
   const betInput = root.querySelector<HTMLInputElement>(
     "[data-field=bet-input]",
   );
@@ -48,6 +55,7 @@ export function mountCrashHud(
   const leftZone = root.querySelector("[data-zone=balance]");
   const chipsHost = root.querySelector("[data-field=chips]");
   const historyHost = root.querySelector("[data-field=history]");
+  const seedChipHost = root.querySelector("[data-field=seed-chip]");
 
   if (
     !betInput ||
@@ -69,6 +77,16 @@ export function mountCrashHud(
 
   if (audio && !muteBtn) {
     throw new Error("CrashHud: data-action=mute required when audio is provided");
+  }
+
+  if (bootSeed != null && !seedChipHost) {
+    throw new Error(
+      "CrashHud: data-field=seed-chip required when seed is provided",
+    );
+  }
+
+  if (bootSeed != null && seedChipHost) {
+    mountSeedChip(seedChipHost, { seed: bootSeed, invalid: seedInvalid });
   }
 
   // Narrowed aliases so closures keep non-null types under strictNullChecks.

@@ -169,6 +169,51 @@ body {
   white-space: nowrap;
 }
 
+/* Collapsible Seed chip — compact collapsed; expand inside bar budget */
+.seed-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.hud-bar .seed-chip__toggle,
+.hud-bar .seed-chip__copy {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-height: 2rem;
+  white-space: nowrap;
+}
+
+.seed-chip__panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.seed-chip__panel[hidden] {
+  display: none;
+}
+
+.seed-chip__value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  max-width: 12rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  color: #c8d4e0;
+}
+
+.seed-chip__note {
+  font-size: 0.6875rem;
+  color: #8a9aaa;
+  white-space: nowrap;
+}
+
 .reset-demo--emphasize {
   border-color: #c9a227;
   background: #3a3420;

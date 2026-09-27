@@ -1,6 +1,7 @@
 import { createBeepAudioPort } from "./shared/audio/createBeepAudioPort.js";
 import { loadMutePref } from "./shared/audio/mutePref.js";
 import { sfxEventsFromTransition } from "./shared/audio/sfxEdges.js";
+import { parseBootSeed } from "./shared/boot/parseBootSeed.js";
 import { mountCrashHud } from "./games/crash/hud/CrashHud.js";
 import {
   createGame,
@@ -15,9 +16,10 @@ async function main(): Promise<void> {
   const host = document.querySelector("#game-canvas-host");
   if (!host) throw new Error("#game-canvas-host missing");
 
-  const game = createGame({ seed: "portfolio-demo" });
+  const { seed, invalid } = parseBootSeed(window.location.search);
+  const game = createGame({ seed });
   const audio = createBeepAudioPort({ muted: loadMutePref() });
-  const hud = mountCrashHud(hudRoot, game, { audio });
+  const hud = mountCrashHud(hudRoot, game, { audio, seed, invalid });
   const { app, scene, dispose } = await mountCrashView(host as HTMLElement);
 
   let prevSnap: CrashSnapshot | null = game.getSnapshot();
