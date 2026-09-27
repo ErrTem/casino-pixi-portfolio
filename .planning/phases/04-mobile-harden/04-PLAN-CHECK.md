@@ -1,24 +1,31 @@
 # Phase 04 Plan Check
 
-**Checked:** 2026-09-27 (re-verify after revision — research open questions marked RESOLVED)  
+**Checked:** 2026-09-27 (re-verify after revision — iteration 2)  
 **Plans:** 04-01, 04-02, 04-03  
-**Mode:** standard (revision re-check)  
+**Mode:** standard (revision re-check, iteration 2)  
 **Verdict:** PASSED
 
 ## Prior Blockers — Cleared
 
 | Blocker | Status | Evidence |
 |---------|--------|----------|
-| `research_resolution` | CLEARED | `04-RESEARCH.md` has `## Open Questions (RESOLVED)`; Q1 RESOLVED locks `--hud-bar-height: 15.5rem` + 04-03 ±1rem QA; Q2 RESOLVED locks fixed height under `max-width: 720px` only (04-01) |
+| `research_resolution` | CLEARED | Live `04-RESEARCH.md` has `## Open Questions (RESOLVED)`; Q1 `**RESOLVED:**` locks `--hud-bar-height: 15.5rem` + 04-01/04-03 ±1rem QA; Q2 `**RESOLVED:**` locks fixed height under `max-width: 720px` only (04-01) |
+
+## Prior INFO Advisories — Cleared
+
+| Advisory | Status | Evidence |
+|----------|--------|----------|
+| 04-01 objective omit D-09/D-11/D-12 | CLEARED | 04-01 `<objective>`: "Decisions in this plan: D-01, D-02, D-03, D-04, D-09, D-10, D-11, D-12, D-14" |
+| 04-03 objective omit D-13 | CLEARED | 04-03 `<objective>`: "Decisions in this plan: D-13 (portrait-first QA…)" |
 
 ## Dimension Results
 
 | # | Dimension | Result |
 |---|-----------|--------|
 | 1 | Requirement coverage | PASS — ARCH-03 claimed in all three plans; ROADMAP SC 1–3 mapped |
-| 2 | Task completeness | PASS — `verify.plan-structure` valid on all plans; checkpoint exempt |
-| 3 | Dependency correctness | PASS — acyclic; 04-01→04-02→04-03; waves match depends_on |
-| 3b | Undeclared coupling | PASS — no same-wave plan pairs |
+| 2 | Task completeness | PASS — `read_first` + `acceptance_criteria` + `verify` on impl tasks; checkpoint:human-verify exempt from automated verify |
+| 3 | Dependency correctness | PASS — acyclic; 04-01→04-02→04-03; waves 1/2/3 match depends_on |
+| 3b | Undeclared coupling | PASS — no same-wave plan pairs; hud.css edits serial across waves |
 | 4 | Key links planned | PASS — fixed-chrome→leftover host; phase→promote class; orientation→app.resize; QA→ARCH-03 gate |
 | 5 | Scope sanity | PASS — tasks ≤3/plan (within 2–3 good); files under blocker (15); 04-02=7 files |
 | 6 | Verification derivation | PASS — user-observable truths + artifacts + key_links from phase goal |
@@ -57,7 +64,7 @@
 | 04-02 | 3 (1 tracer TDD + 2 auto) | 7 | 2 | 04-01 | 42k (medium) | Valid |
 | 04-03 | 2 (1 auto + 1 human-verify) | 1 | 3 | 04-02 | 18k (high) | Valid |
 
-Smart-zone estimates: all under 100k budget. Structure probe: all three plans `valid: true`, 0 errors/warnings.
+Smart-zone estimates: all under 100k budget. Structure probe: all three plans valid; prior verify/failing-direction probes 0/0.
 
 ### Dimension 8: Nyquist Compliance
 
@@ -102,6 +109,8 @@ Deferred correctly: Phase 5 polish; landscape-first redesign; history pill tap; 
 - ARCH-03 edge probe remains unclassified/unresolved in `flagged_assumptions` — review manually; not auto-resolved and not dropped (same stance as prior phases).
 - Node Vitest cannot assert hit targets / safe-area pixels — 04-03 blocking human-verify is the intentional gate.
 - CONTEXT D-08 says “crash → idle”; plans correctly refuse inventing an `idle` phase and use `waiting`/`crashed` (Phase 1 phase union).
+- `04-VALIDATION.md` remains `status: draft` / `nyquist_compliant: false` — expected until validate-phase; plan task verifies are present.
+- ROADMAP Phase 4 `Mode: mvp` is phase delivery mode; this check runs in standard revision re-check mode per verification_context.
 
 ## Issues
 
@@ -109,6 +118,6 @@ None.
 
 ## Recommendation
 
-Plans verified for pre-execution quality. Prior `research_resolution` blocker cleared. Run `/gsd-execute-phase 04` (or equivalent) to proceed.
+Plans verified for pre-execution quality. Prior `research_resolution` blocker and INFO advisories (D-09/D-11/D-12, D-13 objective listing) cleared. Run `/gsd-execute-phase 04` (or equivalent) to proceed.
 
 ## VERIFICATION PASSED
