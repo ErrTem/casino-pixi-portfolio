@@ -167,10 +167,20 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
+**Wave 1**
 
 - [ ] 05-01: Waiting-phase countdown UX wired to round timing
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 05-02: AudioPort + SFX placeholders + mute toggle
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 05-03: `?seed=` parse + on-screen seed display for round replay
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
 - [ ] 05-04: Session stats from history + desktop keyboard cash-out shortcut
 
 ## Progress
