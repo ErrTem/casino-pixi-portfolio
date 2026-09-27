@@ -133,9 +133,16 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
+**Wave 1**
 
 - [ ] 04-01: Responsive layout CSS — canvas + overlay stacking for narrow viewports
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 04-02: Touch-sized controls, safe areas, DPR-capped resize hardening
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 04-03: Mobile QA pass — overlay hit conflicts, history strip readability
 
 ### Phase 5: Polish
