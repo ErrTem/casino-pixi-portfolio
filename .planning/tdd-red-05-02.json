@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/shared/audio/sfxEdges.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\n1..6\nok 1 - returns [] when prev is null\nnot ok 2 - emits takeoff on waiting -> flying\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected [] to deeply equal [ 'takeoff' ]\"\nactual: \"[]\"\nexpected: \"['takeoff']\"\n...\nnot ok 3 - emits cash_out when cashOutAt latches null -> value\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected [] to deeply equal [ 'cash_out' ]\"\nactual: \"[]\"\nexpected: \"['cash_out']\"\n...\nnot ok 4 - emits crash when returning to waiting with history growth\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected [] to deeply equal [ 'crash' ]\"\nactual: \"[]\"\nexpected: \"['crash']\"\n...\nok 5 - never emits bet_lock from snapshot edges\nnot ok 6 - replaying the same prev/next pair is idempotent (same single-event set)\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected [] to deeply equal [ 'takeoff' ]\"\nactual: \"[]\"\nexpected: \"['takeoff']\"\n...\n\n# tests 6\n# pass 2\n# fail 4\n# cancelled 0\n",
+  "targetTest": "emits takeoff on waiting -> flying",
+  "targetFile": "src/shared/audio/sfxEdges.test.ts",
+  "expected": "['takeoff']",
+  "actual": "[]"
+}

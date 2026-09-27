@@ -1,0 +1,41 @@
+TAP version 13
+1..6
+ok 1 - returns [] when prev is null
+not ok 2 - emits takeoff on waiting -> flying
+---
+error:
+name: "AssertionError"
+message: "expected [] to deeply equal [ 'takeoff' ]"
+actual: "[]"
+expected: "['takeoff']"
+...
+not ok 3 - emits cash_out when cashOutAt latches null -> value
+---
+error:
+name: "AssertionError"
+message: "expected [] to deeply equal [ 'cash_out' ]"
+actual: "[]"
+expected: "['cash_out']"
+...
+not ok 4 - emits crash when returning to waiting with history growth
+---
+error:
+name: "AssertionError"
+message: "expected [] to deeply equal [ 'crash' ]"
+actual: "[]"
+expected: "['crash']"
+...
+ok 5 - never emits bet_lock from snapshot edges
+not ok 6 - replaying the same prev/next pair is idempotent (same single-event set)
+---
+error:
+name: "AssertionError"
+message: "expected [] to deeply equal [ 'takeoff' ]"
+actual: "[]"
+expected: "['takeoff']"
+...
+
+# tests 6
+# pass 2
+# fail 4
+# cancelled 0
