@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: Polish
-status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-09-27T14:04:58.600Z"
+status: verifying
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-09-27T14:09:12.297Z"
 last_activity: 2026-09-27
 last_activity_desc: Phase 05 execution started
-state_head: 0d161cd50c99a3a70423f4fc97fbbd5898d794b5
+state_head: 2931cf34e6a7df97c1798b30f7a9a19408dea141
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 18
-  completed_plans: 17
+  completed_plans: 18
   percent: 80
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 
 Phase: 05 (Polish) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-09-27 — Phase 05 execution started
 Progress: [████████░░] 80%
 
@@ -77,6 +77,7 @@ Progress: [████████░░] 80%
 | Phase 05 P01 | 4min | 2 tasks | 3 files |
 | Phase 05 P02 | 7min | 3 tasks | 10 files |
 | Phase 05 P03 | 4min | 2 tasks | 7 files |
+| Phase 05 P04 | 3min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -128,6 +129,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Mute preference key crash-demo:mute only (1|0) — T-5-02 — never persist wallet or seed under mute key
 - [Phase 05]: Seed retained at composition root for chip (not CrashSnapshot) — RESEARCH A4 — avoid logic surface; composition root passes seed into mountCrashHud
 - [Phase 05]: Invalid ?seed= quiet using default note on Seed chip — RESEARCH Q4 discretion — silent fallback plus brief expanded-chip note
+- [Phase 05]: Avg divides by finite count after skipping non-finite — Matches skip-non-finite contract; RESEARCH history.length would skew mixed arrays
+- [Phase 05]: Keyboard cash-out gates on enablementFrom.canCashOut — Same path as Cash out button; ignore spectator/no-bet (RESEARCH Q3 / D-15)
 
 ### Pending Todos
 
@@ -145,6 +148,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-27T14:04:48.936Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-09-27T14:09:03.564Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None

@@ -38,8 +38,8 @@
 - [x] **PLSH-01**: Player sees a waiting-phase countdown before the next flight
 - [x] **PLSH-02**: Game plays SFX placeholders for key events with a mute toggle
 - [x] **PLSH-03**: Player can reproduce a round via `?seed=` URL and/or an on-screen seed display
-- [ ] **PLSH-04**: Player can see soft session stats derived from history (e.g. average / max crash)
-- [ ] **PLSH-05**: Player can cash out via a keyboard shortcut on desktop
+- [x] **PLSH-04**: Player can see soft session stats derived from history (e.g. average / max crash)
+- [x] **PLSH-05**: Player can cash out via a keyboard shortcut on desktop
 
 ## v2 Requirements
 
@@ -97,8 +97,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLSH-01 | 5 | Complete |
 | PLSH-02 | 5 | Complete |
 | PLSH-03 | 5 | Complete |
-| PLSH-04 | 5 | Pending |
-| PLSH-05 | 5 | Pending |
+| PLSH-04 | 5 | Complete |
+| PLSH-05 | 5 | Complete |
 
 **Coverage:**
 

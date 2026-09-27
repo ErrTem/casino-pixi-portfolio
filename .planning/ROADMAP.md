@@ -164,14 +164,14 @@ Plans:
   3. Player can reproduce a round via `?seed=` and/or read the active seed on screen
   4. Soft session stats (e.g. average / max crash) appear from history; desktop keyboard shortcut cashes out mid-flight
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 
 - [x] 05-01-PLAN.md
 - [x] 05-02-PLAN.md
 - [x] 05-03-PLAN.md
-- [ ] 05-04-PLAN.md
+- [x] 05-04-PLAN.md
 
 **Wave 1**
 
@@ -187,7 +187,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 05-04: Session stats from history + desktop keyboard cash-out shortcut
+- [x] 05-04: Session stats from history + desktop keyboard cash-out shortcut
 
 ## Progress
 
@@ -200,4 +200,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
-| 5. Polish | 3/4 | In Progress|  |
+| 5. Polish | 4/4 | In Progress|  |
