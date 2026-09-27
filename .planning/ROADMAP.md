@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: GameLogic Core** - Pure TS round FSM, wallet, seeded RNG, settlement, auto cash-out, Vitest (completed 2026-09-26)
 - [x] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic (completed 2026-09-26)
-- [ ] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots
+- [x] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots (completed 2026-09-27)
 - [ ] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls
 - [ ] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out
 
@@ -101,7 +101,7 @@ Plans:
   2. On crash, player sees a clear visual break (path/rocket interrupt) matching the logic crash event
   3. Ticker feeds `GameLogic.update(deltaMS)` only; outcome never driven by sprite position
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 
@@ -170,6 +170,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
-| 3. Pixi Hybrid View | 3/3 | In Progress|  |
+| 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 0/3 | Not started | - |
 | 5. Polish | 0/4 | Not started | - |
