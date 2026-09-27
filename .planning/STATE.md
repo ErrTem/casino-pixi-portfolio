@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 04
 current_phase_name: Mobile Harden
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-09-27T12:16:31.151Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-09-27T15:20:13Z"
 last_activity: 2026-09-27
-last_activity_desc: Completed 04-01 responsive shell layout
-state_head: 43b47fd71468210a751bc86c343bf192bc253628
+last_activity_desc: Completed 04-02 touch promote chrome + safe-area + resize harden
+state_head: a184cf8
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 12
-  percent: 60
+  completed_plans: 13
+  percent: 65
 ---
 
 # Project State
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
 ## Current Position
 
 Phase: 04 (Mobile Harden) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
-Last activity: 2026-09-27 — Completed 04-01 responsive shell layout
-Progress: [██████░░░░] 60%
+Last activity: 2026-09-27 — Completed 04-02 touch promote chrome + safe-area + resize harden
+Progress: [██████░░░░] 65%
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [██████░░░░] 60%
 | Phase 03-pixi-hybrid-view P02 | 5 min | 3 tasks | 10 files |
 | Phase 03 P03 | 2 min | 2 tasks | 3 files |
 | Phase 04-mobile-harden P01 | 1min | 1 tasks | 1 files |
+| Phase 04-mobile-harden P02 | 2min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Backdrop rebuilds only on screen size change via rebuildIfNeeded — Avoid clear() retessellation every sync frame per RESEARCH Pattern 4
 - [Phase 04]: 15.5rem fixed bar height inside max-width 720px only (D-02/D-04); desktop stays content-sized — Same rem budget in portrait and landscape when width is <=720px; desktop three-column may stay auto-height
 - [Phase 04]: touch-action pan-x on .history-strip so horizontal swipe coexists with bar vertical scroll — Plan discretionary; display-only history stays; no tap handlers
+- [Phase 04]: Promote chrome from snapshot.phase (flying|cashed_out), never from canCashOut (D-08) — Disabled Cash out stays full-width through spectator finish
+- [Phase 04]: dispose() returned from mountCrashView removes resize listeners before HMR app.destroy — Prefer mount-owned cleanup over main-only listeners
+- [Phase 04]: Waiting defaults min-height 2.75rem; promoted Cash out 2.875rem full-width; de-emphasized controls stay visible at 2rem — D-05–D-07 tap contract
 
 ### Pending Todos
 
@@ -128,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-27T12:16:14.979Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-09-27T15:20:13Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
