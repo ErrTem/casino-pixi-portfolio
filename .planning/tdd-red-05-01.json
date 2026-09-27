@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/crash/view/formatWaitCountdown.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\n1..4\nnot ok 1 - formats 5000 ms as 5.0\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected '' to be '5.0' // Object.is equality\"\nactual: \"\"\nexpected: \"5.0\"\n...\nnot ok 2 - formats 4900 ms as 4.9\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected '' to be '4.9' // Object.is equality\"\nactual: \"\"\nexpected: \"4.9\"\n...\nnot ok 3 - clamps 0 and negative values to 0.0\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected '' to be '0.0' // Object.is equality\"\nactual: \"\"\nexpected: \"0.0\"\n...\nok 4 - never appends × suffix\n\n# tests 4\n# pass 1\n# fail 3\n# cancelled 0\n",
+  "targetTest": "formats 5000 ms as 5.0",
+  "targetFile": "src/games/crash/view/formatWaitCountdown.test.ts",
+  "expected": "5.0",
+  "actual": ""
+}
