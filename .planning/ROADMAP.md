@@ -130,12 +130,17 @@ Plans:
   2. Player can place bet, cash out, and use presets/auto CO with touch (adequate tap targets)
   3. Canvas does not steal taps from monetary controls (stacking / pointer-events correct)
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
+
+- [x] 04-01-PLAN.md
+- [ ] 04-02-PLAN.md
+- [ ] 04-03-PLAN.md
+
 **Wave 1**
 
-- [ ] 04-01: Responsive layout CSS — canvas + overlay stacking for narrow viewports
+- [x] 04-01: Responsive layout CSS — canvas + overlay stacking for narrow viewports
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -178,5 +183,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
-| 4. Mobile Harden | 0/3 | Not started | - |
+| 4. Mobile Harden | 1/3 | In Progress|  |
 | 5. Polish | 0/4 | Not started | - |
