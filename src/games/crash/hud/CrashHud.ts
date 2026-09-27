@@ -1,3 +1,5 @@
+import type { AudioPort } from "../../../shared/audio/AudioPort.js";
+import { saveMutePref } from "../../../shared/audio/mutePref.js";
 import type { CrashGame, CrashSnapshot } from "../logic/index.js";
 import { chromeModeFrom } from "./chromeMode.js";
 import { PRESET_CHIPS } from "./chips.js";
@@ -9,11 +11,21 @@ export interface CrashHud {
   render(snap: CrashSnapshot): void;
 }
 
+export interface MountCrashHudOptions {
+  /** Optional AudioPort — mute + bet_lock when provided (05-02). */
+  audio?: AudioPort;
+}
+
 /**
  * Thin HTML binder: commands in, snapshot fields out.
  * No wallet math — facade only. Enablement flags are UX; GameLogic remains authority.
  */
-export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
+export function mountCrashHud(
+  root: Element,
+  game: CrashGame,
+  options: MountCrashHudOptions = {},
+): CrashHud {
+  const audio = options.audio;
   const betInput = root.querySelector<HTMLInputElement>(
     "[data-field=bet-input]",
   );
@@ -28,6 +40,7 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
   );
   const clearAutoBtn = root.querySelector("[data-action=clear-auto-co]");
   const resetBtn = root.querySelector("[data-action=reset-wallet]");
+  const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
   const statusEl = root.querySelector("[data-field=status]");
   const balanceEl = root.querySelector("[data-field=balance]");
   const phaseEl = root.querySelector("[data-field=phase]");
@@ -54,6 +67,10 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     throw new Error("CrashHud: required #hud-bar fields missing");
   }
 
+  if (audio && !muteBtn) {
+    throw new Error("CrashHud: data-action=mute required when audio is provided");
+  }
+
   // Narrowed aliases so closures keep non-null types under strictNullChecks.
   const bet = betInput;
   const auto = autoInput;
@@ -61,6 +78,7 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
   const cashOut = cashOutBtn;
   const clearAuto = clearAutoBtn;
   const reset = resetBtn;
+  const mute = muteBtn;
   const status = statusEl;
   const balance = balanceEl;
   const phase = phaseEl;
@@ -70,6 +88,13 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
   const history = historyHost;
 
   let lastPlaceReason: string | null = null;
+
+  function syncMuteLabel(): void {
+    if (!mute || !audio) return;
+    const muted = audio.isMuted();
+    mute.textContent = muted ? "Sound: Off" : "Sound: On";
+    mute.setAttribute("aria-pressed", muted ? "true" : "false");
+  }
 
   // Chips: fill bet-input only — never call placeBet (Pitfall 4 / WALT-03).
   const chipButtons: HTMLButtonElement[] = [];
@@ -103,12 +128,28 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     } else {
       lastPlaceReason = null;
       status.textContent = "";
+      if (audio) {
+        audio.unlock();
+        audio.play("bet_lock");
+      }
     }
   });
 
   cashOut.addEventListener("click", () => {
+    audio?.unlock();
     game.requestCashOut();
   });
+
+  if (mute && audio) {
+    mute.addEventListener("click", () => {
+      audio.unlock();
+      const next = !audio.isMuted();
+      audio.setMuted(next);
+      saveMutePref(next);
+      syncMuteLabel();
+    });
+    syncMuteLabel();
+  }
 
   const applyAutoCo = () => {
     const raw = auto.value.trim();
@@ -157,6 +198,7 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
       chromeModeFrom(snap.phase) === "promote-cashout",
     );
     syncChipSelection();
+    syncMuteLabel();
 
     // History from snapshot only — never push from button handlers (WALT-05).
     renderHistoryStrip(history, snap.history);

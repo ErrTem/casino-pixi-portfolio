@@ -161,6 +161,14 @@ body {
   color: #e07070;
 }
 
+/* Compact mute control — stay inside Phase 4 --hud-bar-height budget */
+.hud-bar .mute-toggle {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-height: 2rem;
+  white-space: nowrap;
+}
+
 .reset-demo--emphasize {
   border-color: #c9a227;
   background: #3a3420;
