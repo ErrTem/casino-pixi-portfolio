@@ -130,13 +130,13 @@ Plans:
   2. Player can place bet, cash out, and use presets/auto CO with touch (adequate tap targets)
   3. Canvas does not steal taps from monetary controls (stacking / pointer-events correct)
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 
 - [x] 04-01-PLAN.md
 - [x] 04-02-PLAN.md
-- [ ] 04-03-PLAN.md
+- [x] 04-03-PLAN.md
 
 **Wave 1**
 
@@ -148,7 +148,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 04-03: Mobile QA pass — overlay hit conflicts, history strip readability
+- [x] 04-03: Mobile QA pass — overlay hit conflicts, history strip readability
 
 ### Phase 5: Polish
 
@@ -183,5 +183,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. GameLogic Core | 5/5 | Complete    | 2026-09-26 |
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
-| 4. Mobile Harden | 2/3 | In Progress|  |
+| 4. Mobile Harden | 3/3 | In Progress|  |
 | 5. Polish | 0/4 | Not started | - |

@@ -30,7 +30,7 @@
 
 - [x] **ARCH-01**: Rounds use seeded/demo RNG so the same seed produces a reproducible crash point
 - [x] **ARCH-02**: Game rules (round FSM, wallet, RNG, settlement, auto cash-out) live in pure TypeScript GameLogic with no Pixi imports
-- [ ] **ARCH-03**: Layout works on mobile: responsive canvas and touch-usable HTML controls
+- [x] **ARCH-03**: Layout works on mobile: responsive canvas and touch-usable HTML controls
 - [x] **ARCH-04**: GameLogic settlement, auto cash-out, and wallet rules are covered by Vitest unit tests
 
 ### Polish
@@ -92,7 +92,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-02 | 2 | Complete |
 | ARCH-01 | 1 | Complete |
 | ARCH-02 | 1 | Complete |
-| ARCH-03 | 4 | Pending |
+| ARCH-03 | 4 | Complete |
 | ARCH-04 | 1 | Complete |
 | PLSH-01 | 5 | Pending |
 | PLSH-02 | 5 | Pending |
