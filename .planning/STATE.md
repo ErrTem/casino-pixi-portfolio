@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 5
+current_phase: 05
 current_phase_name: Polish
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-09-27T13:39:44.146Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-09-27T13:50:29.598Z"
 last_activity: 2026-09-27
-last_activity_desc: Phase 04 complete, transitioned to Phase 5
-state_head: aa65a38bdf5e683e868935e3aab3a527e0301a60
+last_activity_desc: Phase 05 execution started
+state_head: 125cacee373816f49b57d14f0d38de1de566cde2
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 18
-  completed_plans: 14
-  percent: 78
+  completed_plans: 15
+  percent: 80
 ---
 
 # Project State
@@ -27,11 +27,11 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 
 ## Current Position
 
-Phase: 5 (Polish) — READY TO EXECUTE
-Plan: Not started
+Phase: 05 (Polish) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-09-27 — Phase 04 complete, transitioned to Phase 5
-Progress: [████████░░] 78%
+Last activity: 2026-09-27 — Phase 05 execution started
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [████████░░] 78%
 | Phase 04-mobile-harden P01 | 1min | 1 tasks | 1 files |
 | Phase 04-mobile-harden P02 | 2min | 3 tasks | 7 files |
 | Phase 04 P03 | 5min | 2 tasks | 1 files |
+| Phase 05 P01 | 4min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 04]: dispose() returned from mountCrashView removes resize listeners before HMR app.destroy — Prefer mount-owned cleanup over main-only listeners
 - [Phase 04]: Waiting defaults min-height 2.75rem; promoted Cash out 2.875rem full-width; de-emphasized controls stay visible at 2rem — D-05–D-07 tap contract
 - [Phase 04]: Human approved ARCH-03 mobile QA gate green without --hud-bar-height tweak — blocking-human checkpoint resume signal approved; DevTools/device matrix recorded in 04-03-QA-CHECKLIST.md
+- [Phase 05]: Countdown gated on phase===waiting && mode===idle (RESEARCH A1) — Avoids tenths flashing over red crash � during hold/fade while logic already returned to waiting
+- [Phase 05]: Reuse existing TheaterText live BitmapText for countdown — D-01/D-04; no third text node; BitmapText for per-frame tenths
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-27T13:17:55.991Z
-Stopped at: Phase 5 context gathered
-Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\05-polish\05-CONTEXT.md
+Last session: 2026-09-27T13:50:29.528Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
