@@ -104,7 +104,7 @@ Each task was committed atomically:
 
 1. **Task 1: Fixed chrome budget, stacked zones, and canvas hit isolation** - `a4d03eb` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `43b47fd` (docs: complete plan); `fd0a3bf` (docs: STATE decisions)
 
 ## Files Created/Modified
 
