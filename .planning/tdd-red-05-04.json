@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/crash/hud/sessionStats.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\n1..5\nnot ok 1 - empty history returns placeholders — and n/a, never 0.00×\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected { avgLabel: '0.00×', maxLabel: '0.00×' } to deeply equal { avgLabel: '—', maxLabel: 'n/a' }\"\nactual: \"0.00×\"\nexpected: \"—\"\n...\nnot ok 2 - single-element history formats that value for both avg and max\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected { avgLabel: '0.00×', maxLabel: '0.00×' } to deeply equal { avgLabel: '2.50×', maxLabel: '2.50×' }\"\nactual: \"0.00×\"\nexpected: \"2.50×\"\n...\nnot ok 3 - multi-element history computes avg and max to 2dp ×\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected { avgLabel: '0.00×', maxLabel: '0.00×' } to deeply equal { avgLabel: '5.50×', maxLabel: '12.00×' }\"\nactual: \"0.00×\"\nexpected: \"5.50×\"\n...\nnot ok 4 - skips non-finite entries; all non-finite → placeholders\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected { avgLabel: '0.00×', maxLabel: '0.00×' } to deeply equal { avgLabel: '—', maxLabel: 'n/a' }\"\nactual: \"0.00×\"\nexpected: \"—\"\n...\nnot ok 5 - averages only finite entries when mixed with non-finite\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected { avgLabel: '0.00×', maxLabel: '0.00×' } to deeply equal { avgLabel: '3.00×', maxLabel: '4.00×' }\"\nactual: \"0.00×\"\nexpected: \"3.00×\"\n...\n\n# tests 5\n# pass 0\n# fail 5\n# cancelled 0\n",
+  "targetTest": "empty history returns placeholders — and n/a, never 0.00×",
+  "targetFile": "src/games/crash/hud/sessionStats.test.ts",
+  "expected": "—",
+  "actual": "0.00×"
+}
