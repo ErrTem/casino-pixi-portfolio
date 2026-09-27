@@ -21,11 +21,11 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 - ✓ Bet amount presets (chips) fill-only + free-form input — Phase 2 (WALT-03)
 - ✓ Round history strip from snapshot.history newest-first — Phase 2 (WALT-05)
 - ✓ Empty reserved `#game-canvas-host` for Phase 3 Pixi mount (D-04)
+- ✓ Live multiplier display with hybrid visual (rising curve + small rocket on path) — Phase 3 (VIS-01)
+- ✓ Mobile-friendly canvas layout and touch-usable HTML controls — Phase 4 (ARCH-03)
 
 ### Active
 
-- [ ] Live multiplier display with hybrid visual (rising curve + small rocket on path)
-- [ ] Mobile-friendly canvas layout
 - [ ] Waiting countdown, SFX+mute, seed replay, session stats, keyboard cash-out
 - [ ] Ready to extend later with more casino games (shell optional later)
 
@@ -68,15 +68,17 @@ A recruiter can open the demo, place a bet, watch the round play, cash out or cr
 |----------|-----------|---------|
 | PixiJS v8 + TS + Vite | Portfolio stack already chosen; Pixi skills available | ✓ Phase 2 — Vite 6.4.3 shell; Pixi deferred to Phase 3 |
 | HTML controls + Pixi canvas (no React/Angular v1) | Fastest path to a playable single-game demo; shell deferred | ✓ Phase 2 — full HUD overlay; canvas host empty for Pixi |
-| Hybrid visual (curve + rocket on path) | Polished Crash look without heavy art dependency | — Pending (Phase 3) |
+| Hybrid visual (curve + rocket on path) | Polished Crash look without heavy art dependency | ✓ Phase 3 — Graphics climb trail + rocket on path |
 | Seeded/demo RNG | Testable rounds without backend or certification | ✓ Phase 1 — seedrandom behind Rng; ARCH-01 |
 | D-14 continuous auto-launch | Live Crash cadence + spectator rounds | ✓ Phase 1 — option-continuous locked |
 | Single-authority resolveTick | Crash before auto before manual; idempotent settle | ✓ Phase 1 |
 | v1 includes history, auto cash-out, bet presets | Table-stakes Crash UX for a credible portfolio demo | ✓ Phase 2 — HUD presets + history + auto CO chrome |
+| Fixed HUD chrome + leftover canvas on ≤720px | Phone playability without bar stealing curve space | ✓ Phase 4 — 15.5rem budget; pointer-events isolation |
+| Phase-promoted Cash out through cashed_out | Mid-flight / spectator finish touch target (D-08) | ✓ Phase 4 — chromeModeFrom(flying\|cashed_out) |
 | v1 includes polish (countdown, SFX, seed, stats, keyboard) | Differentiator polish after core loop | — Pending (Phase 5) |
-| No DEMO badge UI | Product owner preference; avoid badge chrome | — Pending |
+| No DEMO badge UI | Product owner preference; avoid badge chrome | ✓ Confirmed Phase 4 QA — no DEMO badge |
 | Single game page only | Ship Crash first; lobby/multi-game later | — Pending |
-| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 2 complete; Phase 3 next |
+| Vertical MVP phases | Playable slices: logic → HUD → Pixi → mobile → polish | ✓ Phase 4 complete; Phase 5 polish next |
 
 ## Evolution
 
@@ -96,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-26 after Phase 2*
+*Last updated: 2026-09-27 after Phase 4*

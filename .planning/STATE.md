@@ -20,10 +20,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-09-26 after Phase 1)
+See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 04 — Mobile Harden
+**Current focus:** Phase 05 — Polish
 
 ## Current Position
 
@@ -135,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-27T12:33:22.160Z
+Last session: 2026-09-27T15:41:00Z
 Stopped at: Phase 04 complete, ready to plan Phase 5
 Resume file: None
