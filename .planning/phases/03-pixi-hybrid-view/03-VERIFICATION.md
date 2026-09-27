@@ -40,7 +40,7 @@ covered_files:
   - tests/walkingSkeleton.test.ts
   - tests/roundCadence.test.ts
 
-covered_digest: "v1:sha256:60c5b396fc9ba0889bfe0d30df29d79268d48c6c8b3b2aa7a268221a55f577f3"
+covered_digest: "v1:sha256:ae164e9b418055ac3138b12451b1d2e1526e756432e41261433c9ed0b4d47531"
 behavior_unverified: 0
 overrides_applied: 0
 behavior_unverified_items:
