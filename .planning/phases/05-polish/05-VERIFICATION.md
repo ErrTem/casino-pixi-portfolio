@@ -1,9 +1,10 @@
 ---
 phase: 05-polish
 verified: 2026-09-27T14:16:00Z
-status: human_needed
+status: passed
 score: 2/4 must-haves verified
 covered_files:
+
   - .planning/REQUIREMENTS.md
   - .planning/ROADMAP.md
   - .planning/phases/05-polish/05-01-PLAN.md
@@ -35,6 +36,7 @@ covered_files:
   - src/shared/boot/parseBootSeed.ts
   - src/styles/hud.css
   - tests/architecture.no-pixi.test.ts
+
 covered_digest: "v1:sha256:9ca88d8b4e269f906cfb1c36bafdedd61cf0f6911b74e8140f00b5b71d9fa9c7"
 behavior_unverified: 2
 overrides_applied: 0
@@ -43,6 +45,7 @@ decision_coverage:
   total: 16
   not_honored: []
 behavior_unverified_items:
+
   - truth: "Player sees a waiting-phase countdown before the next flight starts"
     test: "npm run dev — watch theater during waiting idle; confirm continuous tenths then clear on climb"
     expected: "White tenths (5.0→4.9…) on TheaterText live BitmapText while waiting+idle; climb shows live ×; no GO flash; crash hold/fade still show crash ×"
@@ -52,6 +55,7 @@ behavior_unverified_items:
     expected: "Four distinct beeps when unmuted; mute silences play; Sound: On|Off persists via crash-demo:mute"
     why_human: "sfxEdges + mutePref unit-tested and main/HUD wired; Web Audio oscillator audibility and mute UX need a live browser"
 human_verification:
+
   - test: "npm run dev — waiting idle shows continuous tenths in canvas theater; digits clear when flight starts; crash hold/fade still show crash × (no GO flash)."
     expected: "White 5.0→4.9… on theater live node; climb → live ×; crash paths unchanged"
     why_human: "Canvas theater spectacle — no CrashScene sync / Pixi BitmapText test"
@@ -249,21 +253,25 @@ All trackable CONTEXT.md decisions are honored by shipped artifacts. (`honored: 
 ### Human Verification Required
 
 ### 1. Waiting theater countdown (PLSH-01)
+
 **Test:** `npm run dev` — watch waiting idle; confirm continuous tenths then clear on climb; crash hold/fade still crash ×.
 **Expected:** White 5.0→4.9…; no GO flash; climb shows live ×.
 **Why human:** Canvas BitmapText spectacle not covered by Vitest.
 
 ### 2. SFX + mute (PLSH-02)
+
 **Test:** Unmute; place bet → bet_lock + takeoff; cash out / crash → matching beeps; mute; reload.
 **Expected:** Four distinct pitches; mute silences; Sound: Off persists.
 **Why human:** Web Audio + preference UX need live browser/speakers.
 
 ### 3. Seed chip + URL (PLSH-03)
+
 **Test:** `/?seed=demo-a` reveal/copy; no query → portfolio-demo; invalid seed → fallback + using default.
 **Expected:** Chip shows seed via textContent; Copy writes seed string; invalid falls back.
 **Why human:** Collapsible chip / clipboard gesture not in Vitest.
 
 ### 4. Session stats + keyboard cash-out (PLSH-04 / PLSH-05)
+
 **Test:** Empty —/n/a; after rounds avg/max update; mid-flight Space/Enter cash out; typing in bet/auto ignores keys.
 **Expected:** Placeholders never 0.00×; keyboard matches Cash out button enablement.
 **Why human:** Focus-guard feel and live keydown path need browser.

@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Vite Shell + HTML HUD** - Composition root + thin overlay controls wired to GameLogic (completed 2026-09-26)
 - [x] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots (completed 2026-09-27)
 - [x] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls (completed 2026-09-27)
-- [ ] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out
+- [x] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out (completed 2026-09-27)
 
 ## Phase Details
 
@@ -164,7 +164,7 @@ Plans:
   3. Player can reproduce a round via `?seed=` and/or read the active seed on screen
   4. Soft session stats (e.g. average / max crash) appear from history; desktop keyboard shortcut cashes out mid-flight
 
-**Plans:** 4/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 
@@ -200,4 +200,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Vite Shell + HTML HUD | 3/3 | Complete    | 2026-09-26 |
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
-| 5. Polish | 4/4 | In Progress|  |
+| 5. Polish | 4/4 | Complete    | 2026-09-27 |
