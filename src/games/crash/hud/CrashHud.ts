@@ -7,6 +7,15 @@ import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
 import { renderHistoryStrip } from "./historyStrip.js";
 import { mountSeedChip } from "./seedChip.js";
+import { sessionStatsFrom } from "./sessionStats.js";
+
+/** True when focus is in an editable control — keyboard cash-out must no-op (D-15). */
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+}
 
 export interface CrashHud {
   render(snap: CrashSnapshot): void;
@@ -56,6 +65,8 @@ export function mountCrashHud(
   const chipsHost = root.querySelector("[data-field=chips]");
   const historyHost = root.querySelector("[data-field=history]");
   const seedChipHost = root.querySelector("[data-field=seed-chip]");
+  const statAvgEl = root.querySelector("[data-field=stat-avg]");
+  const statMaxEl = root.querySelector("[data-field=stat-max]");
 
   if (
     !betInput ||
@@ -70,7 +81,9 @@ export function mountCrashHud(
     !liveMultEl ||
     !leftZone ||
     !chipsHost ||
-    !historyHost
+    !historyHost ||
+    !statAvgEl ||
+    !statMaxEl
   ) {
     throw new Error("CrashHud: required #hud-bar fields missing");
   }
@@ -104,8 +117,11 @@ export function mountCrashHud(
   const balanceZone = leftZone;
   const chips = chipsHost;
   const history = historyHost;
+  const statAvg = statAvgEl;
+  const statMax = statMaxEl;
 
   let lastPlaceReason: string | null = null;
+  let lastSnap: CrashSnapshot | null = null;
 
   function syncMuteLabel(): void {
     if (!mute || !audio) return;
@@ -192,7 +208,20 @@ export function mountCrashHud(
   bet.addEventListener("input", syncChipSelection);
   syncChipSelection();
 
+  // Space/Enter → same requestCashOut as button; ignore while typing (D-15 / PLSH-05).
+  // Window listener is fine for this SPA demo (no HUD dispose / HMR teardown yet).
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.key !== " " && e.key !== "Enter") return;
+    if (e.repeat) return;
+    if (isEditableTarget(e.target)) return;
+    if (!lastSnap || !enablementFrom(lastSnap).canCashOut) return;
+    e.preventDefault();
+    audio?.unlock();
+    game.requestCashOut();
+  });
+
   function render(snap: CrashSnapshot): void {
+    lastSnap = snap;
     balance.textContent = formatMoney(snap.balance);
     phase.textContent = snap.phase;
     liveMult.textContent = formatMult(snap.multiplier);
@@ -220,6 +249,11 @@ export function mountCrashHud(
 
     // History from snapshot only — never push from button handlers (WALT-05).
     renderHistoryStrip(history, snap.history);
+
+    // Soft avg/max near strip — textContent only (PLSH-04 / D-13 / D-16).
+    const stats = sessionStatsFrom(snap.history);
+    statAvg.textContent = stats.avgLabel;
+    statMax.textContent = stats.maxLabel;
 
     const emphasizeBroke = en.showBroke || lastPlaceReason === "broke";
     balanceZone.classList.toggle("hud-zone--broke", emphasizeBroke);
