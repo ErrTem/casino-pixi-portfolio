@@ -131,7 +131,7 @@ Each task was committed atomically:
 3. **Task 2: createBeepAudioPort oscillator adapter** - `28e0f5b` (feat)
 4. **Task 3: HUD mute + bet_lock + ticker SFX edges** - `6e2dd73` (feat)
 
-**Plan metadata:** (docs commit follows)
+**Plan metadata:** `61f5e50` (docs: complete plan), `ea88bd7` (docs: STATE/ROADMAP)
 
 ## Files Created/Modified
 

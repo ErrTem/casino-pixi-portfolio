@@ -179,7 +179,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-02: AudioPort + SFX placeholders + mute toggle
+- [x] 05-02: AudioPort + SFX placeholders + mute toggle
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
