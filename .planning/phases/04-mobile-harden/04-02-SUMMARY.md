@@ -129,7 +129,7 @@ Each task was committed atomically:
 3. **Task 2: Promote Cash out CSS, tap targets, safe-area, CrashHud toggle** - `b9a4fd9` (feat)
 4. **Task 3: Harden mountCrashView orientation and visualViewport resize** - `a184cf8` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `c2bd91e` (docs: complete plan)
 
 _Note: TDD Task 1 used test → feat commit sequence_
 
