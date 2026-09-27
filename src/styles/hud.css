@@ -52,7 +52,10 @@ body {
   grid-template-columns: 1fr 2fr 1fr;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding-top: 0.75rem;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   background: #121820;
   border-top: 1px solid #2a3542;
   position: relative;
@@ -93,6 +96,8 @@ body {
   padding: 0.3rem 0.5rem;
   font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
+  touch-action: manipulation;
+  min-height: 2.75rem;
 }
 
 .hud-bar .chip--selected:not(:disabled) {
@@ -180,6 +185,8 @@ body {
   border-radius: 4px;
   background: #0f1419;
   color: inherit;
+  touch-action: manipulation;
+  min-height: 2.75rem;
 }
 
 .hud-bar button {
@@ -189,6 +196,24 @@ body {
   background: #243040;
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
+  min-height: 2.75rem;
+}
+
+/* D-05–D-08: phase-promoted Cash out — not keyed off :disabled */
+.hud-bar--promote-cashout [data-action="cash-out"] {
+  display: block;
+  width: 100%;
+  min-height: 2.875rem;
+  font-weight: 600;
+}
+
+.hud-bar--promote-cashout [data-action="place-bet"],
+.hud-bar--promote-cashout .chip,
+.hud-bar--promote-cashout [data-field="bet-input"],
+.hud-bar--promote-cashout [data-field="auto-co"] {
+  min-height: 2rem;
+  font-size: 0.8125rem;
 }
 
 .hud-bar button:disabled {
@@ -221,5 +246,9 @@ body {
   .hud-zone--right {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .hud-bar .chip {
+    min-width: 2.75rem;
   }
 }

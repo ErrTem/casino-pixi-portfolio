@@ -1,4 +1,5 @@
 import type { CrashGame, CrashSnapshot } from "../logic/index.js";
+import { chromeModeFrom } from "./chromeMode.js";
 import { PRESET_CHIPS } from "./chips.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
@@ -150,6 +151,11 @@ export function mountCrashHud(root: Element, game: CrashGame): CrashHud {
     for (const btn of chipButtons) {
       btn.disabled = !en.chipsEnabled;
     }
+    // D-05–D-08: promote from phase, not canCashOut (disabled Cash out stays full-width).
+    root.classList.toggle(
+      "hud-bar--promote-cashout",
+      chromeModeFrom(snap.phase) === "promote-cashout",
+    );
     syncChipSelection();
 
     // History from snapshot only — never push from button handlers (WALT-05).
