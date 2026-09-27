@@ -4,10 +4,10 @@ current_phase: 04
 current_phase_name: Mobile Harden
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-09-27T12:16:15.051Z"
+last_updated: "2026-09-27T12:16:31.151Z"
 last_activity: 2026-09-27
 last_activity_desc: Phase 04 execution started
-state_head: a4d03eb3213846a9ef75e2cfd95b3ede66216959
+state_head: 43b47fd71468210a751bc86c343bf192bc253628
 progress:
   total_phases: 5
   completed_phases: 3
@@ -110,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Streak dots live in rocket local -X so parent tangent rotation carries them — Keeps pathTangentRadians on parent only; streak does not need world-space offsets
 - [Phase 03]: Flash is alpha on full-canvas Graphics; stage.x/stage.y never written — D-10 and T-03-09: flash must not move HUD hit targets
 - [Phase 03]: Backdrop rebuilds only on screen size change via rebuildIfNeeded — Avoid clear() retessellation every sync frame per RESEARCH Pattern 4
+- [Phase 04]: 15.5rem fixed bar height inside max-width 720px only (D-02/D-04); desktop stays content-sized — Same rem budget in portrait and landscape when width is =720px; desktop three-column may stay auto-height
+- [Phase 04]: touch-action pan-x on .history-strip so horizontal swipe coexists with bar vertical scroll — Plan discretionary; display-only history stays; no tap handlers
 
 ### Pending Todos
 
