@@ -119,7 +119,7 @@ Recent decisions affecting current work:
 - [Phase 04]: dispose() returned from mountCrashView removes resize listeners before HMR app.destroy — Prefer mount-owned cleanup over main-only listeners
 - [Phase 04]: Waiting defaults min-height 2.75rem; promoted Cash out 2.875rem full-width; de-emphasized controls stay visible at 2rem — D-05–D-07 tap contract
 - [Phase 04]: Human approved ARCH-03 mobile QA gate green without --hud-bar-height tweak — blocking-human checkpoint resume signal approved; DevTools/device matrix recorded in 04-03-QA-CHECKLIST.md
-- [Phase 05]: Countdown gated on phase===waiting && mode===idle (RESEARCH A1) — Avoids tenths flashing over red crash � during hold/fade while logic already returned to waiting
+- [Phase 05]: Countdown gated on phase===waiting && mode===idle (RESEARCH A1) — Avoids tenths flashing over red crash × during hold/fade while logic already returned to waiting
 - [Phase 05]: Reuse existing TheaterText live BitmapText for countdown — D-01/D-04; no third text node; BitmapText for per-frame tenths
 
 ### Pending Todos
