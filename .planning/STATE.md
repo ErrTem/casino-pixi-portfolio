@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: enhance and rework UI/buttons/behavior
 status: executing
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-09-29T16:03:06.585Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-09-29T16:07:27.692Z"
 last_activity: 2026-09-29
 last_activity_desc: Phase 06 execution started
-state_head: 128352e715032a563f59c0393edcda4f578e9456
+state_head: 598d73ab5118d40714227257ae4f856260247d7e
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 22
-  completed_plans: 20
+  completed_plans: 21
   percent: 83
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 ## Current Position
 
 Phase: 06 (enhance and rework UI/buttons/behavior) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-09-29 — Phase 06 execution started
 Progress: [████████░░] 83%
@@ -82,6 +82,7 @@ Progress: [████████░░] 83%
 | Phase 05 P04 | 3min | 2 tasks | 5 files |
 | Phase 06 P01 | 7 min | 3 tasks | 11 files |
 | Phase 06 P02 | 4 min | 3 tasks | 4 files |
+| Phase 06 P03 | 2 min | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -139,6 +140,8 @@ Recent decisions affecting current work:
 - Phase 6 planned: 06-01 tracer shell/primary → 06-02 Auto bet (checkpoint D-10) ∥ 06-03 growthRate → 06-04 camera + PLSH-03Δ
 - [Phase 06]: D-10 confirmed option-auto-bet-on-waiting — Auto bet places at each waiting start (D-10..D-13) — Human checkpoint Select: option-auto-bet-on-waiting; one-way product door before waiting-edge placeBet wiring
 - [Phase 06]: Composition-root single Auto bet placeBet site; HUD owns flag + getStake + stopAutoBet — RESEARCH Pattern 3 preference; mirrors sfxEdges; avoids double placeBet from HUD render
+- [Phase 06]: growthRatePerMs = Math.LN2 / 3750 mid-band of D-14 3.5-4s (RESEARCH Q1) — FEEL-01 single-knob climb retune; QA may nudge 3500-4000 without reopening D-14
+- [Phase 06]: D-15: houseEdge/crashFloor/crashCap/CrashRng untouched — only growth rate — Crash distribution unchanged; only climb pace retuned
 
 ### Pending Todos
 
@@ -161,7 +164,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-29T16:02:51.661Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-09-29T16:07:27.618Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
 Next: `/gsd-execute-phase 6` (D-10 checkpoint in 06-02 before Auto bet wire)
