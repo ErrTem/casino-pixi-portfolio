@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: enhance and rework UI/buttons/behavior
-status: executing
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-09-29T16:07:27.692Z"
+status: verifying
+stopped_at: Completed 06-04-PLAN.md
+last_updated: "2026-09-29T16:15:04.539Z"
 last_activity: 2026-09-29
 last_activity_desc: Phase 06 execution started
-state_head: 598d73ab5118d40714227257ae4f856260247d7e
+state_head: 49a10fe47dd83b3605f244ee6f0ccadf6ff9656a
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 22
-  completed_plans: 21
+  completed_plans: 22
   percent: 83
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 
 Phase: 06 (enhance and rework UI/buttons/behavior) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-09-29 — Phase 06 execution started
 Progress: [████████░░] 83%
 
@@ -83,6 +83,7 @@ Progress: [████████░░] 83%
 | Phase 06 P01 | 7 min | 3 tasks | 11 files |
 | Phase 06 P02 | 4 min | 3 tasks | 4 files |
 | Phase 06 P03 | 2 min | 1 tasks | 3 files |
+| Phase 06 P04 | 5 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -142,6 +143,9 @@ Recent decisions affecting current work:
 - [Phase 06]: Composition-root single Auto bet placeBet site; HUD owns flag + getStake + stopAutoBet — RESEARCH Pattern 3 preference; mirrors sfxEdges; avoids double placeBet from HUD render
 - [Phase 06]: growthRatePerMs = Math.LN2 / 3750 mid-band of D-14 3.5-4s (RESEARCH Q1) — FEEL-01 single-knob climb retune; QA may nudge 3500-4000 without reopening D-14
 - [Phase 06]: D-15: houseEdge/crashFloor/crashCap/CrashRng untouched — only growth rate — Crash distribution unchanged; only climb pace retuned
+- [Phase 06]: Arcade camera via world Container only (never stage.x/y); freeze on crash — D-17/D-19 FEEL-02 Pattern 5
+- [Phase 06]: Soft path blend 0.55 + headroom 1.1; gentle tilt clamp ±15° — D-16/D-18 RESEARCH discretionary
+- [Phase 06]: Seed chip removed; silent ?seed= boot only (PLSH-03Δ) — D-21..D-24
 
 ### Pending Todos
 
@@ -164,7 +168,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-29T16:07:27.618Z
-Stopped at: Completed 06-03-PLAN.md
+Last session: 2026-09-29T16:15:03.047Z
+Stopped at: Completed 06-04-PLAN.md
 Resume file: None
 Next: `/gsd-execute-phase 6` (D-10 checkpoint in 06-02 before Auto bet wire)

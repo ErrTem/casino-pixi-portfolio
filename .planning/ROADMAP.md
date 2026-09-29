@@ -206,7 +206,7 @@ Plans:
   5. Craft stays near center with scrolling trail + gentle tilt; crash FX unchanged (D-17–D-19)
   6. Seed chip gone; `?seed=` still boots quietly (D-21–D-24); Phase 5 polish (countdown, mute, stats, keyboard) still works
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 
@@ -221,7 +221,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2)*
 
-- [ ] 06-04-PLAN.md — Arcade camera + soft path + gentle tilt; Seed chip removal + PLSH-03Δ docs (D-16..D-24)
+- [x] 06-04-PLAN.md — Arcade camera + soft path + gentle tilt; Seed chip removal + PLSH-03Δ docs (D-16..D-24)
 
 ## Progress
 
@@ -235,4 +235,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
 | 5. Polish | 4/4 | Complete    | 2026-09-27 |
-| 6. enhance and rework UI/buttons/behavior | 3/4 | In Progress|  |
+| 6. enhance and rework UI/buttons/behavior | 4/4 | In Progress|  |
