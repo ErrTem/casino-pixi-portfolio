@@ -27,10 +27,15 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 export interface CrashHud {
   render(snap: CrashSnapshot): void;
-  /** Session Auto bet flag (06-02 will wire waiting-edge place). */
+  /** Session Auto bet flag (D-10). */
   isAutoBetOn(): boolean;
-  /** Current stake from bet input (display units). */
+  /** Current stake from bet input (display units) — next auto-place (D-13). */
   getStake(): number;
+  /**
+   * Clear Auto bet on broke / insufficient_balance (D-12).
+   * Syncs toggle UI and emphasizes Reset — never calls resetWallet.
+   */
+  stopAutoBet(reason: string): void;
 }
 
 export interface MountCrashHudOptions {
@@ -268,8 +273,16 @@ export function mountCrashHud(
   if (autoBetToggle) {
     autoBetToggle.addEventListener("change", () => {
       autoBetOn = autoBetToggle.checked;
-      // 06-02 owns waiting-edge placeBet — toggle is session UI only here.
     });
+  }
+
+  function stopAutoBet(reason: string): void {
+    autoBetOn = false;
+    if (autoBetToggle) autoBetToggle.checked = false;
+    lastPlaceReason = reason;
+    status.textContent = reason;
+    shell.classList.toggle("hud-zone--broke", true);
+    reset.classList.toggle("reset-demo--emphasize", true);
   }
 
   function nudgeStake(delta: number): void {
@@ -375,5 +388,6 @@ export function mountCrashHud(
       const n = Number(bet.value);
       return Number.isFinite(n) ? n : DISPLAY_MIN;
     },
+    stopAutoBet,
   };
 }
