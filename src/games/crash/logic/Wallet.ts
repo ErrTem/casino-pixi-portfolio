@@ -46,6 +46,11 @@ export class Wallet {
     this.balanceCents += Math.floor(amountCents);
   }
 
+  /** Refund a previously locked stake (cancel bet while waiting). */
+  refund(amountCents: Cents): void {
+    this.credit(amountCents);
+  }
+
   /** Restore starting demo balance (D-04). */
   reset(): void {
     this.balanceCents = CRASH_CONFIG.startingBalanceCents;

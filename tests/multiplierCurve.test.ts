@@ -6,17 +6,18 @@ import {
 import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
 import { multiplierAt } from "../src/games/crash/logic/MultiplierCurve.js";
 
-describe("multiplierCurve — PLAY-02 / D-09..D-12 / FEEL-01", () => {
+describe("multiplierCurve — PLAY-02 / climb pace", () => {
   const r = CRASH_CONFIG.growthRatePerMs;
+  const twoXMs = 8000;
 
-  it("equals 1.00 at 0ms and 2.00 near 3750ms (D-14 / FEEL-01)", () => {
+  it("equals 1.00 at 0ms and 2.00 near 8000ms", () => {
     expect(multiplierAt(0, r)).toBe(1.0);
-    expect(multiplierAt(3750, Math.LN2 / 3750)).toBe(2.0);
-    expect(r).toBe(Math.LN2 / 3750);
+    expect(multiplierAt(twoXMs, Math.LN2 / twoXMs)).toBe(2.0);
+    expect(r).toBe(Math.LN2 / twoXMs);
   });
 
   it("rises monotonically with elapsedMs", () => {
-    const samples = [0, 100, 500, 1000, 3750, 5000].map((t) =>
+    const samples = [0, 100, 500, 1000, twoXMs, 10_000].map((t) =>
       multiplierAt(t, r),
     );
     for (let i = 1; i < samples.length; i++) {
@@ -24,20 +25,20 @@ describe("multiplierCurve — PLAY-02 / D-09..D-12 / FEEL-01", () => {
     }
   });
 
-  it("uses smooth exponential e^(r·t), not linear (D-10)", () => {
-    const t = 1875;
+  it("uses smooth exponential e^(r·t), not linear", () => {
+    const t = twoXMs / 2;
     const expected = fromMultHundredths(
       toMultHundredths(Math.exp(r * t)),
     );
     const linear = fromMultHundredths(
-      toMultHundredths(1 + (2 - 1) * (t / 3750)),
+      toMultHundredths(1 + (2 - 1) * (t / twoXMs)),
     );
     const actual = multiplierAt(t, r);
     expect(actual).toBe(expected);
     expect(actual).not.toBe(linear);
   });
 
-  it("rounds via hundredths path (D-11)", () => {
+  it("rounds via hundredths path", () => {
     const raw = Math.exp(r * 100);
     const rounded = fromMultHundredths(toMultHundredths(raw));
     expect(multiplierAt(100, r)).toBe(rounded);
@@ -46,9 +47,9 @@ describe("multiplierCurve — PLAY-02 / D-09..D-12 / FEEL-01", () => {
     );
   });
 
-  it("growthRatePerMs is the named CRASH_CONFIG constant (D-12 / D-14)", () => {
+  it("growthRatePerMs is the named CRASH_CONFIG constant", () => {
     expect(CRASH_CONFIG).toHaveProperty("growthRatePerMs");
     expect(typeof CRASH_CONFIG.growthRatePerMs).toBe("number");
-    expect(multiplierAt(3750)).toBe(2.0);
+    expect(multiplierAt(twoXMs)).toBe(2.0);
   });
 });

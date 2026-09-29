@@ -43,7 +43,7 @@ describe("viewMode — idle / climb / hold / fade", () => {
     expect(s.trailAlpha).toBe(1);
   });
 
-  it("1000ms of deltaMS enters crash_fade; 400ms more enters idle and clears latchedCashOut", () => {
+  it("3000ms of deltaMS enters crash_fade; 400ms more enters idle and clears latchedCashOut", () => {
     let s = createInitialViewMode();
     s = reduceViewMode(s, snap({ phase: "flying", multiplier: 2 }), 16);
     s = reduceViewMode(
@@ -63,7 +63,7 @@ describe("viewMode — idle / climb / hold / fade", () => {
     s = reduceViewMode(
       s,
       snap({ phase: "waiting", history: [3] }),
-      1000,
+      3000,
     );
     expect(s.mode).toBe("crash_fade");
     expect(s.latchedCashOut).toBe(1.75);

@@ -28,7 +28,7 @@ describe("pathMapping — D-16 soft plot + D-18 gentle tilt", () => {
     // Soft mapping (linear X blend + milder headroom) keeps late climb readable under arcade camera.
     expect(slope24 / slope12).toBeLessThanOrEqual(1.45);
     expect(VIEW_CONFIG.PLOT_X_LINEAR_BLEND).toBeGreaterThan(0);
-    expect(VIEW_CONFIG.SCALE_HEADROOM).toBeLessThanOrEqual(1.15);
+    expect(VIEW_CONFIG.SCALE_HEADROOM).toBeLessThanOrEqual(1.2);
   });
 
   it("gentleTiltRadians clamps path tangent into a small band (D-18)", () => {

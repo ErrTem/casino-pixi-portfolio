@@ -2,7 +2,7 @@ import type { CrashSnapshot } from "../logic/index.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney } from "./format.js";
 
-export type PrimaryChromeKind = "bet" | "cash_out" | "cashed_out";
+export type PrimaryChromeKind = "bet" | "cancel" | "cash_out" | "cashed_out";
 
 export interface PrimaryChrome {
   kind: PrimaryChromeKind;
@@ -12,8 +12,9 @@ export interface PrimaryChrome {
 }
 
 /**
- * Dual-line primary CTA chrome from snapshot + stake display (D-06..D-09).
- * Pure: no DOM, no pixi. Win while flying = bet × multiplier; cashed_out freezes cashOutAt.
+ * Dual-line primary CTA chrome from snapshot + stake display.
+ * waiting+no bet → BET (green); waiting+bet → CANCEL (red);
+ * flying+bet → CASH OUT (orange); cashed_out → frozen disabled.
  */
 export function primaryChromeFrom(
   snap: CrashSnapshot,
@@ -39,7 +40,16 @@ export function primaryChromeFrom(
     };
   }
 
-  // waiting, crashed→waiting snap, flying spectator: BET chrome (no fake CASH OUT win)
+  if (snap.phase === "waiting" && snap.bet != null) {
+    return {
+      kind: "cancel",
+      label: "CANCEL",
+      amountLine: formatMoney(snap.bet),
+      enabled: en.canCancelBet,
+    };
+  }
+
+  // waiting no bet / flying spectator / crash snap → BET
   return {
     kind: "bet",
     label: "BET",

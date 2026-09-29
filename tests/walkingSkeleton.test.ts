@@ -50,7 +50,9 @@ describe("walking skeleton — createGame → placeBet → wait → fly → sett
     }
     const settled = game.getSnapshot();
     expect(settled.phase).toBe("waiting");
-    expect(settled.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(settled.waitRemainingMs).toBe(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
     expect(settled.history.length).toBe(1);
     expect(settled.history[0]).toBe(crashAt);
     expect(settled.balance).toBeGreaterThan(4900);
@@ -59,7 +61,9 @@ describe("walking skeleton — createGame → placeBet → wait → fly → sett
     const historyAfterWin = settled.history.length;
 
     // Spectator round: no bet → balance unchanged after crash
-    game.tick(5000);
+    game.tick(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
     expect(game.getSnapshot().phase).toBe("flying");
     const spectatorCrashAt = game.getSnapshot().crashAt!;
 

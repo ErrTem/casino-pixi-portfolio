@@ -25,6 +25,7 @@ describe("enablementFrom — waiting/flying/broke matrix", () => {
   it("waiting + no bet + solvent → canPlaceBet / canEditBet / chipsEnabled", () => {
     const en = enablementFrom(snap({ phase: "waiting", bet: null, balance: 5000 }));
     expect(en.canPlaceBet).toBe(true);
+    expect(en.canCancelBet).toBe(false);
     expect(en.canEditBet).toBe(true);
     expect(en.chipsEnabled).toBe(true);
     expect(en.canCashOut).toBe(false);
@@ -32,9 +33,10 @@ describe("enablementFrom — waiting/flying/broke matrix", () => {
     expect(en.showBroke).toBe(false);
   });
 
-  it("waiting + locked bet → place/edit/chips off, cash-out off", () => {
+  it("waiting + locked bet → canCancelBet, place/edit/chips off", () => {
     const en = enablementFrom(snap({ phase: "waiting", bet: 100 }));
     expect(en.canPlaceBet).toBe(false);
+    expect(en.canCancelBet).toBe(true);
     expect(en.canEditBet).toBe(false);
     expect(en.chipsEnabled).toBe(false);
     expect(en.canCashOut).toBe(false);

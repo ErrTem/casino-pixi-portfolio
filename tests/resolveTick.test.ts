@@ -23,8 +23,8 @@ function flyingState(overrides: Partial<RoundState> = {}): RoundState {
   return {
     phase: "flying",
     waitRemainingMs: 0,
-    // +100ms tick → 3750ms → 2.00 under growthRatePerMs = LN2/3750 (Phase 6 D-14)
-    elapsedMs: 3650,
+    // +100ms tick → 8000ms → 2.00 under growthRatePerMs = LN2/8000
+    elapsedMs: 7900,
     multiplier: 1.96,
     crashAt: 10,
     roundId: 1,
@@ -77,7 +77,9 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
 
     const afterCrash = tickUntilWaiting(state, deps);
     expect(afterCrash.phase).toBe("waiting");
-    expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(afterCrash.waitRemainingMs).toBe(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
     expect(afterCrash.cashOutAt).toBeNull();
     expect(deps.history.toArray()).toEqual([10]);
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
@@ -178,7 +180,9 @@ describe("resolveTick — auto cash-out (WALT-04)", () => {
 
     const afterCrash = tickUntilWaiting(state, deps);
     expect(afterCrash.phase).toBe("waiting");
-    expect(afterCrash.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(afterCrash.waitRemainingMs).toBe(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
     expect(afterCrash.cashOutAt).toBeNull();
     expect(deps.history.toArray()).toEqual([10]);
   });

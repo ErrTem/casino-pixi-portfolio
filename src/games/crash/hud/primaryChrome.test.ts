@@ -19,7 +19,7 @@ function snap(partial: Partial<CrashSnapshot>): CrashSnapshot {
   };
 }
 
-describe("primaryChromeFrom (D-06..D-09)", () => {
+describe("primaryChromeFrom", () => {
   it("waiting → BET + stake amount, enabled when can place", () => {
     const chrome = primaryChromeFrom(snap({ phase: "waiting", bet: null, balance: 5000 }), 100);
     expect(chrome.kind).toBe("bet");
@@ -34,6 +34,17 @@ describe("primaryChromeFrom (D-06..D-09)", () => {
     expect(chrome.label).toBe("BET");
     expect(chrome.amountLine).toBe(formatMoney(100));
     expect(chrome.enabled).toBe(false);
+  });
+
+  it("waiting + locked bet → CANCEL + stake, enabled", () => {
+    const chrome = primaryChromeFrom(
+      snap({ phase: "waiting", bet: 100, balance: 4900 }),
+      50,
+    );
+    expect(chrome.kind).toBe("cancel");
+    expect(chrome.label).toBe("CANCEL");
+    expect(chrome.amountLine).toBe(formatMoney(100));
+    expect(chrome.enabled).toBe(true);
   });
 
   it("flying + bet → CASH OUT + live win money", () => {
@@ -63,7 +74,7 @@ describe("primaryChromeFrom (D-06..D-09)", () => {
     expect(chrome.enabled).toBe(false);
   });
 
-  it("flying spectator (bet null) → disabled, no fake live win", () => {
+  it("flying spectator (bet null) → disabled BET, no fake live win", () => {
     const chrome = primaryChromeFrom(
       snap({ phase: "flying", bet: null, multiplier: 4 }),
       100,
@@ -71,12 +82,5 @@ describe("primaryChromeFrom (D-06..D-09)", () => {
     expect(chrome.enabled).toBe(false);
     expect(chrome.label).not.toBe("CASH OUT");
     expect(chrome.amountLine).not.toBe(formatMoney(100 * 4));
-  });
-
-  it("no CRASHED kind — crashed phase snaps to BET chrome", () => {
-    const chrome = primaryChromeFrom(snap({ phase: "crashed", bet: null }), 50);
-    expect(chrome.kind).not.toBe("crashed");
-    expect(chrome.label).toBe("BET");
-    expect(chrome.amountLine).toBe(formatMoney(50));
   });
 });

@@ -228,6 +228,15 @@ export function mountCrashHud(
     const en = enablementFrom(lastSnap);
     if (en.canPlaceBet) {
       tryPlaceBet();
+    } else if (en.canCancelBet) {
+      const result = game.cancelBet();
+      if (!result.ok) {
+        lastPlaceReason = result.reason;
+        status.textContent = result.reason;
+      } else {
+        lastPlaceReason = null;
+        status.textContent = "";
+      }
     } else if (en.canCashOut) {
       audio?.unlock();
       game.requestCashOut();
@@ -333,6 +342,13 @@ export function mountCrashHud(
     primaryLabel.textContent = chrome.label;
     primaryAmount.textContent = chrome.amountLine;
     primary.disabled = !chrome.enabled;
+    primary.classList.toggle("primary-cta--bet", chrome.kind === "bet");
+    primary.classList.toggle("primary-cta--cancel", chrome.kind === "cancel");
+    primary.classList.toggle("primary-cta--cash-out", chrome.kind === "cash_out");
+    primary.classList.toggle(
+      "primary-cta--cashed-out",
+      chrome.kind === "cashed_out",
+    );
 
     // Sync Auto CO field from snapshot when toggle ON and field not focused.
     if (autoToggle.checked && document.activeElement !== auto) {

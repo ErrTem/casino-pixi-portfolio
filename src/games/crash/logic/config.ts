@@ -4,10 +4,12 @@ export const CRASH_CONFIG = {
   minBetCents: 1_000, // 10.00
   maxBetCents: 100_000, // 1000.00
   waitDurationMs: 5_000,
+  /** Pad wait after crash so view can show Crashed × for this long before the 5s countdown. */
+  crashDisplayMs: 3_000,
   houseEdge: 0.04, // ~4% within D-08 3–5%
   crashFloor: 1.01, // D-06
   crashCap: 100, // D-07
-  growthRatePerMs: Math.LN2 / 3750, // ~2× @ 3.75s (Phase 6 D-14 / FEEL-01)
+  growthRatePerMs: Math.LN2 / 8000, // ~2× @ 8s
   multDecimals: 2,
   historySize: 20,
   maxDeltaMs: 100,

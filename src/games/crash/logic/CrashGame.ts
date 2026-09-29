@@ -7,6 +7,7 @@ import { CRASH_CONFIG } from "./config.js";
 import { History } from "./History.js";
 import {
   attachBet,
+  clearLockedBet,
   markCashOutRequested,
   resolveTick,
   setAutoCashOutTarget,
@@ -30,6 +31,8 @@ export interface CrashGame {
    * Converted to integer cents internally.
    */
   placeBet(amountDisplay: number): PlaceBetResult;
+  /** Cancel a locked waiting bet and refund stake. */
+  cancelBet(): PlaceBetResult;
   requestCashOut(): void;
   setAutoCashOut(target: number | null): void;
   /** Advance simulation by deltaMs (sub-stepped at maxDeltaMs). */
@@ -66,6 +69,18 @@ export function createGame(options: CreateGameOptions): CrashGame {
       const result = wallet.placeBet(amountCents);
       if (!result.ok) return result;
       state = attachBet(state, amountCents);
+      return { ok: true };
+    },
+
+    cancelBet(): PlaceBetResult {
+      if (state.phase !== "waiting") {
+        return { ok: false, reason: "not_waiting" };
+      }
+      if (state.lockedBetCents == null) {
+        return { ok: false, reason: "no_bet" };
+      }
+      wallet.refund(state.lockedBetCents);
+      state = clearLockedBet(state);
       return { ok: true };
     },
 

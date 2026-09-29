@@ -36,10 +36,12 @@ describe("round cadence — PLAY-01 / PLAY-05 / D-13..D-15", () => {
     expect(after.balance).toBe(balanceBefore);
     expect(after.history.length).toBe(1);
     expect(after.history[0]).toBe(crashAt);
-    expect(after.waitRemainingMs).toBe(5000);
+    expect(after.waitRemainingMs).toBe(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
   });
 
-  it("after terminal settle, waiting opens with waitRemainingMs exactly 5000 (PLAY-05 / D-13)", () => {
+  it("after terminal settle, waiting opens with crash-display pad + 5s countdown", () => {
     const game = createGame({ seed: "cadence-return" });
     expect(game.placeBet(25)).toEqual({ ok: true });
     game.tick(CRASH_CONFIG.waitDurationMs);
@@ -57,8 +59,9 @@ describe("round cadence — PLAY-01 / PLAY-05 / D-13..D-15", () => {
     }
     const after = game.getSnapshot();
     expect(after.phase).toBe("waiting");
-    expect(after.waitRemainingMs).toBe(5000);
-    expect(after.waitRemainingMs).toBe(CRASH_CONFIG.waitDurationMs);
+    expect(after.waitRemainingMs).toBe(
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+    );
   });
 
   it("placeBet while flying is rejected (PLAY-01)", () => {
@@ -84,10 +87,25 @@ describe("round cadence — PLAY-01 / PLAY-05 / D-13..D-15", () => {
 
     // via createGame: many spectator rounds truncate to 20
     const game = createGame({ seed: "cadence-history-ring" });
+    const waitToLaunch =
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs;
     for (let r = 0; r < 22; r++) {
-      game.tick(CRASH_CONFIG.waitDurationMs);
+      // First boot wait is waitDurationMs only; after crash the pad applies.
+      const wait =
+        game.getSnapshot().history.length === 0
+          ? CRASH_CONFIG.waitDurationMs
+          : waitToLaunch;
+      game.tick(wait);
       let guard = 0;
       while (game.getSnapshot().phase === "flying" && guard < 300_000) {
+        game.tick(CRASH_CONFIG.maxDeltaMs);
+        guard += CRASH_CONFIG.maxDeltaMs;
+      }
+      // cashed_out shouldn't happen for spectator; tolerate cashed_out→waiting
+      while (
+        game.getSnapshot().phase === "cashed_out" &&
+        guard < 300_000
+      ) {
         game.tick(CRASH_CONFIG.maxDeltaMs);
         guard += CRASH_CONFIG.maxDeltaMs;
       }

@@ -5,6 +5,8 @@ export interface TheaterTextSyncArgs {
   liveText: string;
   liveTint: number;
   liveAlpha: number;
+  /** Optional title under live (e.g. "Crashed"). Hide when null/empty. */
+  titleText?: string | null;
   /** Hide frozen node when null. */
   frozenText: string | null;
 }
@@ -41,8 +43,8 @@ export function theaterTintForMult(m: number): number {
 }
 
 /**
- * Live theater × + frozen cash-out × (D-13, D-14, D-16).
- * Strings come from formatMult assigned to BitmapText.text — never innerHTML.
+ * Live theater × + optional title + frozen cash-out ×.
+ * Strings assigned to BitmapText.text — never innerHTML.
  */
 export function createTheaterText(): TheaterText {
   const container = new Container();
@@ -57,6 +59,17 @@ export function createTheaterText(): TheaterText {
   });
   live.anchor.set(0.5);
 
+  const title = new BitmapText({
+    text: "",
+    style: {
+      fontFamily: "Arial",
+      fontSize: 28,
+      fill: 0xffffff,
+    },
+  });
+  title.anchor.set(0.5);
+  title.visible = false;
+
   const frozen = new BitmapText({
     text: "",
     style: {
@@ -68,13 +81,14 @@ export function createTheaterText(): TheaterText {
   frozen.anchor.set(0.5);
   frozen.visible = false;
 
-  container.addChild(live, frozen);
+  container.addChild(live, title, frozen);
 
   function layout(screenWidth: number, screenHeight: number): void {
     const cx = screenWidth * 0.5;
     const liveY = VIEW_CONFIG.THEATER_Y_RATIO * screenHeight;
     live.position.set(cx, liveY);
-    frozen.position.set(cx, liveY + VIEW_CONFIG.FROZEN_OFFSET_PX);
+    title.position.set(cx, liveY + VIEW_CONFIG.FROZEN_OFFSET_PX);
+    frozen.position.set(cx, liveY + VIEW_CONFIG.FROZEN_OFFSET_PX * 2);
   }
 
   function sync(args: TheaterTextSyncArgs): void {
@@ -82,6 +96,17 @@ export function createTheaterText(): TheaterText {
     live.tint = args.liveTint;
     live.alpha = args.liveAlpha;
     live.visible = args.liveAlpha > 0 && args.liveText.length > 0;
+
+    const titleText = args.titleText ?? null;
+    if (titleText == null || titleText.length === 0) {
+      title.visible = false;
+      title.text = "";
+    } else {
+      title.visible = true;
+      title.text = titleText;
+      title.tint = args.liveTint;
+      title.alpha = args.liveAlpha;
+    }
 
     if (args.frozenText == null) {
       frozen.visible = false;

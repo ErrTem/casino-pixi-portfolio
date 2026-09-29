@@ -3,6 +3,7 @@ import { CRASH_CONFIG } from "../logic/config.js";
 
 export interface HudEnablement {
   canPlaceBet: boolean;
+  canCancelBet: boolean;
   canCashOut: boolean;
   canEditBet: boolean;
   canEditAuto: boolean;
@@ -24,6 +25,7 @@ export function enablementFrom(snap: CrashSnapshot): HudEnablement {
 
   return {
     canPlaceBet: waiting && !hasBet && !broke,
+    canCancelBet: waiting && hasBet,
     canEditBet: waiting && !hasBet && !broke,
     chipsEnabled: waiting && !hasBet && !broke,
     canCashOut: flying && hasBet,

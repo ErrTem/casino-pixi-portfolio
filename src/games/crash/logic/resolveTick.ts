@@ -61,13 +61,19 @@ function startRound(state: RoundState, deps: ResolveDeps): RoundState {
 /** Crash transition: push crashAt once, then waiting. No credit. */
 function crashIntoWaiting(state: RoundState, deps: ResolveDeps, crashAt: number): RoundState {
   deps.history.push(crashAt);
-  return enterWaiting({
+  const waiting = enterWaiting({
     ...state,
     multiplier: crashAt,
     settledRoundId: state.roundId,
     lockedBetCents: null,
     cashOutRequested: false,
   });
+  // Pad wait so the view can hold "Crashed" + × for crashDisplayMs, then a full 5s countdown.
+  return {
+    ...waiting,
+    waitRemainingMs:
+      CRASH_CONFIG.waitDurationMs + CRASH_CONFIG.crashDisplayMs,
+  };
 }
 
 /**
@@ -173,6 +179,12 @@ export function resolveTick(
 /** Lock a stake onto waiting state (wallet already deducted by caller). */
 export function attachBet(state: RoundState, betCents: Cents): RoundState {
   return { ...state, lockedBetCents: betCents };
+}
+
+/** Clear locked stake while waiting (wallet refund is caller's job). */
+export function clearLockedBet(state: RoundState): RoundState {
+  if (state.phase !== "waiting" || state.lockedBetCents == null) return state;
+  return { ...state, lockedBetCents: null };
 }
 
 export function markCashOutRequested(state: RoundState): RoundState {

@@ -57,28 +57,21 @@ function drawFlashRect(g: Graphics, w: number, h: number): void {
 
 /**
  * Stage graph (D-17 / Pattern 5):
- *   backdrop (screen-fixed) → world (curve+ghost+rocket) → theater (upper third) → flash
+ *   backdrop (screen-fixed) → world (curve+rocket) → theater (upper third) → flash
  * Camera offset ONLY via world.position — never app.stage.x/y.
  */
 export function createCrashScene(app: Application): CrashScene {
   const backdrop = createBackdrop(app.screen.width, app.screen.height);
   const curve = createCurveGraph();
-  const ghost = new Graphics();
-  ghost.circle(0, 0, 14).stroke({
-    width: 2,
-    color: 0xffffff,
-    alpha: 0.28,
-  });
-  ghost.visible = false;
   const rocket = createRocket();
   const theater = createTheaterText();
   const flash = new Graphics();
   drawFlashRect(flash, app.screen.width, app.screen.height);
   flash.alpha = 0;
 
-  // World Container camera (D-17): curve + ghost + rocket scroll as a group.
+  // World Container camera (D-17): curve + rocket scroll as a group.
   const world = new Container({ label: "crash-world" });
-  world.addChild(curve.container, ghost, rocket.container);
+  world.addChild(curve.container, rocket.container);
 
   // Theater stays a stage child outside world — upper-third, clear of craft (D-20).
   // Flash screen-fixed. NEVER write app.stage.x / app.stage.y.
@@ -90,18 +83,17 @@ export function createCrashScene(app: Application): CrashScene {
   let lastH = app.screen.height;
   let holdDrawn = false;
   let idleElapsedMs = 0;
-  /** Latched world offset at crash frame (D-19). */
-  let frozenWorld: { x: number; y: number } | null = null;
+  let climbElapsedMs = 0;
+  /** Latched world transform at crash frame (D-19). */
+  let frozenWorld: {
+    x: number;
+    y: number;
+    rotation: number;
+    pivotX: number;
+    pivotY: number;
+  } | null = null;
 
   theater.layout(lastW, lastH);
-
-  function craftLockPoint(): { x: number; y: number } {
-    // Near screen center, slightly below theater upper third (D-17 / D-20).
-    return {
-      x: lastW * 0.5,
-      y: lastH * VIEW_CONFIG.CAMERA_CENTER_Y_RATIO,
-    };
-  }
 
   function ensurePlot(): void {
     const w = app.screen.width;
@@ -119,6 +111,7 @@ export function createCrashScene(app: Application): CrashScene {
 
   function sync(snapshot: CrashSnapshot, deltaMS: number): void {
     ensurePlot();
+    backdrop.tick(deltaMS);
 
     viewMode = reduceViewMode(
       viewMode,
@@ -154,26 +147,51 @@ export function createCrashScene(app: Application): CrashScene {
       holdDrawn = false;
       idleElapsedMs = 0;
       frozenWorld = null;
-      ghost.visible = false;
+      climbElapsedMs += Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       const tip = Math.max(1, snapshot.multiplier);
       const pts = samplePoints(tip, plot);
-      curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
       const scale = plotScaleFor(tip);
+      const origin = plotPoint(1, plot, scale);
       const pos = plotPoint(tip, plot, scale);
-      const lock = craftLockPoint();
-      // Tip in world/plot space → lock point in screen space via world offset.
-      world.position.set(lock.x - pos.x, lock.y - pos.y);
+      const u = plot.width > 0 ? (pos.x - plot.x) / plot.width : 0;
+      // Craft always on tip. Path origin (m=1) stays fixed on screen.
+      // Past the right edge: rotate the whole world around that origin so the
+      // entire line + craft move up/down together — never bob the tip alone.
+      if (u >= VIEW_CONFIG.RIGHT_EDGE_U) {
+        const radius =
+          Math.hypot(pos.x - origin.x, pos.y - origin.y) || 1;
+        const angle =
+          Math.sin(
+            (climbElapsedMs * 2 * Math.PI) / VIEW_CONFIG.EDGE_BOB_PERIOD_MS,
+          ) * (VIEW_CONFIG.EDGE_BOB_AMPLITUDE_PX / radius);
+        world.pivot.set(origin.x, origin.y);
+        world.position.set(origin.x, origin.y);
+        world.rotation = angle;
+      } else {
+        world.pivot.set(0, 0);
+        world.position.set(0, 0);
+        world.rotation = 0;
+      }
+      curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
       const rot = gentleTiltRadians(pathTangentRadians(tip, plot, scale));
       rocket.syncPose(pos.x, pos.y, rot, true);
       rocket.container.visible = true;
     } else if (mode === "crash_hold") {
       idleElapsedMs = 0;
-      ghost.visible = false;
+      climbElapsedMs = 0;
       // Freeze camera at crash frame (D-19).
       if (frozenWorld == null) {
-        frozenWorld = { x: world.position.x, y: world.position.y };
+        frozenWorld = {
+          x: world.position.x,
+          y: world.position.y,
+          rotation: world.rotation,
+          pivotX: world.pivot.x,
+          pivotY: world.pivot.y,
+        };
       }
+      world.pivot.set(frozenWorld.pivotX, frozenWorld.pivotY);
       world.position.set(frozenWorld.x, frozenWorld.y);
+      world.rotation = frozenWorld.rotation;
       if (!holdDrawn) {
         const tip = latchedCrashMult ?? Math.max(1, snapshot.multiplier);
         const pts = samplePoints(tip, plot);
@@ -183,36 +201,35 @@ export function createCrashScene(app: Application): CrashScene {
       rocket.container.visible = false;
     } else if (mode === "crash_fade") {
       idleElapsedMs = 0;
-      ghost.visible = false;
+      climbElapsedMs = 0;
       if (frozenWorld != null) {
+        world.pivot.set(frozenWorld.pivotX, frozenWorld.pivotY);
         world.position.set(frozenWorld.x, frozenWorld.y);
+        world.rotation = frozenWorld.rotation;
       }
       // Keep severed geometry; alpha from reducer.
       rocket.container.visible = false;
     } else {
-      // idle: world identity + ghost origin + bobbing parked rocket (D-17, D-19)
+      // idle: parked rocket fixed at path origin (no bob)
       holdDrawn = false;
       frozenWorld = null;
+      climbElapsedMs = 0;
+      world.pivot.set(0, 0);
       world.position.set(0, 0);
+      world.rotation = 0;
       curve.container.alpha = 0;
-      idleElapsedMs += Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
+      idleElapsedMs = 0;
       const scale = plotScaleFor(1);
       const origin = plotPoint(1, plot, scale);
-      ghost.position.set(origin.x, origin.y);
-      ghost.visible = true;
-      const bob =
-        Math.sin(
-          (idleElapsedMs * 2 * Math.PI) / VIEW_CONFIG.BOB_PERIOD_MS,
-        ) * VIEW_CONFIG.BOB_AMPLITUDE_PX;
-      rocket.syncPose(origin.x, origin.y + bob, 0, false);
+      rocket.syncPose(origin.x, origin.y, 0, false);
       rocket.container.visible = rocketVisible;
     }
 
-    // Theater dual-read (D-13..D-16, D-20 idle dim last crash ×;
-    // Phase 5 D-01..D-04: waiting+idle shows continuous tenths countdown)
+    // Theater: countdown while waiting+idle; Crashed × during hold/fade; live × on climb
     let liveText: string;
     let liveTint: number;
     let liveAlpha: number;
+    let titleText: string | null = null;
 
     const showCountdown =
       snapshot.phase === "waiting" && mode === "idle";
@@ -229,6 +246,7 @@ export function createCrashScene(app: Application): CrashScene {
       liveText = formatMult(liveMult);
       liveTint = VIEW_CONFIG.CRASH_COLOR;
       liveAlpha = 1;
+      titleText = "Crashed";
     } else if (mode === "idle") {
       // Non-waiting idle safety — dimmed last-crash × (Phase 3 D-20)
       if (latchedCrashMult != null && Number.isFinite(latchedCrashMult)) {
@@ -241,7 +259,7 @@ export function createCrashScene(app: Application): CrashScene {
         liveAlpha = 0;
       }
     } else {
-      // climb — countdown cleared on flight (D-03)
+      // climb — countdown cleared on flight
       liveText = formatMult(snapshot.multiplier);
       liveTint = theaterTintForMult(snapshot.multiplier);
       liveAlpha = 1;
@@ -256,6 +274,7 @@ export function createCrashScene(app: Application): CrashScene {
       liveText,
       liveTint,
       liveAlpha,
+      titleText,
       frozenText,
     });
   }
