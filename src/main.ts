@@ -20,11 +20,11 @@ async function main(): Promise<void> {
   const host = document.querySelector("#game-canvas-host");
   if (!host) throw new Error("#game-canvas-host missing");
 
-  const { seed, invalid } = parseBootSeed(window.location.search);
+  const { seed } = parseBootSeed(window.location.search);
   const game = createGame({ seed });
   const audio = createBeepAudioPort({ muted: loadMutePref() });
-  // seed/invalid still parsed for silent ?seed= boot; Seed chip wiring deferred to 06-04 removal.
-  const hud = mountCrashHud(hudRoot, game, { audio, seed, invalid });
+  // Silent ?seed= boot only (D-21..D-24 / PLSH-03Δ) — no Seed chip / on-screen note.
+  const hud = mountCrashHud(hudRoot, game, { audio });
   const { app, scene, dispose } = await mountCrashView(host as HTMLElement);
 
   let prevSnap: CrashSnapshot | null = game.getSnapshot();

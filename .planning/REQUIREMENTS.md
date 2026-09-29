@@ -26,7 +26,7 @@
 ### Visual & Controls
 
 - [x] **VIS-01**: Player sees a hybrid visual: rising curve/graph with a small rocket traveling the path, and a clear crash break
-- [ ] **VIS-01Δ**: Hybrid visual remains true under arcade-centered craft + scrolling graph camera
+- [x] **VIS-01Δ**: Hybrid visual remains true under arcade-centered craft + scrolling graph camera
 - [x] **VIS-02**: Player uses a thin HTML overlay for bet, cash-out, balance, presets, auto cash-out, and history (Pixi owns the canvas)
 
 ### UI / Feel Rework (Phase 6)
@@ -35,7 +35,7 @@
 - [x] **UI-02**: Single primary BET↔CASH OUT with dual-line stake / live win / frozen CASHED OUT
 - [x] **UI-03**: Auto bet places the current stake at each waiting start; stops on broke / insufficient balance
 - [x] **FEEL-01**: Mild authoritative climb slowdown so ~2× lands at ~3.5–4s (growthRatePerMs only; crash distribution unchanged)
-- [ ] **FEEL-02**: Arcade camera — craft near center; graph scrolls; gentle tilt; crash FX choreography unchanged
+- [x] **FEEL-02**: Arcade camera — craft near center; graph scrolls; gentle tilt; crash FX choreography unchanged
 
 ### Architecture & Quality
 
@@ -48,8 +48,8 @@
 
 - [x] **PLSH-01**: Player sees a waiting-phase countdown before the next flight
 - [x] **PLSH-02**: Game plays SFX placeholders for key events with a mute toggle
-- [x] **PLSH-03**: Player can reproduce a round via optional silent `?seed=` boot (Phase 5 also shipped on-screen Seed chip — superseded by PLSH-03Δ)
-- [ ] **PLSH-03Δ**: Optional silent `?seed=` boot only; no Seed chip / on-screen seed display
+- [x] **PLSH-03**: Player can reproduce a round via optional silent `?seed=` boot (Phase 5 Seed chip superseded by PLSH-03Δ)
+- [x] **PLSH-03Δ**: Optional silent `?seed=` boot only; no Seed chip / on-screen seed display
 - [x] **PLSH-04**: Player can see soft session stats derived from history (e.g. average / max crash)
 - [x] **PLSH-05**: Player can cash out via a keyboard shortcut on desktop
 
@@ -109,7 +109,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLSH-01 | 5 | Complete |
 | PLSH-02 | 5 | Complete |
 | PLSH-03 | 5 | Complete (amended → PLSH-03Δ in Phase 6) |
-| PLSH-03Δ | 6 | Pending |
+| PLSH-03Δ | 6 | Complete |
 | PLSH-04 | 5 | Complete |
 | PLSH-05 | 5 | Complete |
 | WALT-03Δ | 6 | Complete |
@@ -118,8 +118,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-02 | 6 | Complete |
 | UI-03 | 6 | Complete |
 | FEEL-01 | 6 | Complete |
-| FEEL-02 | 6 | Pending |
-| VIS-01Δ | 6 | Pending |
+| FEEL-02 | 6 | Complete |
+| VIS-01Δ | 6 | Complete |
 
 **Coverage:**
 

@@ -41,18 +41,12 @@ export interface CrashHud {
 export interface MountCrashHudOptions {
   /** Optional AudioPort — mute + bet_lock when provided (05-02). */
   audio?: AudioPort;
-  /**
-   * Boot seed — ignored in 06-01 (Seed chip host removed; full delete in 06-04).
-   * Kept optional so main can still pass parseBootSeed until 06-04.
-   */
-  seed?: string;
-  /** @deprecated Seed chip note removed — ignored (D-21/D-22). */
-  invalid?: boolean;
 }
 
 /**
  * Thin HTML binder: commands in, snapshot fields out.
  * Single dual-line primary (D-06..D-09); chips fill-only (D-03); Auto CO toggle (D-04).
+ * Silent ?seed= boot stays in main.ts — no Seed chip / on-screen seed (D-21..D-24).
  */
 export function mountCrashHud(
   root: Element,
@@ -60,9 +54,6 @@ export function mountCrashHud(
   options: MountCrashHudOptions = {},
 ): CrashHud {
   const audio = options.audio;
-  // seed / invalid intentionally unused — Seed chip host omitted (06-01); delete in 06-04.
-  void options.seed;
-  void options.invalid;
 
   const betInput = root.querySelector<HTMLInputElement>(
     "[data-field=bet-input]",

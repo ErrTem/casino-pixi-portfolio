@@ -65,7 +65,7 @@ describe("shell HUD layout (UI-01 / VIS-02 / D-01)", () => {
     expect(html).not.toMatch(/data-action\s*=\s*["']cash-out["']/);
   });
 
-  it("omits seed-chip host (D-21 — full delete in 06-04)", () => {
+  it("omits seed-chip host (D-21 / PLSH-03Δ — silent ?seed= only)", () => {
     expect(html).not.toMatch(/seed-chip/);
   });
 

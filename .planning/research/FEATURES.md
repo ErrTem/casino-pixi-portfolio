@@ -131,7 +131,8 @@ Once one clean round is demo-ready and recorded/shared.
 
 - [ ] Waiting-phase countdown — if inter-round idle confuses testers
 - [ ] Sound cues + mute — if silent demo feels flat in walkthroughs
-- [ ] Seed display / `?seed=` replay link — if interviewers ask “how fair / reproducible?”
+- [ ] Seed display / on-screen Seed chip — superseded by Phase 6 PLSH-03Δ (silent `?seed=` boot only)
+- [x] Shareable replay via silent `?seed=` URL — Phase 5 parseBootSeed kept; Seed chip removed in 06-04
 - [ ] Soft session stats from history — low cost polish after history exists
 - [ ] Keyboard cash-out shortcut — desktop interview demos
 - [ ] Crash particles / stronger crash punch — if visual still reads weak on video
@@ -141,7 +142,7 @@ Once one clean round is demo-ready and recorded/shared.
 Defer until Crash v1 is shipped and a multi-game milestone is intentional.
 
 - [ ] Dual simultaneous bets — Aviator parity; only after single-bet UX is solid
-- [x] Auto-bet / run-N-rounds — **promoted to Phase 6 (UI-03)**; consecutive waiting-edge place + broke stop
+- [x] Auto-bet / run-N-rounds — **promoted to Phase 6 (UI-03)** and shipped in 06-02; consecutive waiting-edge place + broke stop
 - [ ] Cosmetic “other players” feed (fake, client-only) — atmosphere without backend
 - [ ] Multi-game lobby / React|Angular shell — new milestone
 - [ ] Additional games (slot, wheel, roulette) — separate milestones
