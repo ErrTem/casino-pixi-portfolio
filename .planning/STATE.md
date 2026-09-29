@@ -1,17 +1,18 @@
 ---
 gsd_state_version: "1.0"
 current_phase: 6
-status: Phase 6 added — not planned yet
-stopped_at: Phase 6 context gathered
-last_updated: "2026-09-29T15:06:56.516Z"
-last_activity: Phase 6 added
-state_head: dc74453796402c793215be899bef936c72d4d380
+current_phase_name: enhance and rework UI/buttons/behavior
+status: Phase 6 planned — ready to execute
+stopped_at: Phase 6 planning complete
+last_updated: "2026-09-29T15:44:02.270Z"
+last_activity: Phase 6 plans written (06-01..06-04)
+state_head: ea71776cdba3dfd6fa6fdaa08d3a69e819d8a638
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 18
+  total_plans: 22
   completed_plans: 18
-  percent: 83
+  percent: 82
 ---
 
 # Project State
@@ -21,15 +22,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 
 **Core value:** A recruiter can open the demo, place a bet, watch the round play, cash out or crash, and see the demo balance update.
-**Current focus:** Phase 06 — enhance and rework UI/buttons/behavior
+**Current focus:** Phase 06 — enhance and rework UI/buttons/behavior (planned)
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Phase 6 added — not planned yet
-Last activity: Phase 6 added
-Progress: [████████░░] 83%
+Phase: 6 (enhance and rework UI/buttons/behavior) — READY TO EXECUTE
+Plan: 06-01 (next)
+Status: Phase 6 planned — ready to execute
+Last activity: Phase 6 plans written (06-01..06-04)
+Progress: [████████░░] 82%
 
 ## Performance Metrics
 
@@ -48,6 +49,7 @@ Progress: [████████░░] 83%
 | 03 | 3 | - | - |
 | 04 | 3 | - | - |
 | 05 | 4 | - | - |
+| 06 | 0/4 planned | - | - |
 
 **Recent Trend:**
 
@@ -130,6 +132,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Invalid ?seed= quiet using default note on Seed chip — RESEARCH Q4 discretion — silent fallback plus brief expanded-chip note
 - [Phase 05]: Avg divides by finite count after skipping non-finite — Matches skip-non-finite contract; RESEARCH history.length would skew mixed arrays
 - [Phase 05]: Keyboard cash-out gates on enablementFrom.canCashOut — Same path as Cash out button; ignore spectator/no-bet (RESEARCH Q3 / D-15)
+- Phase 6 D-01..D-24 locked in 06-CONTEXT.md (100dvh shell, dual-line primary, Auto bet one-way, climb retune, arcade camera, Seed chip removal)
+- Phase 6 planned: 06-01 tracer shell/primary → 06-02 Auto bet (checkpoint D-10) ∥ 06-03 growthRate → 06-04 camera + PLSH-03Δ
 
 ### Pending Todos
 
@@ -142,6 +146,7 @@ None yet.
 ### Roadmap Evolution
 
 - Phase 6 added: enhance and rework UI/buttons/behavior
+- Phase 6 planned: UI-01/02/03, WALT-03Δ/04Δ, FEEL-01/02, PLSH-03Δ, VIS-01Δ; Auto-bet promoted from v2
 
 ## Deferred Items
 
@@ -151,6 +156,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-29T15:06:56.416Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-enhance-and-rework-ui-buttons-behavior/06-CONTEXT.md
+Last session: 2026-09-29T15:40:00.000Z
+Stopped at: Phase 6 planning complete
+Resume file: .planning/phases/06-enhance-and-rework-ui-buttons-behavior/06-01-PLAN.md
+Next: `/gsd-execute-phase 6` (D-10 checkpoint in 06-02 before Auto bet wire)

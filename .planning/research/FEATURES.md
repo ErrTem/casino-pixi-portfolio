@@ -141,7 +141,7 @@ Once one clean round is demo-ready and recorded/shared.
 Defer until Crash v1 is shipped and a multi-game milestone is intentional.
 
 - [ ] Dual simultaneous bets — Aviator parity; only after single-bet UX is solid
-- [ ] Auto-bet / run-N-rounds — power-user; easy to obscure demo narrative
+- [x] Auto-bet / run-N-rounds — **promoted to Phase 6 (UI-03)**; consecutive waiting-edge place + broke stop
 - [ ] Cosmetic “other players” feed (fake, client-only) — atmosphere without backend
 - [ ] Multi-game lobby / React|Angular shell — new milestone
 - [ ] Additional games (slot, wheel, roulette) — separate milestones
@@ -171,7 +171,7 @@ Defer until Crash v1 is shipped and a multi-game milestone is intentional.
 | Crash VFX punch-up | MEDIUM | MEDIUM | P2 |
 | Keyboard shortcuts | LOW–MEDIUM | LOW | P2 |
 | Dual bets | MEDIUM | MEDIUM | P3 |
-| Auto-bet | LOW–MEDIUM | MEDIUM | P3 |
+| Auto-bet | MEDIUM | MEDIUM | P1 (Phase 6 UI-03) |
 | Fake player feed | LOW | MEDIUM | P3 |
 | Lobby / multi-game shell | MEDIUM (later) | HIGH | P3 |
 | Real money / auth / multiplayer / provably fair | — | HIGH | Anti (skip) |

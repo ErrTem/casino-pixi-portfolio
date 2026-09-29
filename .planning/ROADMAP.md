@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ship a recruiter-ready Crash demo in five vertical slices: pure GameLogic (FSM, wallet, seeded RNG, settlement) first, then a headless-playable HTML HUD, then the hybrid Pixi curve/rocket view, mobile hardening, and polish (countdown, SFX, seed replay, session stats, keyboard cash-out). Every phase ends with something demoable — tests, number loop, spectacle, phone-ready, or shareable polish — without React/Angular or a DEMO badge UI.
+Ship a recruiter-ready Crash demo in six vertical slices: pure GameLogic (FSM, wallet, seeded RNG, settlement) first, then a headless-playable HTML HUD, then the hybrid Pixi curve/rocket view, mobile hardening, polish (countdown, SFX, seed replay, session stats, keyboard cash-out), and a final UI/feel rework (compact JetX-like chrome, dual-line BET/CASH OUT, Auto bet, milder climb, arcade camera). Every phase ends with something demoable — without React/Angular or a DEMO badge UI.
 
 ## Phases
 
@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots (completed 2026-09-27)
 - [x] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls (completed 2026-09-27)
 - [x] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out (completed 2026-09-27)
-- [ ] **Phase 6: enhance and rework UI/buttons/behavior** - UI/button/behavior pass before milestone close
+- [ ] **Phase 6: enhance and rework UI/buttons/behavior** - Compact JetX-like chrome, Auto bet, climb feel, arcade camera before milestone close
 
 ## Phase Details
 
@@ -192,14 +192,36 @@ Plans:
 
 ### Phase 6: enhance and rework UI/buttons/behavior
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** As a recruiter on phone or desktop, I want a compact JetX-like Crash chrome with a dual-line BET/CASH OUT, Auto bet, a milder climb, and a centered craft over a scrolling graph — so the demo feels finished before milestone close without dual-bet or lobby scope.
+**Mode:** standard
 **Depends on:** Phase 5
-**Plans:** 0 plans
+**Requirements:** UI-01, UI-02, UI-03, WALT-03Δ, WALT-04Δ, FEEL-01, FEEL-02, PLSH-03Δ, VIS-01Δ
+**UI hint:** yes
+**Success Criteria** (what must be TRUE):
+
+  1. Viewport is 100dvh with no page scroll; layout matches D-01 zones on phone/tablet/desktop
+  2. Primary control cycles BET+stake → CASH OUT+live win → CASHED OUT frozen → BET on next wait (D-06–D-09)
+  3. Auto bet ON auto-places at waiting start; stops and emphasizes Reset when broke (D-10–D-12)
+  4. Authoritative ~2× lands in 3.5–4s band; crash distribution unchanged (D-14/D-15)
+  5. Craft stays near center with scrolling trail + gentle tilt; crash FX unchanged (D-17–D-19)
+  6. Seed chip gone; `?seed=` still boots quietly (D-21–D-24); Phase 5 polish (countdown, mute, stats, keyboard) still works
+
+**Plans:** 0/4 plans complete
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase 6 to break down)
+**Wave 1**
+
+- [ ] 06-01-PLAN.md — Tracer: 100dvh shell + dual-line primary + presets/Auto CO chrome (D-01..D-09)
+
+**Wave 2** *(blocked on Wave 1; 06-02 and 06-03 parallel)*
+
+- [ ] 06-02-PLAN.md — Auto bet toggle + waiting-edge place + broke stop (D-10 checkpoint + D-11..D-13)
+- [ ] 06-03-PLAN.md — Climb slowdown `growthRatePerMs = LN2/3750` (D-14/D-15)
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 06-04-PLAN.md — Arcade camera + soft path + gentle tilt; Seed chip removal + PLSH-03Δ docs (D-16..D-24)
 
 ## Progress
 
@@ -213,4 +235,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
 | 5. Polish | 4/4 | Complete    | 2026-09-27 |
-| 6. enhance and rework UI/buttons/behavior | 0/0 | Not started | — |
+| 6. enhance and rework UI/buttons/behavior | 0/4 | Planned | — |
