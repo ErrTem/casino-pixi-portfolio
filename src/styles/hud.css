@@ -8,6 +8,8 @@ html,
 body {
   margin: 0;
   height: 100%;
+  height: 100dvh;
+  overflow: hidden;
   font-family: "Segoe UI", system-ui, sans-serif;
   background: #0f1419;
   color: #e8eef4;
@@ -16,10 +18,66 @@ body {
 .app-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  max-width: 100%;
 }
 
+/* —— Top chrome (D-01) —— */
+.top-chrome {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  padding-bottom: 0.35rem;
+  background: #121820;
+  border-bottom: 1px solid #2a3542;
+  position: relative;
+  z-index: 1;
+}
+
+.top-chrome__balance {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.money-icon {
+  font-size: 0.875rem;
+  color: #7dca8e;
+  font-weight: 700;
+}
+
+.top-chrome__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* —— History band —— */
+.history-band {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 2rem;
+  max-height: 2.5rem;
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  padding-bottom: 0.25rem;
+  background: #121820;
+  overflow: hidden;
+}
+
+/* —— Canvas leftover —— */
 .canvas-host {
   flex: 1 1 auto;
   display: block;
@@ -46,23 +104,32 @@ body {
   opacity: 0.7;
 }
 
+/* —— Bottom controls band —— */
 .hud-bar {
   flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: 0.75rem;
-  align-items: center;
-  padding-top: 0.75rem;
-  padding-left: max(1rem, env(safe-area-inset-left));
-  padding-right: max(1rem, env(safe-area-inset-right));
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   background: #121820;
   border-top: 1px solid #2a3542;
   position: relative;
   z-index: 1;
 }
 
-.hud-zone {
+.auto-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+}
+
+.auto-co-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -70,25 +137,140 @@ body {
   min-width: 0;
 }
 
-.hud-zone--left {
-  justify-content: flex-start;
+.auto-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.hud-zone--center {
-  justify-content: center;
+.auto-toggle input[type="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: #5a9fd4;
+  touch-action: manipulation;
 }
 
-.hud-zone--right {
-  justify-content: flex-end;
-  min-height: 2rem;
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   gap: 0.5rem;
+}
+
+.primary-cta {
+  flex: 1 1 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  min-height: 2.875rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #2a6b3c;
+  border-radius: 6px;
+  background: #1e4a2e;
+  color: #e8f5ec;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  line-height: 1.15;
+}
+
+.primary-cta__label {
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.primary-cta__amount {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.primary-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #3a4654;
+  background: #243040;
+  color: inherit;
+}
+
+.primary-cta:not(:disabled):hover {
+  background: #256038;
+}
+
+.stake-group {
+  flex: 1 1 9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.stake-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.stake-stepper input[type="number"] {
+  flex: 1 1 auto;
+  width: 4.5rem;
+  min-width: 0;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #0f1419;
+  color: inherit;
+  touch-action: manipulation;
+  min-height: 2.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stake-stepper button {
+  flex: 0 0 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.75rem;
+  padding: 0.25rem;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #243040;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.stake-stepper button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.stake-stepper button:not(:disabled):hover {
+  background: #2e3d50;
+}
+
+.auto-co-stepper.is-dimmed,
+.auto-co-stepper:has(input:disabled) {
+  opacity: 0.45;
+}
+
+.auto-co-stepper.is-dimmed input,
+.auto-co-stepper input:disabled {
+  cursor: not-allowed;
 }
 
 .chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  justify-content: flex-end;
 }
 
 .hud-bar .chip {
@@ -98,6 +280,11 @@ body {
   font-size: 0.8125rem;
   touch-action: manipulation;
   min-height: 2.75rem;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #243040;
+  color: inherit;
+  cursor: pointer;
 }
 
 .hud-bar .chip--selected:not(:disabled) {
@@ -105,7 +292,15 @@ body {
   background: #1e3a52;
 }
 
-/* Thin avg/max row above history — do not raise --hud-bar-height (PLSH-04 / D-14) */
+.hud-bar .chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hud-bar .chip:not(:disabled):hover {
+  background: #2e3d50;
+}
+
 .session-stats {
   display: flex;
   flex-wrap: wrap;
@@ -116,6 +311,7 @@ body {
   color: #8a9aaa;
   font-variant-numeric: tabular-nums;
   width: 100%;
+  flex: 0 0 auto;
 }
 
 .session-stats [data-field="stat-avg"],
@@ -129,8 +325,9 @@ body {
   gap: 0.35rem;
   max-width: 100%;
   overflow-x: auto;
-  padding-bottom: 0.15rem;
+  padding-bottom: 0.1rem;
   touch-action: pan-x;
+  min-height: 0;
 }
 
 .history-strip .hist {
@@ -163,73 +360,34 @@ body {
   font-weight: 600;
 }
 
-.live-mult {
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  min-width: 4.5ch;
-}
-
 .hud-status {
   font-size: 0.8125rem;
   color: #c9a227;
-  min-height: 1.25em;
+  min-height: 1.1em;
 }
 
-.hud-zone--broke .balance {
+.top-chrome.hud-zone--broke .balance,
+.app-shell.hud-zone--broke .balance {
   color: #e07070;
 }
 
-/* Compact mute control — stay inside Phase 4 --hud-bar-height budget */
-.hud-bar .mute-toggle {
+.mute-toggle,
+.reset-demo {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
-  min-height: 2rem;
+  min-height: 2.75rem;
   white-space: nowrap;
+  border: 1px solid #3a4654;
+  border-radius: 4px;
+  background: #243040;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-/* Collapsible Seed chip — compact collapsed; expand inside bar budget */
-.seed-chip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  max-width: 100%;
-}
-
-.hud-bar .seed-chip__toggle,
-.hud-bar .seed-chip__copy {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  min-height: 2rem;
-  white-space: nowrap;
-}
-
-.seed-chip__panel {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.seed-chip__panel[hidden] {
-  display: none;
-}
-
-.seed-chip__value {
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  max-width: 12rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  color: #c8d4e0;
-}
-
-.seed-chip__note {
-  font-size: 0.6875rem;
-  color: #8a9aaa;
-  white-space: nowrap;
+.mute-toggle:not(:disabled):hover,
+.reset-demo:not(:disabled):hover {
+  background: #2e3d50;
 }
 
 .reset-demo--emphasize {
@@ -242,84 +400,28 @@ body {
   background: #4a4328;
 }
 
-.hud-bar label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.875rem;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.hud-bar input[type="number"] {
-  width: 5.5rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid #3a4654;
-  border-radius: 4px;
-  background: #0f1419;
-  color: inherit;
-  touch-action: manipulation;
-  min-height: 2.75rem;
-}
-
-.hud-bar button {
-  padding: 0.4rem 0.75rem;
-  border: 1px solid #3a4654;
-  border-radius: 4px;
-  background: #243040;
-  color: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-  min-height: 2.75rem;
-}
-
-/* D-05–D-08: phase-promoted Cash out — not keyed off :disabled */
-.hud-bar--promote-cashout [data-action="cash-out"] {
-  display: block;
-  width: 100%;
-  min-height: 2.875rem;
-  font-weight: 600;
-}
-
-.hud-bar--promote-cashout [data-action="place-bet"],
-.hud-bar--promote-cashout .chip,
-.hud-bar--promote-cashout [data-field="bet-input"],
-.hud-bar--promote-cashout [data-field="auto-co"] {
-  min-height: 2rem;
-  font-size: 0.8125rem;
-}
-
-.hud-bar button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.hud-bar button:not(:disabled):hover {
-  background: #2e3d50;
-}
-
-@media (max-width: 720px) {
-  .hud-bar {
-    --hud-bar-height: 15.5rem;
-    flex: 0 0 var(--hud-bar-height);
-    height: var(--hud-bar-height);
-    max-height: var(--hud-bar-height);
-    grid-template-columns: 1fr;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .hud-zone--left,
-  .hud-zone--center,
-  .hud-zone--right {
-    justify-content: center;
-  }
-
-  .hud-zone--right {
+@media (max-width: 390px) {
+  .action-row {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .hud-bar .chip {
-    min-width: 2.75rem;
+  .primary-cta {
+    width: 100%;
+  }
+
+  .stake-group {
+    width: 100%;
   }
 }

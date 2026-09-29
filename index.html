@@ -11,14 +11,15 @@
   </head>
   <body>
     <div id="app" class="app-shell">
-      <!-- Reserved Pixi mount — keep empty (D-04) -->
-      <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
-        <p class="canvas-placeholder">Game view</p>
-      </div>
-
-      <footer id="hud-bar" class="hud-bar">
-        <div class="hud-zone hud-zone--left" data-zone="balance">
+      <header id="top-chrome" class="top-chrome">
+        <div class="top-chrome__balance">
+          <span class="money-icon" aria-hidden="true">$</span>
           <div class="balance" data-field="balance">—</div>
+        </div>
+        <div class="top-chrome__actions">
+          <button type="button" data-action="reset-wallet" class="reset-demo">
+            Reset demo
+          </button>
           <button
             type="button"
             data-action="mute"
@@ -27,59 +28,121 @@
           >
             Sound: On
           </button>
-          <button type="button" data-action="reset-wallet" class="reset-demo">
-            Reset demo
-          </button>
         </div>
+      </header>
 
-        <div class="hud-zone hud-zone--center" data-zone="actions">
-          <span data-field="phase"></span>
-          <span data-field="live-mult" class="live-mult">1.00×</span>
-          <label>
-            Bet
-            <input
-              data-field="bet-input"
-              type="number"
-              min="10"
-              max="1000"
-              step="1"
-              value="100"
-            />
-          </label>
-          <button type="button" data-action="place-bet">Place bet</button>
-          <button type="button" data-action="cash-out">Cash out</button>
-          <label>
-            Auto CO
-            <input
-              data-field="auto-co"
-              type="number"
-              min="1.01"
-              step="0.01"
-              placeholder="Off"
-            />
-          </label>
-          <button type="button" data-action="clear-auto-co">Clear</button>
-          <span data-field="status" class="hud-status" aria-live="polite"></span>
+      <div id="history-band" class="history-band">
+        <div
+          class="session-stats"
+          data-field="session-stats"
+          aria-label="Session stats"
+        >
+          <span>Avg <span data-field="stat-avg">—</span></span>
+          <span>Max <span data-field="stat-max">n/a</span></span>
         </div>
+        <div
+          data-field="history"
+          class="history-strip"
+          role="list"
+          aria-label="Crash history"
+        ></div>
+      </div>
 
-        <div class="hud-zone hud-zone--right" data-zone="chips-history">
-          <div data-field="chips" class="chip-row" role="group" aria-label="Bet presets"></div>
-          <div data-field="seed-chip" class="seed-chip"></div>
-          <div
-            class="session-stats"
-            data-field="session-stats"
-            aria-label="Session stats"
-          >
-            <span>Avg <span data-field="stat-avg">—</span></span>
-            <span>Max <span data-field="stat-max">n/a</span></span>
+      <!-- Reserved Pixi mount — keep empty of monetary controls (VIS-02) -->
+      <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
+        <p class="canvas-placeholder">Game view</p>
+      </div>
+
+      <footer id="hud-bar" class="hud-bar">
+        <div class="auto-row">
+          <div class="auto-co-group">
+            <label class="auto-toggle">
+              <input
+                type="checkbox"
+                data-field="auto-co-toggle"
+                aria-label="Auto cash out"
+              />
+              <span>Auto cash out</span>
+            </label>
+            <div class="stake-stepper auto-co-stepper">
+              <button
+                type="button"
+                data-action="auto-co-dec"
+                aria-label="Decrease auto cash out"
+              >
+                −
+              </button>
+              <input
+                data-field="auto-co"
+                type="number"
+                min="1.01"
+                step="0.01"
+                placeholder="Off"
+                disabled
+                aria-label="Auto cash out multiplier"
+              />
+              <button
+                type="button"
+                data-action="auto-co-inc"
+                aria-label="Increase auto cash out"
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div
-            data-field="history"
-            class="history-strip"
-            role="list"
-            aria-label="Crash history"
-          ></div>
+          <label class="auto-toggle">
+            <input
+              type="checkbox"
+              data-field="auto-bet-toggle"
+              aria-label="Auto bet"
+            />
+            <span>Auto bet</span>
+          </label>
         </div>
+
+        <div class="action-row">
+          <button type="button" data-action="primary" class="primary-cta">
+            <span class="primary-cta__label" data-field="primary-label">BET</span>
+            <span class="primary-cta__amount" data-field="primary-amount">100.00</span>
+          </button>
+          <div class="stake-group">
+            <div class="stake-stepper">
+              <button
+                type="button"
+                data-action="stake-dec"
+                aria-label="Decrease stake"
+              >
+                −
+              </button>
+              <input
+                data-field="bet-input"
+                type="number"
+                min="10"
+                max="1000"
+                step="1"
+                value="100"
+                aria-label="Bet amount"
+              />
+              <button
+                type="button"
+                data-action="stake-inc"
+                aria-label="Increase stake"
+              >
+                +
+              </button>
+            </div>
+            <div
+              data-field="chips"
+              class="chip-row"
+              role="group"
+              aria-label="Bet presets"
+            ></div>
+          </div>
+        </div>
+
+        <span data-field="phase" class="visually-hidden"></span>
+        <span data-field="live-mult" class="visually-hidden">1.00×</span>
+        <span data-field="status" class="hud-status" aria-live="polite"></span>
       </footer>
     </div>
     <script type="module" src="/src/main.ts"></script>
