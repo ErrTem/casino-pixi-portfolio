@@ -11,14 +11,15 @@ import { mountCrashView } from "./games/crash/view/mountCrashView.js";
 import "./styles/hud.css";
 
 async function main(): Promise<void> {
-  const hudRoot = document.querySelector("#hud-bar");
-  if (!hudRoot) throw new Error("#hud-bar missing");
+  const hudRoot = document.querySelector("#app");
+  if (!hudRoot) throw new Error("#app missing");
   const host = document.querySelector("#game-canvas-host");
   if (!host) throw new Error("#game-canvas-host missing");
 
   const { seed, invalid } = parseBootSeed(window.location.search);
   const game = createGame({ seed });
   const audio = createBeepAudioPort({ muted: loadMutePref() });
+  // seed/invalid still parsed for silent ?seed= boot; Seed chip wiring deferred to 06-04 removal.
   const hud = mountCrashHud(hudRoot, game, { audio, seed, invalid });
   const { app, scene, dispose } = await mountCrashView(host as HTMLElement);
 

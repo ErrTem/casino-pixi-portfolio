@@ -27,6 +27,7 @@ export function enablementFrom(snap: CrashSnapshot): HudEnablement {
     canEditBet: waiting && !hasBet && !broke,
     chipsEnabled: waiting && !hasBet && !broke,
     canCashOut: flying && hasBet,
+    // Auto CO field editability is further gated by the HUD toggle (D-04).
     canEditAuto: true,
     showBroke: broke,
   };

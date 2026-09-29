@@ -1,13 +1,21 @@
 import type { AudioPort } from "../../../shared/audio/AudioPort.js";
 import { saveMutePref } from "../../../shared/audio/mutePref.js";
 import type { CrashGame, CrashSnapshot } from "../logic/index.js";
-import { chromeModeFrom } from "./chromeMode.js";
-import { PRESET_CHIPS } from "./chips.js";
+import { CRASH_CONFIG } from "../logic/config.js";
+import {
+  ALL_CHIP,
+  PRESET_CHIPS,
+  maxAffordableStake,
+} from "./chips.js";
 import { enablementFrom } from "./enablement.js";
 import { formatMoney, formatMult } from "./format.js";
 import { renderHistoryStrip } from "./historyStrip.js";
-import { mountSeedChip } from "./seedChip.js";
+import { primaryChromeFrom } from "./primaryChrome.js";
 import { sessionStatsFrom } from "./sessionStats.js";
+
+const DISPLAY_MIN = CRASH_CONFIG.minBetCents / 100;
+const STAKE_STEP = 10;
+const AUTO_CO_STEP = 0.1;
 
 /** True when focus is in an editable control — keyboard cash-out must no-op (D-15). */
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -19,20 +27,27 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 export interface CrashHud {
   render(snap: CrashSnapshot): void;
+  /** Session Auto bet flag (06-02 will wire waiting-edge place). */
+  isAutoBetOn(): boolean;
+  /** Current stake from bet input (display units). */
+  getStake(): number;
 }
 
 export interface MountCrashHudOptions {
   /** Optional AudioPort — mute + bet_lock when provided (05-02). */
   audio?: AudioPort;
-  /** Boot seed for collapsible Seed chip (05-03 / D-09–D-11). */
+  /**
+   * Boot seed — ignored in 06-01 (Seed chip host removed; full delete in 06-04).
+   * Kept optional so main can still pass parseBootSeed until 06-04.
+   */
   seed?: string;
-  /** True when ?seed= was present but invalid — quiet "using default" note. */
+  /** @deprecated Seed chip note removed — ignored (D-21/D-22). */
   invalid?: boolean;
 }
 
 /**
  * Thin HTML binder: commands in, snapshot fields out.
- * No wallet math — facade only. Enablement flags are UX; GameLogic remains authority.
+ * Single dual-line primary (D-06..D-09); chips fill-only (D-03); Auto CO toggle (D-04).
  */
 export function mountCrashHud(
   root: Element,
@@ -40,81 +55,90 @@ export function mountCrashHud(
   options: MountCrashHudOptions = {},
 ): CrashHud {
   const audio = options.audio;
-  const bootSeed = options.seed;
-  const seedInvalid = options.invalid === true;
+  // seed / invalid intentionally unused — Seed chip host omitted (06-01); delete in 06-04.
+  void options.seed;
+  void options.invalid;
+
   const betInput = root.querySelector<HTMLInputElement>(
     "[data-field=bet-input]",
   );
   const autoInput = root.querySelector<HTMLInputElement>(
     "[data-field=auto-co]",
   );
-  const placeBetBtn = root.querySelector<HTMLButtonElement>(
-    "[data-action=place-bet]",
+  const autoCoToggle = root.querySelector<HTMLInputElement>(
+    "[data-field=auto-co-toggle]",
   );
-  const cashOutBtn = root.querySelector<HTMLButtonElement>(
-    "[data-action=cash-out]",
+  const autoBetToggle = root.querySelector<HTMLInputElement>(
+    "[data-field=auto-bet-toggle]",
   );
-  const clearAutoBtn = root.querySelector("[data-action=clear-auto-co]");
+  const primaryBtn = root.querySelector<HTMLButtonElement>(
+    "[data-action=primary]",
+  );
+  const primaryLabelEl = root.querySelector("[data-field=primary-label]");
+  const primaryAmountEl = root.querySelector("[data-field=primary-amount]");
   const resetBtn = root.querySelector("[data-action=reset-wallet]");
   const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
+  const stakeDecBtn = root.querySelector<HTMLButtonElement>(
+    "[data-action=stake-dec]",
+  );
+  const stakeIncBtn = root.querySelector<HTMLButtonElement>(
+    "[data-action=stake-inc]",
+  );
+  const autoCoDecBtn = root.querySelector<HTMLButtonElement>(
+    "[data-action=auto-co-dec]",
+  );
+  const autoCoIncBtn = root.querySelector<HTMLButtonElement>(
+    "[data-action=auto-co-inc]",
+  );
   const statusEl = root.querySelector("[data-field=status]");
   const balanceEl = root.querySelector("[data-field=balance]");
   const phaseEl = root.querySelector("[data-field=phase]");
   const liveMultEl = root.querySelector("[data-field=live-mult]");
-  const leftZone = root.querySelector("[data-zone=balance]");
   const chipsHost = root.querySelector("[data-field=chips]");
   const historyHost = root.querySelector("[data-field=history]");
-  const seedChipHost = root.querySelector("[data-field=seed-chip]");
   const statAvgEl = root.querySelector("[data-field=stat-avg]");
   const statMaxEl = root.querySelector("[data-field=stat-max]");
+  const shell =
+    root.classList.contains("app-shell")
+      ? root
+      : (root.closest(".app-shell") ?? root);
 
   if (
     !betInput ||
     !autoInput ||
-    !placeBetBtn ||
-    !cashOutBtn ||
-    !clearAutoBtn ||
+    !autoCoToggle ||
+    !primaryBtn ||
+    !primaryLabelEl ||
+    !primaryAmountEl ||
     !resetBtn ||
     !statusEl ||
     !balanceEl ||
     !phaseEl ||
     !liveMultEl ||
-    !leftZone ||
     !chipsHost ||
     !historyHost ||
     !statAvgEl ||
     !statMaxEl
   ) {
-    throw new Error("CrashHud: required #hud-bar fields missing");
+    throw new Error("CrashHud: required shell / #hud-bar fields missing");
   }
 
   if (audio && !muteBtn) {
     throw new Error("CrashHud: data-action=mute required when audio is provided");
   }
 
-  if (bootSeed != null && !seedChipHost) {
-    throw new Error(
-      "CrashHud: data-field=seed-chip required when seed is provided",
-    );
-  }
-
-  if (bootSeed != null && seedChipHost) {
-    mountSeedChip(seedChipHost, { seed: bootSeed, invalid: seedInvalid });
-  }
-
-  // Narrowed aliases so closures keep non-null types under strictNullChecks.
   const bet = betInput;
   const auto = autoInput;
-  const placeBet = placeBetBtn;
-  const cashOut = cashOutBtn;
-  const clearAuto = clearAutoBtn;
+  const autoToggle = autoCoToggle;
+  const primary = primaryBtn;
+  const primaryLabel = primaryLabelEl;
+  const primaryAmount = primaryAmountEl;
   const reset = resetBtn;
   const mute = muteBtn;
   const status = statusEl;
   const balance = balanceEl;
   const phase = phaseEl;
   const liveMult = liveMultEl;
-  const balanceZone = leftZone;
   const chips = chipsHost;
   const history = historyHost;
   const statAvg = statAvgEl;
@@ -122,6 +146,7 @@ export function mountCrashHud(
 
   let lastPlaceReason: string | null = null;
   let lastSnap: CrashSnapshot | null = null;
+  let autoBetOn = false;
 
   function syncMuteLabel(): void {
     if (!mute || !audio) return;
@@ -130,7 +155,25 @@ export function mountCrashHud(
     mute.setAttribute("aria-pressed", muted ? "true" : "false");
   }
 
-  // Chips: fill bet-input only — never call placeBet (Pitfall 4 / WALT-03).
+  function syncAutoCoFieldEnabled(): void {
+    const on = autoToggle.checked;
+    auto.disabled = !on;
+    if (autoCoDecBtn) autoCoDecBtn.disabled = !on;
+    if (autoCoIncBtn) autoCoIncBtn.disabled = !on;
+    auto.closest(".auto-co-stepper")?.classList.toggle("is-dimmed", !on);
+  }
+
+  function applyAutoCoFromField(): void {
+    if (!autoToggle.checked) {
+      game.setAutoCashOut(null);
+      return;
+    }
+    const raw = auto.value.trim();
+    if (raw === "") game.setAutoCashOut(null);
+    else game.setAutoCashOut(Number(raw));
+  }
+
+  // Chips: fill bet-input only — never call placeBet (Pitfall 4 / WALT-03 / D-03).
   const chipButtons: HTMLButtonElement[] = [];
   for (const value of PRESET_CHIPS) {
     const btn = document.createElement("button");
@@ -146,6 +189,21 @@ export function mountCrashHud(
     chipButtons.push(btn);
   }
 
+  const allBtn = document.createElement("button");
+  allBtn.type = "button";
+  allBtn.textContent = ALL_CHIP;
+  allBtn.dataset.chip = ALL_CHIP;
+  allBtn.className = "chip";
+  allBtn.addEventListener("click", () => {
+    if (!lastSnap) return;
+    const max = maxAffordableStake(lastSnap.balance);
+    if (max < DISPLAY_MIN) return;
+    bet.value = String(max);
+    syncChipSelection();
+  });
+  chips.appendChild(allBtn);
+  chipButtons.push(allBtn);
+
   function syncChipSelection(): void {
     const current = bet.value;
     for (const btn of chipButtons) {
@@ -153,7 +211,7 @@ export function mountCrashHud(
     }
   }
 
-  placeBet.addEventListener("click", () => {
+  function tryPlaceBet(): void {
     const amount = Number(bet.value);
     const result = game.placeBet(amount);
     if (!result.ok) {
@@ -167,11 +225,17 @@ export function mountCrashHud(
         audio.play("bet_lock");
       }
     }
-  });
+  }
 
-  cashOut.addEventListener("click", () => {
-    audio?.unlock();
-    game.requestCashOut();
+  primary.addEventListener("click", () => {
+    if (!lastSnap) return;
+    const en = enablementFrom(lastSnap);
+    if (en.canPlaceBet) {
+      tryPlaceBet();
+    } else if (en.canCashOut) {
+      audio?.unlock();
+      game.requestCashOut();
+    }
   });
 
   if (mute && audio) {
@@ -185,19 +249,50 @@ export function mountCrashHud(
     syncMuteLabel();
   }
 
-  const applyAutoCo = () => {
-    const raw = auto.value.trim();
-    if (raw === "") game.setAutoCashOut(null);
-    else game.setAutoCashOut(Number(raw));
-  };
-
-  auto.addEventListener("change", applyAutoCo);
-  auto.addEventListener("blur", applyAutoCo);
-
-  clearAuto.addEventListener("click", () => {
-    auto.value = "";
-    game.setAutoCashOut(null);
+  autoToggle.addEventListener("change", () => {
+    if (!autoToggle.checked) {
+      game.setAutoCashOut(null);
+      syncAutoCoFieldEnabled();
+      return;
+    }
+    syncAutoCoFieldEnabled();
+    if (auto.value.trim() === "") {
+      auto.value = "2.00";
+    }
+    applyAutoCoFromField();
   });
+
+  auto.addEventListener("change", applyAutoCoFromField);
+  auto.addEventListener("blur", applyAutoCoFromField);
+
+  if (autoBetToggle) {
+    autoBetToggle.addEventListener("change", () => {
+      autoBetOn = autoBetToggle.checked;
+      // 06-02 owns waiting-edge placeBet — toggle is session UI only here.
+    });
+  }
+
+  function nudgeStake(delta: number): void {
+    const current = Number(bet.value);
+    const base = Number.isFinite(current) ? current : DISPLAY_MIN;
+    const next = Math.max(DISPLAY_MIN, Math.floor(base + delta));
+    bet.value = String(next);
+    syncChipSelection();
+  }
+
+  function nudgeAutoCo(delta: number): void {
+    if (!autoToggle.checked) return;
+    const current = Number(auto.value);
+    const base = Number.isFinite(current) && current > 0 ? current : 2;
+    const next = Math.max(1.01, Math.round((base + delta) * 100) / 100);
+    auto.value = String(next);
+    applyAutoCoFromField();
+  }
+
+  stakeDecBtn?.addEventListener("click", () => nudgeStake(-STAKE_STEP));
+  stakeIncBtn?.addEventListener("click", () => nudgeStake(STAKE_STEP));
+  autoCoDecBtn?.addEventListener("click", () => nudgeAutoCo(-AUTO_CO_STEP));
+  autoCoIncBtn?.addEventListener("click", () => nudgeAutoCo(AUTO_CO_STEP));
 
   reset.addEventListener("click", () => {
     game.resetWallet();
@@ -207,9 +302,9 @@ export function mountCrashHud(
 
   bet.addEventListener("input", syncChipSelection);
   syncChipSelection();
+  syncAutoCoFieldEnabled();
 
-  // Space/Enter → same requestCashOut as button; ignore while typing (D-15 / PLSH-05).
-  // Window listener is fine for this SPA demo (no HUD dispose / HMR teardown yet).
+  // Space/Enter → same requestCashOut as primary; ignore while typing (D-05 / PLSH-05).
   window.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key !== " " && e.key !== "Enter") return;
     if (e.repeat) return;
@@ -226,42 +321,59 @@ export function mountCrashHud(
     phase.textContent = snap.phase;
     liveMult.textContent = formatMult(snap.multiplier);
 
-    if (document.activeElement !== auto) {
+    const stakeDisplay = Number(bet.value);
+    const stakeForChrome = Number.isFinite(stakeDisplay)
+      ? stakeDisplay
+      : DISPLAY_MIN;
+    const chrome = primaryChromeFrom(snap, stakeForChrome);
+    primaryLabel.textContent = chrome.label;
+    primaryAmount.textContent = chrome.amountLine;
+    primary.disabled = !chrome.enabled;
+
+    // Sync Auto CO field from snapshot when toggle ON and field not focused.
+    if (autoToggle.checked && document.activeElement !== auto) {
       auto.value =
         snap.autoCashOutAt == null ? "" : String(snap.autoCashOutAt);
     }
 
     const en = enablementFrom(snap);
-    placeBet.disabled = !en.canPlaceBet;
-    cashOut.disabled = !en.canCashOut;
     bet.disabled = !en.canEditBet;
-    auto.disabled = !en.canEditAuto;
+    if (stakeDecBtn) stakeDecBtn.disabled = !en.canEditBet;
+    if (stakeIncBtn) stakeIncBtn.disabled = !en.canEditBet;
+
+    const allMax = maxAffordableStake(snap.balance);
+    const allAffordable = allMax >= DISPLAY_MIN;
     for (const btn of chipButtons) {
-      btn.disabled = !en.chipsEnabled;
+      if (btn.dataset.chip === ALL_CHIP) {
+        btn.disabled = !en.chipsEnabled || !allAffordable;
+      } else {
+        btn.disabled = !en.chipsEnabled;
+      }
     }
-    // D-05–D-08: promote from phase, not canCashOut (disabled Cash out stays full-width).
-    root.classList.toggle(
-      "hud-bar--promote-cashout",
-      chromeModeFrom(snap.phase) === "promote-cashout",
-    );
     syncChipSelection();
     syncMuteLabel();
+    syncAutoCoFieldEnabled();
 
-    // History from snapshot only — never push from button handlers (WALT-05).
     renderHistoryStrip(history, snap.history);
 
-    // Soft avg/max near strip — textContent only (PLSH-04 / D-13 / D-16).
     const stats = sessionStatsFrom(snap.history);
     statAvg.textContent = stats.avgLabel;
     statMax.textContent = stats.maxLabel;
 
     const emphasizeBroke = en.showBroke || lastPlaceReason === "broke";
-    balanceZone.classList.toggle("hud-zone--broke", emphasizeBroke);
+    shell.classList.toggle("hud-zone--broke", emphasizeBroke);
     reset.classList.toggle("reset-demo--emphasize", emphasizeBroke);
     if (emphasizeBroke && !status.textContent) {
       status.textContent = "broke — Reset demo to continue";
     }
   }
 
-  return { render };
+  return {
+    render,
+    isAutoBetOn: () => autoBetOn,
+    getStake: () => {
+      const n = Number(bet.value);
+      return Number.isFinite(n) ? n : DISPLAY_MIN;
+    },
+  };
 }
