@@ -7,7 +7,7 @@ export const CRASH_CONFIG = {
   houseEdge: 0.04, // ~4% within D-08 3–5%
   crashFloor: 1.01, // D-06
   crashCap: 100, // D-07
-  growthRatePerMs: Math.LN2 / 2500, // ~2× @ 2.5s (D-09)
+  growthRatePerMs: Math.LN2 / 3750, // ~2× @ 3.75s (Phase 6 D-14 / FEEL-01)
   multDecimals: 2,
   historySize: 20,
   maxDeltaMs: 100,

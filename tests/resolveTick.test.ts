@@ -23,8 +23,9 @@ function flyingState(overrides: Partial<RoundState> = {}): RoundState {
   return {
     phase: "flying",
     waitRemainingMs: 0,
-    elapsedMs: 2400,
-    multiplier: 1.93,
+    // +100ms tick → 3750ms → 2.00 under growthRatePerMs = LN2/3750 (Phase 6 D-14)
+    elapsedMs: 3650,
+    multiplier: 1.96,
     crashAt: 10,
     roundId: 1,
     lockedBetCents: 10_000,
@@ -69,7 +70,7 @@ describe("resolveTick — manual cash-out and crash settle (PLAY-03 / PLAY-04)",
     expect(state.crashAt).toBe(10);
     expect(state.cashOutAt).toBe(2);
     expect(state.lockedBetCents).toBeNull();
-    // elapsed 2400+100 → multiplierAt ≈ 2.00
+    // elapsed 3650+100 → multiplierAt ≈ 2.00
     const expectedPayout = payoutCents(10_000, toMultHundredths(2));
     expect(deps.wallet.getBalanceCents()).toBe(balBefore + expectedPayout);
     expect(deps.history.toArray()).toEqual([]);
