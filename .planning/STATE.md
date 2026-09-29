@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: enhance and rework UI/buttons/behavior
 status: executing
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-09-29T15:53:20.092Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-09-29T16:03:06.585Z"
 last_activity: 2026-09-29
 last_activity_desc: Phase 06 execution started
-state_head: 937ad7afe4cb5cbebdb9e168d000b5dacc0fe20d
+state_head: 128352e715032a563f59c0393edcda4f578e9456
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 22
-  completed_plans: 19
+  completed_plans: 20
   percent: 83
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 ## Current Position
 
 Phase: 06 (enhance and rework UI/buttons/behavior) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-09-29 — Phase 06 execution started
 Progress: [████████░░] 83%
@@ -81,6 +81,7 @@ Progress: [████████░░] 83%
 | Phase 05 P03 | 4min | 2 tasks | 7 files |
 | Phase 05 P04 | 3min | 2 tasks | 5 files |
 | Phase 06 P01 | 7 min | 3 tasks | 11 files |
+| Phase 06 P02 | 4 min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Keyboard cash-out gates on enablementFrom.canCashOut — Same path as Cash out button; ignore spectator/no-bet (RESEARCH Q3 / D-15)
 - Phase 6 D-01..D-24 locked in 06-CONTEXT.md (100dvh shell, dual-line primary, Auto bet one-way, climb retune, arcade camera, Seed chip removal)
 - Phase 6 planned: 06-01 tracer shell/primary → 06-02 Auto bet (checkpoint D-10) ∥ 06-03 growthRate → 06-04 camera + PLSH-03Δ
+- [Phase 06]: D-10 confirmed option-auto-bet-on-waiting — Auto bet places at each waiting start (D-10..D-13) — Human checkpoint Select: option-auto-bet-on-waiting; one-way product door before waiting-edge placeBet wiring
+- [Phase 06]: Composition-root single Auto bet placeBet site; HUD owns flag + getStake + stopAutoBet — RESEARCH Pattern 3 preference; mirrors sfxEdges; avoids double placeBet from HUD render
 
 ### Pending Todos
 
@@ -158,7 +161,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-29T15:53:20.014Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-09-29T16:02:51.661Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
 Next: `/gsd-execute-phase 6` (D-10 checkpoint in 06-02 before Auto bet wire)

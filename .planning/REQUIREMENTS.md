@@ -33,7 +33,7 @@
 
 - [x] **UI-01**: Compact no-scroll 100dvh shell (top chrome → history → canvas → autos → primary/stake/presets)
 - [x] **UI-02**: Single primary BET↔CASH OUT with dual-line stake / live win / frozen CASHED OUT
-- [ ] **UI-03**: Auto bet places the current stake at each waiting start; stops on broke / insufficient balance
+- [x] **UI-03**: Auto bet places the current stake at each waiting start; stops on broke / insufficient balance
 - [ ] **FEEL-01**: Mild authoritative climb slowdown so ~2× lands at ~3.5–4s (growthRatePerMs only; crash distribution unchanged)
 - [ ] **FEEL-02**: Arcade camera — craft near center; graph scrolls; gentle tilt; crash FX choreography unchanged
 
@@ -116,7 +116,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WALT-04Δ | 6 | Complete |
 | UI-01 | 6 | Complete |
 | UI-02 | 6 | Complete |
-| UI-03 | 6 | Pending |
+| UI-03 | 6 | Complete |
 | FEEL-01 | 6 | Pending |
 | FEEL-02 | 6 | Pending |
 | VIS-01Δ | 6 | Pending |

@@ -206,7 +206,7 @@ Plans:
   5. Craft stays near center with scrolling trail + gentle tilt; crash FX unchanged (D-17–D-19)
   6. Seed chip gone; `?seed=` still boots quietly (D-21–D-24); Phase 5 polish (countdown, mute, stats, keyboard) still works
 
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 
@@ -216,7 +216,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1; 06-02 and 06-03 parallel)*
 
-- [ ] 06-02-PLAN.md — Auto bet toggle + waiting-edge place + broke stop (D-10 checkpoint + D-11..D-13)
+- [x] 06-02-PLAN.md — Auto bet toggle + waiting-edge place + broke stop (D-10 checkpoint + D-11..D-13)
 - [ ] 06-03-PLAN.md — Climb slowdown `growthRatePerMs = LN2/3750` (D-14/D-15)
 
 **Wave 3** *(blocked on Wave 2)*
@@ -235,4 +235,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
 | 5. Polish | 4/4 | Complete    | 2026-09-27 |
-| 6. enhance and rework UI/buttons/behavior | 1/4 | In Progress|  |
+| 6. enhance and rework UI/buttons/behavior | 2/4 | In Progress|  |
