@@ -65,3 +65,11 @@ export function pathTangentRadians(
   if (!Number.isFinite(dx) || !Number.isFinite(dy)) return 0;
   return Math.atan2(dy, dx);
 }
+
+/**
+ * Gentle craft tilt (D-18). RED stub: passthrough — GREEN clamps to TILT_MAX_RAD.
+ */
+export function gentleTiltRadians(tangent: number): number {
+  if (!Number.isFinite(tangent)) return 0;
+  return tangent;
+}

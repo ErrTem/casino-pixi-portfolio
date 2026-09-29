@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run tests/pathMapping.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\n1..4\nok 1 - m=1 is the origin (left/bottom)\nnot ok 2 - mid/late climb tip motion is soft — 2×→4× slope not dramatically steeper than 1×→2× (D-16)\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected 2 to be less than or equal to 1.45\"\nactual: \"2\"\nexpected: \"1.45\"\n...\nnot ok 3 - gentleTiltRadians clamps path tangent into a small band (D-18)\n---\nerror:\nname: \"AssertionError\"\nmessage: \"expected 1.5707963267948966 to be close to 0.2617993877991494, received difference is 1.3089969389957472, but expected 5e-7\"\nactual: \"1.5707963267948966\"\nexpected: \"0.2617993877991494\"\n...\nok 4 - non-finite multiplier yields finite x/y with no NaN\n\n# tests 4\n# pass 2\n# fail 2\n# cancelled 0\n",
+  "targetTest": "mid/late climb tip motion is soft — 2×→4× slope not dramatically steeper than 1×→2× (D-16)",
+  "targetFile": "tests/pathMapping.test.ts",
+  "expected": "slope24/slope12 <= 1.45 under soft mapping; gentleTiltRadians clamps to TILT_MAX_RAD",
+  "actual": "pure log2-X ratio ~2; gentleTiltRadians passthrough returns PI/2"
+}
