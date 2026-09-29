@@ -145,7 +145,7 @@ Each task was committed atomically:
 3. **Task 2: Arcade world Container camera + crash freeze** - `9747fbb` (feat)
 4. **Task 3: Remove Seed chip + PLSH-03Δ docs** - `49a10fe` (feat)
 
-**Plan metadata:** _(docs commit follows)_
+**Plan metadata:** `86395ac` (docs: complete plan)
 
 _Note: TDD Task 1 produced RED → GREEN commits; no REFACTOR needed_
 

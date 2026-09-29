@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Pixi Hybrid View** - Rising curve + rocket on path + crash break from snapshots (completed 2026-09-27)
 - [x] **Phase 4: Mobile Harden** - Responsive canvas and touch-usable HTML controls (completed 2026-09-27)
 - [x] **Phase 5: Polish** - Countdown, SFX/mute, seed replay, session stats, keyboard cash-out (completed 2026-09-27)
-- [ ] **Phase 6: enhance and rework UI/buttons/behavior** - Compact JetX-like chrome, Auto bet, climb feel, arcade camera before milestone close
+- [x] **Phase 6: enhance and rework UI/buttons/behavior** - Compact JetX-like chrome, Auto bet, climb feel, arcade camera before milestone close
 
 ## Phase Details
 
@@ -235,4 +235,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Pixi Hybrid View | 3/3 | Complete    | 2026-09-27 |
 | 4. Mobile Harden | 3/3 | Complete    | 2026-09-27 |
 | 5. Polish | 4/4 | Complete    | 2026-09-27 |
-| 6. enhance and rework UI/buttons/behavior | 4/4 | In Progress|  |
+| 6. enhance and rework UI/buttons/behavior | 4/4 | Complete    | 2026-09-29 |
