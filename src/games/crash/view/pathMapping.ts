@@ -29,7 +29,9 @@ export function plotScaleFor(multiplier: number): PlotScale {
 
 /**
  * Map multiplier into plot pixels. m=1 is origin (left/bottom).
- * X = log2(m)/log2(xMax); Y = linear (m-1)/(yMax-1) with Pixi Y down.
+ * Soft arcade X (D-16): blend log2-X with linear X so mid/late climb
+ * does not vertical-spike as hard under a centered craft camera.
+ * Y stays linear (m-1)/(yMax-1) with Pixi Y down.
  */
 export function plotPoint(
   multiplier: number,
@@ -42,7 +44,11 @@ export function plotPoint(
   const m = Math.max(1, multiplier);
   const { xMax, yMax } = scale;
   const logDenom = Math.log2(xMax);
-  const u = logDenom > 0 ? Math.log2(m) / logDenom : 0;
+  const uLog = logDenom > 0 ? Math.log2(m) / logDenom : 0;
+  const linDenom = xMax - 1;
+  const uLin = linDenom > 0 ? (m - 1) / linDenom : 0;
+  const blend = Math.min(1, Math.max(0, VIEW_CONFIG.PLOT_X_LINEAR_BLEND));
+  const u = uLog * (1 - blend) + uLin * blend;
   const vDenom = yMax - 1;
   const v = vDenom > 0 ? (m - 1) / vDenom : 0;
   return {
@@ -66,10 +72,9 @@ export function pathTangentRadians(
   return Math.atan2(dy, dx);
 }
 
-/**
- * Gentle craft tilt (D-18). RED stub: passthrough — GREEN clamps to TILT_MAX_RAD.
- */
+/** Clamp path tangent into a gentle tilt band (D-18, ±TILT_MAX_RAD). */
 export function gentleTiltRadians(tangent: number): number {
   if (!Number.isFinite(tangent)) return 0;
-  return tangent;
+  const max = VIEW_CONFIG.TILT_MAX_RAD;
+  return Math.max(-max, Math.min(max, tangent));
 }

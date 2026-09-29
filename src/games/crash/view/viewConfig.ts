@@ -6,13 +6,13 @@ export const VIEW_CONFIG = {
   CLIMB_COLOR: 0x3dff8a,
   CRASH_COLOR: 0xff3b4e,
   /** Milder than Phase 3 1.25 so tip motion stays smooth under arcade camera (D-16). */
-  SCALE_HEADROOM: 1.25,
+  SCALE_HEADROOM: 1.1,
   SCALE_FLOOR: 2,
   /**
    * Blend weight toward linear X in plotPoint (0 = pure log2-X Phase 3, 1 = fully linear).
-   * Soft arcade scroll uses a mid blend (D-16). Stub 0 until GREEN softens mapping.
+   * Soft arcade scroll uses a mid blend (D-16).
    */
-  PLOT_X_LINEAR_BLEND: 0,
+  PLOT_X_LINEAR_BLEND: 0.55,
   /** Max craft tilt from path tangent (±15°) — D-18 gentle tilt. */
   TILT_MAX_RAD: Math.PI / 12,
   PLOT_TOP_RATIO: 0.36,
