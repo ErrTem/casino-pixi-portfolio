@@ -1,10 +1,11 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Container, Graphics } from "pixi.js";
 import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createBackdrop } from "./Backdrop.js";
 import { createCurveGraph } from "./CurveGraph.js";
 import { formatWaitCountdown } from "./formatWaitCountdown.js";
 import {
+  gentleTiltRadians,
   pathTangentRadians,
   plotPoint,
   plotScaleFor,
@@ -54,6 +55,11 @@ function drawFlashRect(g: Graphics, w: number, h: number): void {
   g.rect(0, 0, w, h).fill({ color: VIEW_CONFIG.CRASH_COLOR });
 }
 
+/**
+ * Stage graph (D-17 / Pattern 5):
+ *   backdrop (screen-fixed) → world (curve+ghost+rocket) → theater (upper third) → flash
+ * Camera offset ONLY via world.position — never app.stage.x/y.
+ */
 export function createCrashScene(app: Application): CrashScene {
   const backdrop = createBackdrop(app.screen.width, app.screen.height);
   const curve = createCurveGraph();
@@ -70,15 +76,13 @@ export function createCrashScene(app: Application): CrashScene {
   drawFlashRect(flash, app.screen.width, app.screen.height);
   flash.alpha = 0;
 
-  // Backdrop behind trail; flash above spectacle (D-04, D-10). No stage.x/y.
-  app.stage.addChild(
-    backdrop.container,
-    curve.container,
-    ghost,
-    rocket.container,
-    theater.container,
-    flash,
-  );
+  // World Container camera (D-17): curve + ghost + rocket scroll as a group.
+  const world = new Container({ label: "crash-world" });
+  world.addChild(curve.container, ghost, rocket.container);
+
+  // Theater stays a stage child outside world — upper-third, clear of craft (D-20).
+  // Flash screen-fixed. NEVER write app.stage.x / app.stage.y.
+  app.stage.addChild(backdrop.container, world, theater.container, flash);
 
   let viewMode: ViewModeState = createInitialViewMode();
   let plot = buildPlot(app.screen.width, app.screen.height);
@@ -86,8 +90,18 @@ export function createCrashScene(app: Application): CrashScene {
   let lastH = app.screen.height;
   let holdDrawn = false;
   let idleElapsedMs = 0;
+  /** Latched world offset at crash frame (D-19). */
+  let frozenWorld: { x: number; y: number } | null = null;
 
   theater.layout(lastW, lastH);
+
+  function craftLockPoint(): { x: number; y: number } {
+    // Near screen center, slightly below theater upper third (D-17 / D-20).
+    return {
+      x: lastW * 0.5,
+      y: lastH * VIEW_CONFIG.CAMERA_CENTER_Y_RATIO,
+    };
+  }
 
   function ensurePlot(): void {
     const w = app.screen.width;
@@ -129,10 +143,7 @@ export function createCrashScene(app: Application): CrashScene {
     rocket.container.visible = rocketVisible;
 
     // Flash from crash_hold clock only (D-10). Never write stage.x / stage.y.
-    if (
-      mode === "crash_hold" &&
-      modeElapsedMs < VIEW_CONFIG.FLASH_MS
-    ) {
+    if (mode === "crash_hold" && modeElapsedMs < VIEW_CONFIG.FLASH_MS) {
       const t = modeElapsedMs / VIEW_CONFIG.FLASH_MS;
       flash.alpha = VIEW_CONFIG.FLASH_PEAK_ALPHA * (1 - t);
     } else {
@@ -142,18 +153,27 @@ export function createCrashScene(app: Application): CrashScene {
     if (mode === "climb") {
       holdDrawn = false;
       idleElapsedMs = 0;
+      frozenWorld = null;
       ghost.visible = false;
       const tip = Math.max(1, snapshot.multiplier);
       const pts = samplePoints(tip, plot);
       curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
       const scale = plotScaleFor(tip);
       const pos = plotPoint(tip, plot, scale);
-      const rot = pathTangentRadians(tip, plot, scale);
+      const lock = craftLockPoint();
+      // Tip in world/plot space → lock point in screen space via world offset.
+      world.position.set(lock.x - pos.x, lock.y - pos.y);
+      const rot = gentleTiltRadians(pathTangentRadians(tip, plot, scale));
       rocket.syncPose(pos.x, pos.y, rot, true);
       rocket.container.visible = true;
     } else if (mode === "crash_hold") {
       idleElapsedMs = 0;
       ghost.visible = false;
+      // Freeze camera at crash frame (D-19).
+      if (frozenWorld == null) {
+        frozenWorld = { x: world.position.x, y: world.position.y };
+      }
+      world.position.set(frozenWorld.x, frozenWorld.y);
       if (!holdDrawn) {
         const tip = latchedCrashMult ?? Math.max(1, snapshot.multiplier);
         const pts = samplePoints(tip, plot);
@@ -164,11 +184,16 @@ export function createCrashScene(app: Application): CrashScene {
     } else if (mode === "crash_fade") {
       idleElapsedMs = 0;
       ghost.visible = false;
+      if (frozenWorld != null) {
+        world.position.set(frozenWorld.x, frozenWorld.y);
+      }
       // Keep severed geometry; alpha from reducer.
       rocket.container.visible = false;
     } else {
-      // idle: ghost origin + bobbing parked rocket (D-17, D-19)
+      // idle: world identity + ghost origin + bobbing parked rocket (D-17, D-19)
       holdDrawn = false;
+      frozenWorld = null;
+      world.position.set(0, 0);
       curve.container.alpha = 0;
       idleElapsedMs += Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       const scale = plotScaleFor(1);

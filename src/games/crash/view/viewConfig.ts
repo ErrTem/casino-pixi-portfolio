@@ -26,6 +26,8 @@ export const VIEW_CONFIG = {
   BOB_AMPLITUDE_PX: 4,
   IDLE_CRASH_ALPHA: 0.45,
   THEATER_Y_RATIO: 0.18,
+  /** Screen Y fraction where craft tip is locked during climb (D-17; below theater). */
+  CAMERA_CENTER_Y_RATIO: 0.52,
   FROZEN_OFFSET_PX: 48,
   ROCKET_LENGTH_PX: 28,
   BACKGROUND: 0x070b14,
