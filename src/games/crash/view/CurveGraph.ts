@@ -112,7 +112,7 @@ function strokeNeonStack(
     color,
     VIEW_CONFIG.HALO_ALPHA,
   );
-  strokePath(core, points, VIEW_CONFIG.CORE_WIDTH, color, 1);
+  strokePath(core, points, VIEW_CONFIG.CORE_WIDTH, color, VIEW_CONFIG.CORE_ALPHA);
 }
 
 export function createCurveGraph(): CurveGraph {

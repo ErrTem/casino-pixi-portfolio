@@ -1,4 +1,11 @@
-import { Application, Container, Graphics } from "pixi.js";
+import {
+  Application,
+  BlurFilter,
+  Container,
+  Graphics,
+  Rectangle,
+  type Texture,
+} from "pixi.js";
 import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createBackdrop } from "./Backdrop.js";
@@ -22,6 +29,11 @@ import {
 
 export interface CrashScene {
   sync: (snapshot: CrashSnapshot, deltaMS: number) => void;
+}
+
+export interface CrashSceneOptions {
+  cloudTextures?: readonly Texture[];
+  treeTextures?: readonly Texture[];
 }
 
 function buildPlot(screenW: number, screenH: number): PlotRect {
@@ -60,8 +72,14 @@ function drawFlashRect(g: Graphics, w: number, h: number): void {
  *   backdrop (screen-fixed) → world (curve+rocket) → theater (upper third) → flash
  * Camera offset ONLY via world.position — never app.stage.x/y.
  */
-export function createCrashScene(app: Application): CrashScene {
-  const backdrop = createBackdrop(app.screen.width, app.screen.height);
+export function createCrashScene(
+  app: Application,
+  options: CrashSceneOptions = {},
+): CrashScene {
+  const backdrop = createBackdrop(app.screen.width, app.screen.height, {
+    cloudTextures: options.cloudTextures,
+    treeTextures: options.treeTextures,
+  });
   const curve = createCurveGraph();
   const rocket = createRocket();
   const theater = createTheaterText();
@@ -76,6 +94,15 @@ export function createCrashScene(app: Application): CrashScene {
   // Theater stays a stage child outside world — upper-third, clear of craft (D-20).
   // Flash screen-fixed. NEVER write app.stage.x / app.stage.y.
   app.stage.addChild(backdrop.container, world, theater.container, flash);
+
+  // Motion blur on backdrop only after 10× — keeps × / HUD sharp.
+  const speedBlur = new BlurFilter({
+    strength: 0,
+    quality: VIEW_CONFIG.SPEED_BLUR_QUALITY,
+    kernelSize: 5,
+  });
+  speedBlur.strengthX = 0;
+  speedBlur.strengthY = 0;
 
   let viewMode: ViewModeState = createInitialViewMode();
   let plot = buildPlot(app.screen.width, app.screen.height);
@@ -131,14 +158,36 @@ export function createCrashScene(app: Application): CrashScene {
       latchedCashOut,
     } = viewMode;
 
-    // Parallax always; speed-line intensity only while climbing.
-    let climbIntensity = 0;
-    if (mode === "climb") {
-      const m = Number.isFinite(snapshot.multiplier) ? snapshot.multiplier : 1;
-      const at = VIEW_CONFIG.SPEED_LINE_INTENSITY_AT;
-      climbIntensity = Math.min(1, Math.max(0, (m - 1) / Math.max(1, at - 1)));
+    // Parallax scrolls only while climbing; speed boost ramps smoothly with ×.
+    const climbing = mode === "climb";
+    let parallaxSpeed = 0;
+    let climbMult = 1;
+    if (climbing) {
+      climbMult = Number.isFinite(snapshot.multiplier)
+        ? Math.max(1, snapshot.multiplier)
+        : 1;
+      const at = VIEW_CONFIG.PARALLAX_INTENSITY_AT;
+      parallaxSpeed = Math.min(
+        1,
+        Math.max(0, (climbMult - 1) / Math.max(1, at - 1)),
+      );
     }
-    backdrop.tick(deltaMS, climbIntensity);
+    backdrop.tick(deltaMS, climbing, parallaxSpeed);
+
+    // Speed blur on backdrop after SPEED_BLUR_START_M (horizontal-biased).
+    if (climbing && climbMult > VIEW_CONFIG.SPEED_BLUR_START_M) {
+      const start = VIEW_CONFIG.SPEED_BLUR_START_M;
+      const at = Math.max(start + 0.01, VIEW_CONFIG.SPEED_BLUR_AT_M);
+      const t = Math.min(1, Math.max(0, (climbMult - start) / (at - start)));
+      speedBlur.strengthX = VIEW_CONFIG.SPEED_BLUR_STRENGTH_X * t;
+      speedBlur.strengthY = VIEW_CONFIG.SPEED_BLUR_STRENGTH_Y * t;
+      backdrop.container.filters = [speedBlur];
+      backdrop.container.filterArea = new Rectangle(0, 0, lastW, lastH);
+    } else {
+      speedBlur.strengthX = 0;
+      speedBlur.strengthY = 0;
+      backdrop.container.filters = null;
+    }
 
     curve.container.alpha = trailAlpha;
     rocket.container.visible = rocketVisible;
@@ -159,14 +208,15 @@ export function createCrashScene(app: Application): CrashScene {
       const pts = samplePoints(tip, plot);
       const scale = plotScaleFor(tip);
       const pos = plotPoint(tip, plot, scale);
-      // Tip-follow camera on world Container only (never stage.x/y).
-      // Pivot identity + rotation 0; lerp so tip locks near screen center.
+      // Tip-follow on world only (never stage.x/y). Hold at identity until the
+      // craft reaches the lock point so takeoff reads from ground/left, then follow.
       world.pivot.set(0, 0);
       world.rotation = 0;
       const lockX = lastW * VIEW_CONFIG.CAMERA_CENTER_X_RATIO;
       const lockY = lastH * VIEW_CONFIG.CAMERA_CENTER_Y_RATIO;
-      const targetX = lockX - pos.x;
-      const targetY = lockY - pos.y;
+      const targetX = pos.x < lockX ? 0 : lockX - pos.x;
+      // Pixi Y-down: ground is larger Y; follow only after tip rises to lockY.
+      const targetY = pos.y > lockY ? 0 : lockY - pos.y;
       const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       const tau = Math.max(1, VIEW_CONFIG.CAMERA_LERP_TAU_MS);
       const a = 1 - Math.exp(-dt / tau);

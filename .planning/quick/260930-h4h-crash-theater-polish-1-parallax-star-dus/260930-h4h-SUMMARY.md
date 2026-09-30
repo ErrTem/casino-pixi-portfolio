@@ -91,3 +91,9 @@ status: complete
 ## Deviations
 
 - None material; view-layer only, no logic/ or new packages.
+
+## Self-Check: PASSED
+
+- All key artifacts present (Backdrop, CrashScene, CurveGraph, Rocket, TheaterText, viewConfig, theaterTint.test.ts, SUMMARY)
+- Commits found: `fa1aae4`, `9710140`, `72d4d4a`
+- `npx tsc --noEmit` + `npm test` (132) green after restore

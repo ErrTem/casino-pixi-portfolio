@@ -13,7 +13,7 @@ export interface Rocket {
 }
 
 /**
- * Geometric rocket with texture-swap seam and capped spark/smoke tip trail.
+ * Geometric rocket with texture-swap seam (no particle trail).
  * Position/rotation stay on the parent Container — path-follow never moves to the sprite.
  */
 export function createRocket(): Rocket {
@@ -40,25 +40,6 @@ export function createRocket(): Rocket {
   bodySprite.visible = false;
   container.addChild(bodySprite);
 
-  const trailCount = VIEW_CONFIG.TRAIL_COUNT;
-  const spacing = VIEW_CONFIG.TRAIL_SPACING_PX;
-  const trailDots: Graphics[] = [];
-  for (let i = 0; i < trailCount; i++) {
-    const dot = new Graphics();
-    const isSmoke = i % 3 === 0;
-    if (isSmoke) {
-      const rx = 2.4 + (i % 4) * 0.35;
-      const ry = 1.4 + (i % 3) * 0.25;
-      dot.ellipse(0, 0, rx, ry).fill({ color: 0xb8b4d8 });
-    } else {
-      const r = 1.6 + (i % 3) * 0.35;
-      dot.circle(0, 0, r).fill({ color: 0xfd953c });
-    }
-    dot.visible = false;
-    trailDots.push(dot);
-    container.addChild(dot);
-  }
-
   function setBodyTexture(texture: Texture | null): void {
     if (texture) {
       bodySprite.texture = texture;
@@ -74,28 +55,10 @@ export function createRocket(): Rocket {
     x: number,
     y: number,
     rotationRadians: number,
-    showStreak: boolean,
+    _showStreak: boolean,
   ): void {
     container.position.set(x, y);
     container.rotation = rotationRadians;
-
-    if (showStreak) {
-      for (let i = 0; i < trailCount; i++) {
-        const dot = trailDots[i]!;
-        // Local -X is -tangent after parent rotation (nose along +X).
-        const offset = (i + 1) * spacing;
-        const wobble = ((i % 5) - 2) * 0.35;
-        dot.position.set(-offset, wobble);
-        const t = i / trailCount;
-        dot.alpha = (1 - t) * (1 - t) * 0.95;
-        dot.scale.set(1 - t * 0.55);
-        dot.visible = true;
-      }
-    } else {
-      for (const dot of trailDots) {
-        dot.visible = false;
-      }
-    }
   }
 
   return { container, setBodyTexture, syncPose };

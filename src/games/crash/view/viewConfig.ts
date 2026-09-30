@@ -2,10 +2,11 @@
 export const VIEW_CONFIG = {
   /** Soft outer neon glow (widest). */
   GLOW_OUTER_WIDTH: 28,
-  GLOW_OUTER_ALPHA: 0.18,
-  HALO_WIDTH: 18,
-  HALO_ALPHA: 0.42,
-  CORE_WIDTH: 4,
+  GLOW_OUTER_ALPHA: 0.08,
+  HALO_WIDTH: 14,
+  HALO_ALPHA: 0.16,
+  CORE_WIDTH: 3.5,
+  CORE_ALPHA: 0.42,
   CLIMB_COLOR: 0x7667ff,
   CRASH_COLOR: 0xf84f3c,
   /** Milder headroom — tip travels farther before rescale. */
@@ -40,22 +41,53 @@ export const VIEW_CONFIG = {
   FROZEN_OFFSET_PX: 48,
   ROCKET_LENGTH_PX: 28,
   BACKGROUND: 0x161648,
+  /** Parallax cloud sprite tint (was ellipse fill 0x3a386a @ 0.28). */
+  CLOUD_TINT: 0x3a386a,
+  CLOUD_ALPHA: 0.28,
+  /** Screen-fixed ground strip — cloud hue, slightly more saturated. */
+  GROUND_COLOR: 0x4540a0,
+  GROUND_HEIGHT_RATIO: 0.055,
+  GROUND_LIP_COLOR: 0x5550b8,
+  GROUND_LIP_PX: 2,
+  /** Trees on ground — same hue as clouds, slightly more opaque. */
+  TREE_TINT: 0x3a386a,
+  TREE_ALPHA: 0.55,
+  /** Tree height as fraction of screen height (desktop). */
+  TREE_HEIGHT_RATIO: 0.09,
+  /** Tree height as fraction of screen height (narrow / mobile). */
+  TREE_HEIGHT_RATIO_MOBILE: 0.055,
+  /** Match HUD mobile breakpoint — fewer/smaller trees below this width. */
+  TREE_MOBILE_MAX_W: 720,
   /** Far / mid / near star-dust wrap periods (ms) at intensity 0. */
   PARALLAX_FAR_PERIOD_MS: 72_000,
   PARALLAX_MID_PERIOD_MS: 42_000,
   PARALLAX_NEAR_PERIOD_MS: 22_000,
-  /** At full intensity, periods shrink by this factor (faster scroll). */
-  PARALLAX_SPEED_BOOST: 2.8,
-  /** Multiplier where speed-line / parallax intensity saturates. */
-  SPEED_LINE_INTENSITY_AT: 12,
-  SPEED_LINE_COUNT: 18,
-  SPEED_LINE_ALPHA_MAX: 0.35,
-  /** Tip spark/smoke trail pool size (hard cap). */
-  TRAIL_COUNT: 20,
-  TRAIL_SPACING_PX: 4.5,
+  /** At full intensity, scroll rate multiplies by this (smooth — no period remaps). */
+  PARALLAX_SPEED_BOOST: 8,
+  /** Multiplier where parallax speed boost saturates. */
+  PARALLAX_INTENSITY_AT: 25,
   /** Live × scale pulse on whole-number crossings. */
   PULSE_PEAK_SCALE: 1.12,
   PULSE_DURATION_MS: 180,
+  /** Base live × scale grows from 1 → this as mult approaches LIVE_SCALE_AT_M. */
+  LIVE_SCALE_MAX: 1.55,
+  /** Multiplier where live × base scale growth begins. */
+  LIVE_SCALE_START_M: 3,
+  /** Multiplier where live × base scale saturates. */
+  LIVE_SCALE_AT_M: 40,
+  /** Pendulum amplitude for live × rotation (degrees). */
+  LIVE_SWAY_DEG: 15,
+  /** Full +amp→−amp→+amp cycle duration (ms) at constant angular speed. */
+  LIVE_SWAY_PERIOD_MS: 4800,
+  /** Sway starts only after this multiplier (ramps in smoothly). */
+  LIVE_SWAY_START_M: 10,
+  /** Multiplier where spark rain starts (ramps to full by LIVE_SPARK_AT_M). */
+  LIVE_SPARK_START_M: 3,
+  LIVE_SPARK_AT_M: 15,
+  /** Hard-capped spark pool hanging off live ×. */
+  LIVE_SPARK_POOL: 28,
+  /** Spawn attempts per second at full spark intensity. */
+  LIVE_SPARK_SPAWN_PER_SEC: 18,
   /** White → gold/fire tint ramp starts after this multiplier. */
   TINT_GOLD_START_M: 10,
   TINT_NEAR_WHITE: 0xf3f0ff,
@@ -63,6 +95,14 @@ export const VIEW_CONFIG = {
   TINT_FIRE: 0xff7a18,
   /** Multiplier where gold→fire lerp completes. */
   TINT_FIRE_AT_M: 25,
+  /** Backdrop speed-blur starts after this multiplier. */
+  SPEED_BLUR_START_M: 10,
+  /** Multiplier where speed-blur strength saturates. */
+  SPEED_BLUR_AT_M: 25,
+  /** Max horizontal / vertical blur strength (motion-speed feel). */
+  SPEED_BLUR_STRENGTH_X: 6,
+  SPEED_BLUR_STRENGTH_Y: 1.2,
+  SPEED_BLUR_QUALITY: 3,
 } as const;
 
 export type ViewConfig = typeof VIEW_CONFIG;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { theaterTintForMult } from "./TheaterText.js";
+import { liveScaleProgress, theaterTintForMult } from "./TheaterText.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
 
 describe("theaterTintForMult", () => {
@@ -42,5 +42,24 @@ describe("theaterTintForMult", () => {
     expect(red(a)).toBeGreaterThanOrEqual(0xe0);
     expect(red(b)).toBeGreaterThanOrEqual(0xe0);
     expect(red(c)).toBe(0xff);
+  });
+});
+
+describe("liveScaleProgress", () => {
+  it("is 0 at/below LIVE_SCALE_START_M and saturates at LIVE_SCALE_AT_M", () => {
+    expect(liveScaleProgress(1)).toBe(0);
+    expect(liveScaleProgress(VIEW_CONFIG.LIVE_SCALE_START_M)).toBe(0);
+    expect(liveScaleProgress(VIEW_CONFIG.LIVE_SCALE_AT_M)).toBe(1);
+    expect(liveScaleProgress(VIEW_CONFIG.LIVE_SCALE_AT_M * 2)).toBe(1);
+  });
+
+  it("grows monotonically between START and AT", () => {
+    const a = liveScaleProgress(4);
+    const b = liveScaleProgress(8);
+    const c = liveScaleProgress(20);
+    expect(a).toBeGreaterThan(0);
+    expect(b).toBeGreaterThan(a);
+    expect(c).toBeGreaterThan(b);
+    expect(c).toBeLessThanOrEqual(1);
   });
 });
