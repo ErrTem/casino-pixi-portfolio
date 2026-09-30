@@ -3,8 +3,8 @@ export const VIEW_CONFIG = {
   HALO_WIDTH: 16,
   HALO_ALPHA: 0.35,
   CORE_WIDTH: 4,
-  CLIMB_COLOR: 0x3dff8a,
-  CRASH_COLOR: 0xff3b4e,
+  CLIMB_COLOR: 0x7667ff,
+  CRASH_COLOR: 0xf84f3c,
   /** Milder headroom — tip travels farther before rescale. */
   SCALE_HEADROOM: 1.08,
   /** Higher floor keeps early climb on a fixed scale (smooth left→right takeoff). */
@@ -16,10 +16,6 @@ export const VIEW_CONFIG = {
   PLOT_X_LINEAR_BLEND: 0.72,
   /** Max craft tilt from path tangent (±12°). */
   TILT_MAX_RAD: Math.PI / 15,
-  /** Lock craft X near this plot-width fraction; then bob up/down. */
-  RIGHT_EDGE_U: 0.88,
-  EDGE_BOB_AMPLITUDE_PX: 14,
-  EDGE_BOB_PERIOD_MS: 1600,
   PLOT_TOP_RATIO: 0.36,
   SAMPLE_COUNT: 64,
   SEVER_KEEP_RATIO: 0.94,
@@ -31,12 +27,16 @@ export const VIEW_CONFIG = {
   BOB_PERIOD_MS: 1400,
   BOB_AMPLITUDE_PX: 4,
   IDLE_CRASH_ALPHA: 0.45,
-  THEATER_Y_RATIO: 0.18,
-  /** Screen Y fraction where craft tip is locked during climb (unused when fixed camera). */
+  THEATER_Y_RATIO: 0.4,
+  /** Screen X fraction where craft tip is locked during climb (slight right bias). */
+  CAMERA_CENTER_X_RATIO: 0.55,
+  /** Screen Y fraction where craft tip is locked during climb. */
   CAMERA_CENTER_Y_RATIO: 0.52,
+  /** Exponential follow time-constant (ms) for world.position tip lock. */
+  CAMERA_LERP_TAU_MS: 140,
   FROZEN_OFFSET_PX: 48,
   ROCKET_LENGTH_PX: 28,
-  BACKGROUND: 0x070b14,
+  BACKGROUND: 0x161648,
 } as const;
 
 export type ViewConfig = typeof VIEW_CONFIG;

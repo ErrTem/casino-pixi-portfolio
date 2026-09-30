@@ -83,7 +83,6 @@ export function createCrashScene(app: Application): CrashScene {
   let lastH = app.screen.height;
   let holdDrawn = false;
   let idleElapsedMs = 0;
-  let climbElapsedMs = 0;
   /** Latched world transform at crash frame (D-19). */
   let frozenWorld: {
     x: number;
@@ -147,38 +146,31 @@ export function createCrashScene(app: Application): CrashScene {
       holdDrawn = false;
       idleElapsedMs = 0;
       frozenWorld = null;
-      climbElapsedMs += Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       const tip = Math.max(1, snapshot.multiplier);
       const pts = samplePoints(tip, plot);
       const scale = plotScaleFor(tip);
-      const origin = plotPoint(1, plot, scale);
       const pos = plotPoint(tip, plot, scale);
-      const u = plot.width > 0 ? (pos.x - plot.x) / plot.width : 0;
-      // Craft always on tip. Path origin (m=1) stays fixed on screen.
-      // Past the right edge: rotate the whole world around that origin so the
-      // entire line + craft move up/down together — never bob the tip alone.
-      if (u >= VIEW_CONFIG.RIGHT_EDGE_U) {
-        const radius =
-          Math.hypot(pos.x - origin.x, pos.y - origin.y) || 1;
-        const angle =
-          Math.sin(
-            (climbElapsedMs * 2 * Math.PI) / VIEW_CONFIG.EDGE_BOB_PERIOD_MS,
-          ) * (VIEW_CONFIG.EDGE_BOB_AMPLITUDE_PX / radius);
-        world.pivot.set(origin.x, origin.y);
-        world.position.set(origin.x, origin.y);
-        world.rotation = angle;
-      } else {
-        world.pivot.set(0, 0);
-        world.position.set(0, 0);
-        world.rotation = 0;
-      }
+      // Tip-follow camera on world Container only (never stage.x/y).
+      // Pivot identity + rotation 0; lerp so tip locks near screen center.
+      world.pivot.set(0, 0);
+      world.rotation = 0;
+      const lockX = lastW * VIEW_CONFIG.CAMERA_CENTER_X_RATIO;
+      const lockY = lastH * VIEW_CONFIG.CAMERA_CENTER_Y_RATIO;
+      const targetX = lockX - pos.x;
+      const targetY = lockY - pos.y;
+      const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
+      const tau = Math.max(1, VIEW_CONFIG.CAMERA_LERP_TAU_MS);
+      const a = 1 - Math.exp(-dt / tau);
+      world.position.set(
+        world.position.x + (targetX - world.position.x) * a,
+        world.position.y + (targetY - world.position.y) * a,
+      );
       curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
       const rot = gentleTiltRadians(pathTangentRadians(tip, plot, scale));
       rocket.syncPose(pos.x, pos.y, rot, true);
       rocket.container.visible = true;
     } else if (mode === "crash_hold") {
       idleElapsedMs = 0;
-      climbElapsedMs = 0;
       // Freeze camera at crash frame (D-19).
       if (frozenWorld == null) {
         frozenWorld = {
@@ -201,7 +193,6 @@ export function createCrashScene(app: Application): CrashScene {
       rocket.container.visible = false;
     } else if (mode === "crash_fade") {
       idleElapsedMs = 0;
-      climbElapsedMs = 0;
       if (frozenWorld != null) {
         world.pivot.set(frozenWorld.pivotX, frozenWorld.pivotY);
         world.position.set(frozenWorld.x, frozenWorld.y);
@@ -213,7 +204,6 @@ export function createCrashScene(app: Application): CrashScene {
       // idle: parked rocket fixed at path origin (no bob)
       holdDrawn = false;
       frozenWorld = null;
-      climbElapsedMs = 0;
       world.pivot.set(0, 0);
       world.position.set(0, 0);
       world.rotation = 0;
