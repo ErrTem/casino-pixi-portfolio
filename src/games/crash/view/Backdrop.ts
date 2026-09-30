@@ -27,39 +27,74 @@ export const TREE_ASSET_URLS = [
   "/assets/trees/tree-c.png",
 ] as const;
 
+type ScrollNode = {
+  node: Container;
+  /** Resting Y (bob is applied on top). */
+  baseY: number;
+  /** Half-width used so wrap happens after the sprite fully leaves the screen. */
+  wrapPad: number;
+};
+
 function clamp01(t: number): number {
   if (!Number.isFinite(t)) return 0;
   return Math.min(1, Math.max(0, t));
 }
 
-function fillStarDust(
-  g: Graphics,
+/** Create individual star/dust Graphics — each wraps independently (never rebuilt on tick). */
+function spawnStarDust(
+  layer: Container,
   count: number,
   w: number,
   h: number,
   yBand: { top: number; span: number },
   seed: number,
   dustish: boolean,
-): void {
+): ScrollNode[] {
+  const nodes: ScrollNode[] = [];
   for (let i = 0; i < count; i++) {
     const u = ((i * 47 + seed * 13) % 97) / 97;
     const v = ((i * 31 + seed * 17 + 13) % 89) / 89;
-    const x = u * w * 2;
+    const x = u * w;
     const y = h * (yBand.top + v * yBand.span);
+    const g = new Graphics();
+    let pad = 2;
     if (dustish && i % 4 === 0) {
       const rx = 1.2 + (i % 3) * 0.8;
       const ry = 0.5 + (i % 2) * 0.35;
-      g.ellipse(x, y, rx, ry).fill({
+      g.ellipse(0, 0, rx, ry).fill({
         color: 0xc8c4ff,
         alpha: 0.1 + (i % 5) * 0.03,
       });
+      pad = rx;
     } else {
       const r = 0.55 + (i % 3) * 0.35;
-      g.circle(x, y, r).fill({
+      g.circle(0, 0, r).fill({
         color: 0xffffff,
         alpha: 0.16 + (i % 5) * 0.05,
       });
+      pad = r;
     }
+    g.position.set(x, y);
+    layer.addChild(g);
+    nodes.push({ node: g, baseY: y, wrapPad: pad });
+  }
+  return nodes;
+}
+
+/** Shift nodes left; when fully off-screen, wrap to the right — seamless infinite scroll. */
+function scrollWrapX(nodes: readonly ScrollNode[], dx: number, screenW: number): void {
+  const span = screenW > 0 ? screenW : 1;
+  for (const item of nodes) {
+    item.node.x -= dx;
+    if (item.node.x < -item.wrapPad) {
+      item.node.x += span + item.wrapPad * 2;
+    }
+  }
+}
+
+function applyBobY(nodes: readonly ScrollNode[], bobY: number): void {
+  for (const item of nodes) {
+    item.node.y = item.baseY + bobY;
   }
 }
 
@@ -72,7 +107,7 @@ export interface BackdropOptions {
 
 /**
  * Flat night field + parallax stars + clouds + ground strip with trees.
- * Scroll only while climbing; phase accumulates continuously (no intensity-period jumps).
+ * Each sprite/star scrolls and wraps individually (infinite) — no layer recreate on tick.
  */
 export function createBackdrop(
   width: number,
@@ -82,19 +117,15 @@ export function createBackdrop(
   const container = new Container();
   let lastW = -1;
   let lastH = -1;
-  /** Continuous wrap phases in [0, ∞); position = -(phase % 1) * screenW. */
-  let farPhase = 0;
-  let midPhase = 0;
-  let nearPhase = 0;
-  let cloudPhase = 0;
-  let treePhase = 0;
   let bobMs = 0;
-  let farLayer: Graphics | null = null;
-  let midLayer: Graphics | null = null;
-  let nearLayer: Graphics | null = null;
-  let clouds: Container | null = null;
-  let trees: Container | null = null;
   let screenW = width;
+
+  let farStars: ScrollNode[] = [];
+  let midStars: ScrollNode[] = [];
+  let nearStars: ScrollNode[] = [];
+  let cloudNodes: ScrollNode[] = [];
+  let treeNodes: ScrollNode[] = [];
+
   const cloudTextures = (options.cloudTextures ?? []).filter(
     (t) => t && t !== Texture.EMPTY,
   );
@@ -102,8 +133,9 @@ export function createBackdrop(
     (t) => t && t !== Texture.EMPTY,
   );
 
-  function placeCloudSprites(layer: Container, w: number, h: number): void {
-    if (cloudTextures.length === 0) return;
+  function placeCloudSprites(layer: Container, w: number, h: number): ScrollNode[] {
+    const placed: ScrollNode[] = [];
+    if (cloudTextures.length === 0) return placed;
 
     const groundH = Math.max(18, h * VIEW_CONFIG.GROUND_HEIGHT_RATIO);
     const clearance = 10;
@@ -112,10 +144,6 @@ export function createBackdrop(
       { cx: w * 0.48, cy: h * 0.76, width: w * 0.272 },
       { cx: w * 0.78, cy: h * 0.7, width: w * 0.208 },
       { cx: w * 0.62, cy: h * 0.78, width: w * 0.24 },
-      // Duplicate strip for seamless wrap (2× wide scroll).
-      { cx: w * 1.18, cy: h * 0.74, width: w * 0.224 },
-      { cx: w * 1.48, cy: h * 0.77, width: w * 0.256 },
-      { cx: w * 1.78, cy: h * 0.71, width: w * 0.192 },
     ];
 
     for (let i = 0; i < specs.length; i++) {
@@ -127,49 +155,51 @@ export function createBackdrop(
       sprite.alpha = VIEW_CONFIG.CLOUD_ALPHA;
       const scale = spec.width / Math.max(1, tex.width);
       sprite.scale.set(scale);
-      // Keep sprite bottom above the ground strip (desktop overlap fix).
       const halfH = (tex.height * scale) / 2;
+      const halfW = (tex.width * scale) / 2;
       const maxCy = h - groundH - clearance - halfH;
-      sprite.position.set(spec.cx, Math.min(spec.cy, maxCy));
+      const cy = Math.min(spec.cy, maxCy);
+      sprite.position.set(spec.cx, cy);
       layer.addChild(sprite);
+      placed.push({ node: sprite, baseY: cy, wrapPad: halfW });
     }
+    return placed;
   }
 
-  function placeTreeSprites(layer: Container, w: number, h: number): void {
-    if (treeTextures.length === 0) return;
+  function placeTreeSprites(layer: Container, w: number, h: number): ScrollNode[] {
+    const placed: ScrollNode[] = [];
+    if (treeTextures.length === 0) return placed;
 
     const mobile = w <= VIEW_CONFIG.TREE_MOBILE_MAX_W;
     const groundH = Math.max(18, h * VIEW_CONFIG.GROUND_HEIGHT_RATIO);
     const groundTop = h - groundH;
-    // Plant trunks slightly into the strip so they sit on the ground.
     const plantY = groundTop + groundH * 0.35;
     const heightRatio = mobile
       ? VIEW_CONFIG.TREE_HEIGHT_RATIO_MOBILE
       : VIEW_CONFIG.TREE_HEIGHT_RATIO;
     const targetH = Math.max(22, h * heightRatio);
 
-    // Fewer trees on narrow screens; duplicate for 2× wrap strip.
     const fracXs = mobile
       ? [0.15, 0.5, 0.82]
       : [0.08, 0.22, 0.38, 0.55, 0.7, 0.88];
-    const xs = [
-      ...fracXs.map((u) => w * u),
-      ...fracXs.map((u) => w * (1 + u)),
-    ];
 
-    for (let i = 0; i < xs.length; i++) {
+    for (let i = 0; i < fracXs.length; i++) {
       const tex = treeTextures[i % treeTextures.length]!;
       const sprite = new Sprite(tex);
       sprite.anchor.set(0.5, 1);
       sprite.tint = VIEW_CONFIG.TREE_TINT;
       sprite.alpha = VIEW_CONFIG.TREE_ALPHA;
       const scale = targetH / Math.max(1, tex.height);
-      // Slight size variation along the row
       const vary = 0.85 + (i % 3) * 0.1;
-      sprite.scale.set(scale * vary);
-      sprite.position.set(xs[i]!, plantY);
+      const s = scale * vary;
+      sprite.scale.set(s);
+      const halfW = (tex.width * s) / 2;
+      const x = w * fracXs[i]!;
+      sprite.position.set(x, plantY);
       layer.addChild(sprite);
+      placed.push({ node: sprite, baseY: plantY, wrapPad: halfW });
     }
+    return placed;
   }
 
   function rebuild(w: number, h: number): void {
@@ -180,23 +210,22 @@ export function createBackdrop(
     sky.rect(0, 0, w, h).fill({ color: VIEW_CONFIG.BACKGROUND });
     container.addChild(sky);
 
-    farLayer = new Graphics();
-    fillStarDust(farLayer, 40, w, h, { top: 0.02, span: 0.5 }, 1, false);
+    const farLayer = new Container();
+    farStars = spawnStarDust(farLayer, 40, w, h, { top: 0.02, span: 0.5 }, 1, false);
     container.addChild(farLayer);
 
-    midLayer = new Graphics();
-    fillStarDust(midLayer, 48, w, h, { top: 0.04, span: 0.48 }, 2, true);
+    const midLayer = new Container();
+    midStars = spawnStarDust(midLayer, 48, w, h, { top: 0.04, span: 0.48 }, 2, true);
     container.addChild(midLayer);
 
-    nearLayer = new Graphics();
-    fillStarDust(nearLayer, 36, w, h, { top: 0.06, span: 0.44 }, 3, true);
+    const nearLayer = new Container();
+    nearStars = spawnStarDust(nearLayer, 36, w, h, { top: 0.06, span: 0.44 }, 3, true);
     container.addChild(nearLayer);
 
-    clouds = new Container();
-    placeCloudSprites(clouds, w, h);
+    const clouds = new Container();
+    cloudNodes = placeCloudSprites(clouds, w, h);
     container.addChild(clouds);
 
-    // Screen-fixed ground strip.
     const groundH = Math.max(18, h * VIEW_CONFIG.GROUND_HEIGHT_RATIO);
     const ground = new Graphics();
     ground.rect(0, h - groundH, w, groundH).fill({
@@ -210,51 +239,21 @@ export function createBackdrop(
     });
     container.addChild(ground);
 
-    // Trees sit on the ground; scroll horizontally with climb.
-    trees = new Container();
-    placeTreeSprites(trees, w, h);
+    const trees = new Container();
+    treeNodes = placeTreeSprites(trees, w, h);
     container.addChild(trees);
 
     lastW = w;
     lastH = h;
-    applyPositions();
+    applyBob();
   }
 
-  function wrapX(phase: number): number {
-    const w = screenW > 0 ? screenW : 1;
-    const u = phase - Math.floor(phase);
-    return -u * w;
-  }
-
-  function applyPositions(): void {
-    if (farLayer) {
-      farLayer.position.set(
-        wrapX(farPhase),
-        Math.sin((bobMs * 2 * Math.PI) / 28_000) * 3,
-      );
-    }
-    if (midLayer) {
-      midLayer.position.set(
-        wrapX(midPhase),
-        Math.sin((bobMs * 2 * Math.PI) / 18_000) * 4,
-      );
-    }
-    if (nearLayer) {
-      nearLayer.position.set(
-        wrapX(nearPhase),
-        Math.sin((bobMs * 2 * Math.PI) / 12_000) * 5,
-      );
-    }
-    if (clouds) {
-      clouds.position.set(
-        wrapX(cloudPhase),
-        Math.sin((bobMs * 2 * Math.PI) / 9_000) * 5,
-      );
-    }
-    if (trees) {
-      // Horizontal scroll only — keep planted on the ground strip.
-      trees.position.set(wrapX(treePhase), 0);
-    }
+  function applyBob(): void {
+    applyBobY(farStars, Math.sin((bobMs * 2 * Math.PI) / 28_000) * 3);
+    applyBobY(midStars, Math.sin((bobMs * 2 * Math.PI) / 18_000) * 4);
+    applyBobY(nearStars, Math.sin((bobMs * 2 * Math.PI) / 12_000) * 5);
+    applyBobY(cloudNodes, Math.sin((bobMs * 2 * Math.PI) / 9_000) * 5);
+    // Trees stay planted — no vertical bob.
   }
 
   rebuild(width, height);
@@ -268,25 +267,37 @@ export function createBackdrop(
     },
     tick(deltaMS: number, scrolling = false, speed01 = 0): void {
       if (!scrolling) {
-        applyPositions();
+        applyBob();
         return;
       }
 
       const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
       bobMs += dt;
-      // Rate multiplies smoothly — never remaps wrap period (avoids ~12–13× hitch).
       const rate =
         1 +
         (VIEW_CONFIG.PARALLAX_SPEED_BOOST - 1) * clamp01(speed01);
+      const w = screenW > 0 ? screenW : 1;
 
-      farPhase += (dt / VIEW_CONFIG.PARALLAX_FAR_PERIOD_MS) * rate;
-      midPhase += (dt / VIEW_CONFIG.PARALLAX_MID_PERIOD_MS) * rate;
-      nearPhase += (dt / VIEW_CONFIG.PARALLAX_NEAR_PERIOD_MS) * rate;
-      cloudPhase += (dt / 28_000) * rate;
-      // Trees scroll a bit faster than clouds (near-ground parallax).
-      treePhase += (dt / 18_000) * rate;
+      // px/frame from the old phase→wrapX model: (dt/period)*rate*w
+      scrollWrapX(
+        farStars,
+        (dt / VIEW_CONFIG.PARALLAX_FAR_PERIOD_MS) * rate * w,
+        w,
+      );
+      scrollWrapX(
+        midStars,
+        (dt / VIEW_CONFIG.PARALLAX_MID_PERIOD_MS) * rate * w,
+        w,
+      );
+      scrollWrapX(
+        nearStars,
+        (dt / VIEW_CONFIG.PARALLAX_NEAR_PERIOD_MS) * rate * w,
+        w,
+      );
+      scrollWrapX(cloudNodes, (dt / 28_000) * rate * w, w);
+      scrollWrapX(treeNodes, (dt / 18_000) * rate * w, w);
 
-      applyPositions();
+      applyBob();
     },
   };
 }

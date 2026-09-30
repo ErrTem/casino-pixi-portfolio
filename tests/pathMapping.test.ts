@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   gentleTiltRadians,
+  pathProgress,
   pathTangentRadians,
   plotPoint,
   plotScaleFor,
@@ -10,7 +11,7 @@ import { VIEW_CONFIG } from "../src/games/crash/view/viewConfig.js";
 
 const plot: PlotRect = { x: 0, y: 0, width: 400, height: 300 };
 
-describe("pathMapping — D-16 soft plot + D-18 gentle tilt", () => {
+describe("pathMapping — infinite diagonal sine + gentle tilt", () => {
   it("m=1 is the origin (left/bottom)", () => {
     const scale = plotScaleFor(1);
     const p = plotPoint(1, plot, scale);
@@ -18,20 +19,52 @@ describe("pathMapping — D-16 soft plot + D-18 gentle tilt", () => {
     expect(p.y).toBe(plot.y + plot.height);
   });
 
-  it("mid/late climb tip motion is soft — 2×→4× slope not dramatically steeper than 1×→2× (D-16)", () => {
+  it("path undulates off the diagonal (sine, not a straight climb)", () => {
     const scale = plotScaleFor(4);
-    const p1 = plotPoint(1, plot, scale);
-    const p2 = plotPoint(2, plot, scale);
-    const p4 = plotPoint(4, plot, scale);
-    const slope12 = Math.abs((p2.y - p1.y) / (p2.x - p1.x));
-    const slope24 = Math.abs((p4.y - p2.y) / (p4.x - p2.x));
-    // Soft mapping (linear X blend + milder headroom) keeps late climb readable under arcade camera.
-    expect(slope24 / slope12).toBeLessThanOrEqual(1.45);
-    expect(VIEW_CONFIG.PLOT_X_LINEAR_BLEND).toBeGreaterThan(0);
-    expect(VIEW_CONFIG.SCALE_HEADROOM).toBeLessThanOrEqual(1.2);
+    let maxOff = 0;
+    for (let i = 1; i <= 20; i++) {
+      const m = 1 + ((4 - 1) * i) / 20;
+      const p = plotPoint(m, plot, scale);
+      const u = pathProgress(m);
+      const diagX = plot.x + u * plot.width;
+      const diagY = plot.y + plot.height - u * plot.height;
+      maxOff = Math.max(maxOff, Math.hypot(p.x - diagX, p.y - diagY));
+    }
+    expect(maxOff).toBeGreaterThan(
+      VIEW_CONFIG.PATH_SINE_AMPLITUDE * Math.min(plot.width, plot.height) * 0.5,
+    );
+    expect(VIEW_CONFIG.PATH_SINE_CYCLES).toBeGreaterThan(0);
   });
 
-  it("gentleTiltRadians clamps path tangent into a small band (D-18)", () => {
+  it("first sine lobe arcs upward (Pixi Y decreases vs diagonal)", () => {
+    const scale = plotScaleFor(4);
+    // Small step off origin — phase π makes sin negative → opposite of down-right perp → up.
+    const m = 1 + (VIEW_CONFIG.SCALE_FLOOR - 1) * 0.08;
+    const p = plotPoint(m, plot, scale);
+    const u = pathProgress(m);
+    const diagY = plot.y + plot.height - u * plot.height;
+    expect(p.y).toBeLessThan(diagY);
+  });
+
+  it("tip keeps advancing past SCALE_FLOOR, but slower than linear (log late)", () => {
+    const scale = plotScaleFor(25);
+    const floor = VIEW_CONFIG.SCALE_FLOOR;
+    const pFloor = plotPoint(floor, plot, scale);
+    const pLate = plotPoint(floor * 2, plot, scale);
+    const traveled = Math.hypot(pLate.x - pFloor.x, pLate.y - pFloor.y);
+    const diagLen = Math.hypot(plot.width, plot.height);
+    // One doubling past floor adds PATH_LATE_SPAN diagonals — not a full extra span.
+    expect(traveled).toBeGreaterThan(diagLen * VIEW_CONFIG.PATH_LATE_SPAN * 0.5);
+    expect(traveled).toBeLessThan(diagLen * 0.75);
+    expect(pathProgress(floor * 2)).toBeCloseTo(
+      1 + VIEW_CONFIG.PATH_LATE_SPAN,
+      6,
+    );
+    // High × must not race like the old linear (m-1)/(floor-1) mapping.
+    expect(pathProgress(floor * 8)).toBeLessThan(1 + (floor * 8 - 1) / (floor - 1) * 0.25);
+  });
+
+  it("gentleTiltRadians clamps path tangent into a band", () => {
     const max = VIEW_CONFIG.TILT_MAX_RAD;
     expect(max).toBeGreaterThan(0);
     expect(gentleTiltRadians(0)).toBe(0);

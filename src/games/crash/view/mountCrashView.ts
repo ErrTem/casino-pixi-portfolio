@@ -1,6 +1,8 @@
 import { Application } from "pixi.js";
 import { loadBackdropTextures } from "./Backdrop.js";
 import { createCrashScene, type CrashScene } from "./CrashScene.js";
+import { loadExplosionTextures } from "./Explosion.js";
+import { loadRocketTextures } from "./Rocket.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
 
 export interface MountedCrashView {
@@ -48,7 +50,17 @@ export async function mountCrashView(
     vv?.removeEventListener("resize", refresh);
   };
 
-  const { cloudTextures, treeTextures } = await loadBackdropTextures();
-  const scene = createCrashScene(app, { cloudTextures, treeTextures });
+  const [{ cloudTextures, treeTextures }, rocketTextures, explosionTextures] =
+    await Promise.all([
+      loadBackdropTextures(),
+      loadRocketTextures(),
+      loadExplosionTextures(),
+    ]);
+  const scene = createCrashScene(app, {
+    cloudTextures,
+    treeTextures,
+    rocketTextures,
+    explosionTextures,
+  });
   return { app, scene, dispose };
 }

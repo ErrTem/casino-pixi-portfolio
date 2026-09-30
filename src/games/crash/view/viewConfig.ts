@@ -7,21 +7,45 @@ export const VIEW_CONFIG = {
   HALO_ALPHA: 0.16,
   CORE_WIDTH: 3.5,
   CORE_ALPHA: 0.42,
+  /**
+   * Fraction of path length nearest the tip that stays visible.
+   * The rest of the tail is fully gone (alpha 0).
+   */
+  TRAIL_VISIBLE_FRACTION: 0.42,
+  /** Soft additive layers for a continuous fade (avoids per-segment "dots"). */
+  TRAIL_FADE_LAYERS: 12,
   CLIMB_COLOR: 0x7667ff,
   CRASH_COLOR: 0xf84f3c,
-  /** Milder headroom — tip travels farther before rescale. */
+  /** Milder headroom — kept for plotScaleFor callers; path progress uses SCALE_FLOOR. */
   SCALE_HEADROOM: 1.08,
-  /** Higher floor keeps early climb on a fixed scale (smooth left→right takeoff). */
+  /**
+   * Diagonal span reference: progress u=1 at this multiplier (m=1 → origin).
+   * Past this, progress continues via log2 (PATH_LATE_SPAN per doubling).
+   */
   SCALE_FLOOR: 4.5,
   /**
-   * Blend weight toward linear X in plotPoint (0 = pure log2-X, 1 = fully linear).
-   * Higher linear blend = smoother takeoff travel.
+   * Extra diagonal spans added per ×2 past SCALE_FLOOR.
+   * Lower = slower late climb (high × no longer rockets along the path).
    */
-  PLOT_X_LINEAR_BLEND: 0.72,
-  /** Max craft tilt from path tangent (±12°). */
-  TILT_MAX_RAD: Math.PI / 15,
+  PATH_LATE_SPAN: 0.5,
+  /** Max craft tilt from path tangent — wide enough to follow the sine wave. */
+  TILT_MAX_RAD: Math.PI / 3,
+  /**
+   * Sine-wave path: amplitude as a fraction of min(plot width, height).
+   * Offset is applied perpendicular to the diagonal.
+   */
+  PATH_SINE_AMPLITUDE: 0.05,
+  /** Full sine cycles per SCALE_FLOOR span of progress (keeps waving past 5×). */
+  PATH_SINE_CYCLES: 2.5,
+  /**
+   * Phase offset (radians). π flips the first lobe so takeoff arcs up, not down.
+   */
+  PATH_SINE_PHASE: Math.PI,
   PLOT_TOP_RATIO: 0.36,
-  SAMPLE_COUNT: 64,
+  /** Base trail samples along path progress. */
+  SAMPLE_COUNT: 96,
+  /** Cap on trail samples at high multipliers. */
+  SAMPLE_COUNT_MAX: 192,
   SEVER_KEEP_RATIO: 0.94,
   /** Show Crashed × for 3s before fading into the waiting countdown. */
   HOLD_MS: 3000,
@@ -39,7 +63,18 @@ export const VIEW_CONFIG = {
   /** Exponential follow time-constant (ms) for world.position tip lock. */
   CAMERA_LERP_TAU_MS: 140,
   FROZEN_OFFSET_PX: 48,
-  ROCKET_LENGTH_PX: 28,
+  /** Craft length in plot pixels (sprite scaled to this). */
+  ROCKET_LENGTH_PX: 156,
+  /**
+   * Texture forward axis vs local +X. Saucer art faces +X already.
+   */
+  ROCKET_TEXTURE_ANGLE: 0,
+  /** AnimatedSprite playback speed for the 3-frame ship loop. */
+  ROCKET_ANIM_SPEED: 0.12,
+  /** Crash explosion size in plot pixels. */
+  EXPLOSION_SIZE_PX: 275,
+  /** One-shot circle explosion playback speed (~10 frames). */
+  EXPLOSION_ANIM_SPEED: 0.28,
   BACKGROUND: 0x161648,
   /** Parallax cloud sprite tint (was ellipse fill 0x3a386a @ 0.28). */
   CLOUD_TINT: 0x3a386a,
@@ -63,7 +98,7 @@ export const VIEW_CONFIG = {
   PARALLAX_MID_PERIOD_MS: 42_000,
   PARALLAX_NEAR_PERIOD_MS: 22_000,
   /** At full intensity, scroll rate multiplies by this (smooth — no period remaps). */
-  PARALLAX_SPEED_BOOST: 8,
+  PARALLAX_SPEED_BOOST: 3,
   /** Multiplier where parallax speed boost saturates. */
   PARALLAX_INTENSITY_AT: 25,
   /** Live × scale pulse on whole-number crossings. */
@@ -96,11 +131,11 @@ export const VIEW_CONFIG = {
   /** Multiplier where gold→fire lerp completes. */
   TINT_FIRE_AT_M: 25,
   /** Backdrop speed-blur starts after this multiplier. */
-  SPEED_BLUR_START_M: 10,
+  SPEED_BLUR_START_M: 15,
   /** Multiplier where speed-blur strength saturates. */
-  SPEED_BLUR_AT_M: 25,
+  SPEED_BLUR_AT_M: 35,
   /** Max horizontal / vertical blur strength (motion-speed feel). */
-  SPEED_BLUR_STRENGTH_X: 6,
+  SPEED_BLUR_STRENGTH_X: 3,
   SPEED_BLUR_STRENGTH_Y: 1.2,
   SPEED_BLUR_QUALITY: 3,
 } as const;

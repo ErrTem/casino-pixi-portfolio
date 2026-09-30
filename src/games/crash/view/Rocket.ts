@@ -1,8 +1,22 @@
-import { Container, Graphics, Sprite, type Texture } from "pixi.js";
+import {
+  AnimatedSprite,
+  Assets,
+  Container,
+  Graphics,
+  Texture,
+} from "pixi.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
+
+export const ROCKET_ASSET_URLS = [
+  "/assets/rocket/ship-1.png",
+  "/assets/rocket/ship-2.png",
+  "/assets/rocket/ship-3.png",
+] as const;
 
 export interface Rocket {
   container: Container;
+  setBodyTextures: (textures: readonly Texture[]) => void;
+  /** @deprecated Prefer setBodyTextures — single-frame fallback. */
   setBodyTexture: (texture: Texture | null) => void;
   syncPose: (
     x: number,
@@ -12,11 +26,16 @@ export interface Rocket {
   ) => void;
 }
 
+export interface RocketOptions {
+  /** Preloaded animation frames; falls back to geometric arrow if empty. */
+  bodyTextures?: readonly Texture[];
+}
+
 /**
- * Geometric rocket with texture-swap seam (no particle trail).
- * Position/rotation stay on the parent Container — path-follow never moves to the sprite.
+ * Craft on the climb path. Position/rotation stay on the parent Container —
+ * path-follow never moves to the sprite. 3-frame loop for neon flicker.
  */
-export function createRocket(): Rocket {
+export function createRocket(options: RocketOptions = {}): Rocket {
   const container = new Container();
 
   const L = VIEW_CONFIG.ROCKET_LENGTH_PX;
@@ -35,31 +54,85 @@ export function createRocket(): Rocket {
   bodyGraphics.fill({ color: 0xf3f0ff });
   container.addChild(bodyGraphics);
 
-  const bodySprite = new Sprite();
-  bodySprite.anchor.set(0.5);
+  // Placeholder frame — replaced when textures load.
+  const bodySprite = new AnimatedSprite({
+    textures: [Texture.EMPTY],
+    animationSpeed: VIEW_CONFIG.ROCKET_ANIM_SPEED,
+    loop: true,
+    autoPlay: false,
+    autoUpdate: true,
+  });
+  bodySprite.anchor.set(0.5, 0.55);
+  bodySprite.rotation = VIEW_CONFIG.ROCKET_TEXTURE_ANGLE;
   bodySprite.visible = false;
   container.addChild(bodySprite);
 
-  function setBodyTexture(texture: Texture | null): void {
-    if (texture) {
-      bodySprite.texture = texture;
+  function fitFrames(textures: readonly Texture[]): void {
+    const frames = textures.filter((t) => t && t !== Texture.EMPTY);
+    if (frames.length === 0) return;
+
+    bodySprite.textures = frames;
+    const tw = Math.max(1, frames[0]!.width);
+    const th = Math.max(1, frames[0]!.height);
+    const scale = L / Math.max(tw, th);
+    bodySprite.scale.set(scale);
+    bodySprite.rotation = VIEW_CONFIG.ROCKET_TEXTURE_ANGLE;
+    bodySprite.animationSpeed = VIEW_CONFIG.ROCKET_ANIM_SPEED;
+    bodySprite.gotoAndPlay(0);
+  }
+
+  function setBodyTextures(textures: readonly Texture[]): void {
+    const frames = textures.filter((t) => t && t !== Texture.EMPTY);
+    if (frames.length > 0) {
+      fitFrames(frames);
       bodySprite.visible = true;
       bodyGraphics.visible = false;
     } else {
+      bodySprite.stop();
       bodySprite.visible = false;
       bodyGraphics.visible = true;
     }
   }
 
+  function setBodyTexture(texture: Texture | null): void {
+    setBodyTextures(texture ? [texture] : []);
+  }
+
+  if (options.bodyTextures && options.bodyTextures.length > 0) {
+    setBodyTextures(options.bodyTextures);
+  }
+
   function syncPose(
     x: number,
     y: number,
-    rotationRadians: number,
-    _showStreak: boolean,
+    _rotationRadians: number,
+    showStreak: boolean,
   ): void {
     container.position.set(x, y);
-    container.rotation = rotationRadians;
+    // Saucer stays upright — never bank with the path tangent.
+    container.rotation = 0;
+    if (!bodySprite.visible) return;
+    if (showStreak) {
+      if (!bodySprite.playing) bodySprite.play();
+    } else {
+      if (bodySprite.playing) bodySprite.stop();
+    }
   }
 
-  return { container, setBodyTexture, syncPose };
+  return { container, setBodyTextures, setBodyTexture, syncPose };
+}
+
+/** Load the 3-frame ship animation (call once before createCrashScene). */
+export async function loadRocketTextures(): Promise<Texture[]> {
+  const loaded = await Assets.load([...ROCKET_ASSET_URLS]);
+  return ROCKET_ASSET_URLS.map((url) => {
+    const t = loaded[url];
+    return t instanceof Texture ? t : Texture.EMPTY;
+  });
+}
+
+/** @deprecated Prefer loadRocketTextures. */
+export async function loadRocketTexture(): Promise<Texture> {
+  const frames = await loadRocketTextures();
+  return frames[0] ?? Texture.EMPTY;
 }

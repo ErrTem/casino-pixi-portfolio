@@ -10,12 +10,14 @@ import { formatMult } from "../hud/format.js";
 import type { CrashSnapshot } from "../logic/index.js";
 import { createBackdrop } from "./Backdrop.js";
 import { createCurveGraph } from "./CurveGraph.js";
+import { createExplosion } from "./Explosion.js";
 import { formatWaitCountdown } from "./formatWaitCountdown.js";
 import {
-  gentleTiltRadians,
-  pathTangentRadians,
+  multiplierAtProgress,
+  pathProgress,
   plotPoint,
   plotScaleFor,
+  type PlotPoint,
   type PlotRect,
 } from "./pathMapping.js";
 import { createRocket } from "./Rocket.js";
@@ -34,6 +36,8 @@ export interface CrashScene {
 export interface CrashSceneOptions {
   cloudTextures?: readonly Texture[];
   treeTextures?: readonly Texture[];
+  rocketTextures?: readonly Texture[];
+  explosionTextures?: readonly Texture[];
 }
 
 function buildPlot(screenW: number, screenH: number): PlotRect {
@@ -49,15 +53,25 @@ function buildPlot(screenW: number, screenH: number): PlotRect {
 function samplePoints(
   tipMult: number,
   plot: PlotRect,
-): ReturnType<typeof plotPoint>[] {
+): PlotPoint[] {
   const scale = plotScaleFor(tipMult);
-  const n = VIEW_CONFIG.SAMPLE_COUNT;
   const mMax = Math.max(1, tipMult);
-  const pts: ReturnType<typeof plotPoint>[] = [];
+  const uMax = pathProgress(mMax);
+  // Even spacing along the diagonal — avoids clustering dots at high ×.
+  const need = Math.ceil(Math.max(1, uMax) * VIEW_CONFIG.PATH_SINE_CYCLES * 8);
+  const n = Math.min(
+    VIEW_CONFIG.SAMPLE_COUNT_MAX,
+    Math.max(VIEW_CONFIG.SAMPLE_COUNT, need),
+  );
+  const pts: PlotPoint[] = [];
   for (let i = 0; i < n; i++) {
-    const t = i / (n - 1);
-    const m = 1 + (mMax - 1) * t;
+    const t = n <= 1 ? 0 : i / (n - 1);
+    const m = multiplierAtProgress(uMax * t);
     pts.push(plotPoint(m, plot, scale));
+  }
+  // Ensure exact tip sample.
+  if (pts.length > 0) {
+    pts[pts.length - 1] = plotPoint(mMax, plot, scale);
   }
   return pts;
 }
@@ -81,7 +95,8 @@ export function createCrashScene(
     treeTextures: options.treeTextures,
   });
   const curve = createCurveGraph();
-  const rocket = createRocket();
+  const rocket = createRocket({ bodyTextures: options.rocketTextures });
+  const explosion = createExplosion({ frames: options.explosionTextures });
   const theater = createTheaterText();
   const flash = new Graphics();
   drawFlashRect(flash, app.screen.width, app.screen.height);
@@ -89,7 +104,7 @@ export function createCrashScene(
 
   // World Container camera (D-17): curve + rocket scroll as a group.
   const world = new Container({ label: "crash-world" });
-  world.addChild(curve.container, rocket.container);
+  world.addChild(curve.container, rocket.container, explosion.container);
 
   // Theater stays a stage child outside world — upper-third, clear of craft (D-20).
   // Flash screen-fixed. NEVER write app.stage.x / app.stage.y.
@@ -204,6 +219,7 @@ export function createCrashScene(
       holdDrawn = false;
       idleElapsedMs = 0;
       frozenWorld = null;
+      explosion.hide();
       const tip = Math.max(1, snapshot.multiplier);
       const pts = samplePoints(tip, plot);
       const scale = plotScaleFor(tip);
@@ -225,8 +241,7 @@ export function createCrashScene(
         world.position.y + (targetY - world.position.y) * a,
       );
       curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
-      const rot = gentleTiltRadians(pathTangentRadians(tip, plot, scale));
-      rocket.syncPose(pos.x, pos.y, rot, true);
+      rocket.syncPose(pos.x, pos.y, 0, true);
       rocket.container.visible = true;
     } else if (mode === "crash_hold") {
       idleElapsedMs = 0;
@@ -244,9 +259,9 @@ export function createCrashScene(
       world.position.set(frozenWorld.x, frozenWorld.y);
       world.rotation = frozenWorld.rotation;
       if (!holdDrawn) {
-        const tip = latchedCrashMult ?? Math.max(1, snapshot.multiplier);
-        const pts = samplePoints(tip, plot);
-        curve.redraw(pts, VIEW_CONFIG.CRASH_COLOR, true);
+        // No red severed trail on crash — clear the climb path.
+        curve.redraw([], 0, false);
+        explosion.playAt(rocket.container.x, rocket.container.y);
         holdDrawn = true;
       }
       rocket.container.visible = false;
@@ -268,6 +283,7 @@ export function createCrashScene(
       world.rotation = 0;
       curve.container.alpha = 0;
       idleElapsedMs = 0;
+      explosion.hide();
       const scale = plotScaleFor(1);
       const origin = plotPoint(1, plot, scale);
       rocket.syncPose(origin.x, origin.y, 0, false);

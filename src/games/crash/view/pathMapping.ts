@@ -15,9 +15,11 @@ export interface PlotScale {
 export interface PlotPoint {
   x: number;
   y: number;
+  /** Multiplier this point was sampled at (for trail fade). */
+  m: number;
 }
 
-/** Axis maxima grow with the live multiplier so the tip stays on screen. */
+/** Kept for callers; path no longer remaps into a growing axis (avoids tip freeze). */
 export function plotScaleFor(multiplier: number): PlotScale {
   const m = Number.isFinite(multiplier) ? Math.max(1, multiplier) : 1;
   const extent = Math.max(
@@ -28,32 +30,76 @@ export function plotScaleFor(multiplier: number): PlotScale {
 }
 
 /**
- * Map multiplier into plot pixels. m=1 is origin (left/bottom).
- * Soft arcade X (D-16): blend log2-X with linear X so mid/late climb
- * does not vertical-spike as hard under a centered craft camera.
- * Y stays linear (m-1)/(yMax-1) with Pixi Y down.
+ * Progress along the infinite diagonal: 0 at m=1, 1 when m == SCALE_FLOOR.
+ * Past SCALE_FLOOR, advances with log2(m) so high × stays readable (not a rocket).
+ */
+export function pathProgress(multiplier: number): number {
+  if (!Number.isFinite(multiplier)) return 0;
+  const m = Math.max(1, multiplier);
+  const floor = Math.max(1 + 1e-6, VIEW_CONFIG.SCALE_FLOOR);
+  if (m <= floor) {
+    return (m - 1) / (floor - 1);
+  }
+  return 1 + Math.log2(m / floor) * VIEW_CONFIG.PATH_LATE_SPAN;
+}
+
+/** Inverse of pathProgress — sample evenly along the diagonal. */
+export function multiplierAtProgress(u: number): number {
+  if (!Number.isFinite(u) || u <= 0) return 1;
+  const floor = Math.max(1 + 1e-6, VIEW_CONFIG.SCALE_FLOOR);
+  if (u <= 1) {
+    return 1 + u * (floor - 1);
+  }
+  const span = Math.max(1e-6, VIEW_CONFIG.PATH_LATE_SPAN);
+  return floor * 2 ** ((u - 1) / span);
+}
+
+/**
+ * Map multiplier into plot/world pixels along an infinite diagonal sine wave.
+ * m=1 is origin (left/bottom). Camera follows the tip so late climb keeps moving.
  */
 export function plotPoint(
   multiplier: number,
   plot: PlotRect,
-  scale: PlotScale,
+  _scale?: PlotScale,
 ): PlotPoint {
+  void _scale;
+  const m = Number.isFinite(multiplier) ? Math.max(1, multiplier) : 1;
   if (!Number.isFinite(multiplier)) {
-    return { x: plot.x, y: plot.y + plot.height };
+    return { x: plot.x, y: plot.y + plot.height, m: 1 };
   }
-  const m = Math.max(1, multiplier);
-  const { xMax, yMax } = scale;
-  const logDenom = Math.log2(xMax);
-  const uLog = logDenom > 0 ? Math.log2(m) / logDenom : 0;
-  const linDenom = xMax - 1;
-  const uLin = linDenom > 0 ? (m - 1) / linDenom : 0;
-  const blend = Math.min(1, Math.max(0, VIEW_CONFIG.PLOT_X_LINEAR_BLEND));
-  const u = uLog * (1 - blend) + uLin * blend;
-  const vDenom = yMax - 1;
-  const v = vDenom > 0 ? (m - 1) / vDenom : 0;
+
+  const diagLen = Math.hypot(plot.width, plot.height);
+  const originX = plot.x;
+  const originY = plot.y + plot.height;
+  if (!(diagLen > 0)) {
+    return { x: originX, y: originY, m };
+  }
+
+  const u = pathProgress(m);
+  // Unit along diagonal (up-right in Pixi Y-down) and its perpendicular.
+  const ax = plot.width / diagLen;
+  const ay = -plot.height / diagLen;
+  const px = plot.height / diagLen;
+  const py = plot.width / diagLen;
+
+  const along = u * diagLen;
+  const amp =
+    VIEW_CONFIG.PATH_SINE_AMPLITUDE * Math.min(plot.width, plot.height);
+  // Phase keyed to unbounded progress — keeps oscillating past SCALE_FLOOR.
+  // u==0 → exact origin (sin(π) is not a clean 0 in float).
+  const wave =
+    u <= 0
+      ? 0
+      : Math.sin(
+          u * VIEW_CONFIG.PATH_SINE_CYCLES * Math.PI * 2 +
+            VIEW_CONFIG.PATH_SINE_PHASE,
+        ) * amp;
+
   return {
-    x: plot.x + u * plot.width,
-    y: plot.y + plot.height - v * plot.height,
+    x: originX + along * ax + wave * px,
+    y: originY + along * ay + wave * py,
+    m,
   };
 }
 
@@ -61,7 +107,7 @@ export function plotPoint(
 export function pathTangentRadians(
   multiplier: number,
   plot: PlotRect,
-  scale: PlotScale,
+  scale?: PlotScale,
 ): number {
   if (!Number.isFinite(multiplier)) return 0;
   const a = plotPoint(multiplier, plot, scale);
@@ -72,7 +118,7 @@ export function pathTangentRadians(
   return Math.atan2(dy, dx);
 }
 
-/** Clamp path tangent into a gentle tilt band (D-18, ±TILT_MAX_RAD). */
+/** Clamp path tangent into a tilt band (D-18). */
 export function gentleTiltRadians(tangent: number): number {
   if (!Number.isFinite(tangent)) return 0;
   const max = VIEW_CONFIG.TILT_MAX_RAD;
