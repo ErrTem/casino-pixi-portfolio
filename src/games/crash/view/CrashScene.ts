@@ -275,6 +275,8 @@ export function createCrashScene(app: Application): CrashScene {
       liveAlpha,
       titleText,
       frozenText,
+      pulseMult: mode === "climb" ? snapshot.multiplier : null,
+      deltaMS,
     });
   }
 
