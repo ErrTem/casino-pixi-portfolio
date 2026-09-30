@@ -1,10 +1,6 @@
 import { Container, Graphics, Sprite, type Texture } from "pixi.js";
 import { VIEW_CONFIG } from "./viewConfig.js";
 
-const STREAK_COUNT = 8;
-const STREAK_SPACING_PX = 5;
-const STREAK_RADIUS = 2.2;
-
 export interface Rocket {
   container: Container;
   setBodyTexture: (texture: Texture | null) => void;
@@ -17,7 +13,7 @@ export interface Rocket {
 }
 
 /**
- * Geometric rocket with texture-swap seam and short tail streak (D-05..D-08).
+ * Geometric rocket with texture-swap seam and capped spark/smoke tip trail.
  * Position/rotation stay on the parent Container — path-follow never moves to the sprite.
  */
 export function createRocket(): Rocket {
@@ -36,7 +32,7 @@ export function createRocket(): Rocket {
     -L * 0.35,
     halfW,
   ]);
-  bodyGraphics.fill({ color: 0xe8eef4 });
+  bodyGraphics.fill({ color: 0xf3f0ff });
   container.addChild(bodyGraphics);
 
   const bodySprite = new Sprite();
@@ -44,12 +40,22 @@ export function createRocket(): Rocket {
   bodySprite.visible = false;
   container.addChild(bodySprite);
 
-  const streakDots: Graphics[] = [];
-  for (let i = 0; i < STREAK_COUNT; i++) {
+  const trailCount = VIEW_CONFIG.TRAIL_COUNT;
+  const spacing = VIEW_CONFIG.TRAIL_SPACING_PX;
+  const trailDots: Graphics[] = [];
+  for (let i = 0; i < trailCount; i++) {
     const dot = new Graphics();
-    dot.circle(0, 0, STREAK_RADIUS).fill({ color: 0xffffff });
+    const isSmoke = i % 3 === 0;
+    if (isSmoke) {
+      const rx = 2.4 + (i % 4) * 0.35;
+      const ry = 1.4 + (i % 3) * 0.25;
+      dot.ellipse(0, 0, rx, ry).fill({ color: 0xb8b4d8 });
+    } else {
+      const r = 1.6 + (i % 3) * 0.35;
+      dot.circle(0, 0, r).fill({ color: 0xfd953c });
+    }
     dot.visible = false;
-    streakDots.push(dot);
+    trailDots.push(dot);
     container.addChild(dot);
   }
 
@@ -74,16 +80,19 @@ export function createRocket(): Rocket {
     container.rotation = rotationRadians;
 
     if (showStreak) {
-      for (let i = 0; i < STREAK_COUNT; i++) {
-        const dot = streakDots[i]!;
+      for (let i = 0; i < trailCount; i++) {
+        const dot = trailDots[i]!;
         // Local -X is -tangent after parent rotation (nose along +X).
-        const offset = (i + 1) * STREAK_SPACING_PX;
-        dot.position.set(-offset, 0);
-        dot.alpha = 1 - i / STREAK_COUNT;
+        const offset = (i + 1) * spacing;
+        const wobble = ((i % 5) - 2) * 0.35;
+        dot.position.set(-offset, wobble);
+        const t = i / trailCount;
+        dot.alpha = (1 - t) * (1 - t) * 0.95;
+        dot.scale.set(1 - t * 0.55);
         dot.visible = true;
       }
     } else {
-      for (const dot of streakDots) {
+      for (const dot of trailDots) {
         dot.visible = false;
       }
     }

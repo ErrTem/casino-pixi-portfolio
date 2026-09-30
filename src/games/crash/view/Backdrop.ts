@@ -1,61 +1,91 @@
-import { Container, FillGradient, Graphics } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
+import { VIEW_CONFIG } from "./viewConfig.js";
 
 export interface Backdrop {
   container: Container;
   /** Rebuild layers only when screen size changes — never clear every sync frame. */
   rebuildIfNeeded: (width: number, height: number) => void;
-  /** Advance cloud/star drift (call each sync with deltaMS). */
-  tick: (deltaMS: number) => void;
+  /**
+   * Advance parallax + speed lines.
+   * @param intensity 0..1 climb spectacle (0 idle/waiting/crash).
+   */
+  tick: (deltaMS: number, intensity?: number) => void;
+}
+
+function clamp01(t: number): number {
+  if (!Number.isFinite(t)) return 0;
+  return Math.min(1, Math.max(0, t));
+}
+
+function fillStarDust(
+  g: Graphics,
+  count: number,
+  w: number,
+  h: number,
+  yBand: { top: number; span: number },
+  seed: number,
+  dustish: boolean,
+): void {
+  for (let i = 0; i < count; i++) {
+    const u = ((i * 47 + seed * 13) % 97) / 97;
+    const v = ((i * 31 + seed * 17 + 13) % 89) / 89;
+    const x = u * w * 2;
+    const y = h * (yBand.top + v * yBand.span);
+    if (dustish && i % 4 === 0) {
+      const rx = 1.2 + (i % 3) * 0.8;
+      const ry = 0.5 + (i % 2) * 0.35;
+      g.ellipse(x, y, rx, ry).fill({
+        color: 0xc8c4ff,
+        alpha: 0.1 + (i % 5) * 0.03,
+      });
+    } else {
+      const r = 0.55 + (i % 3) * 0.35;
+      g.circle(x, y, r).fill({
+        color: 0xffffff,
+        alpha: 0.16 + (i % 5) * 0.05,
+      });
+    }
+  }
 }
 
 /**
- * Cosmos (top) → horizon/clouds (bottom). No plot grid.
- * Stars and clouds drift continuously.
+ * Flat night field, 3 parallax star/dust layers, clouds, multiplier-driven speed lines.
  */
 export function createBackdrop(width: number, height: number): Backdrop {
   const container = new Container();
   let lastW = -1;
   let lastH = -1;
   let scrollMs = 0;
-  let stars: Graphics | null = null;
+  let farLayer: Graphics | null = null;
+  let midLayer: Graphics | null = null;
+  let nearLayer: Graphics | null = null;
   let clouds: Graphics | null = null;
+  let speedLines: Graphics | null = null;
   let screenW = width;
+  let screenH = height;
+  let lastIntensity = 0;
 
   function rebuild(w: number, h: number): void {
     container.removeChildren();
     screenW = w;
+    screenH = h;
 
     const sky = new Graphics();
-    const gradient = new FillGradient({
-      type: "linear",
-      start: { x: 0, y: 0 },
-      end: { x: 0, y: 1 },
-      colorStops: [
-        { offset: 0, color: "#070b18" },
-        { offset: 0.45, color: "#1a2840" },
-        { offset: 0.78, color: "#5a8fb8" },
-        { offset: 1, color: "#9ec8e8" },
-      ],
-    });
-    sky.rect(0, 0, w, h).fill(gradient);
+    sky.rect(0, 0, w, h).fill({ color: VIEW_CONFIG.BACKGROUND });
     container.addChild(sky);
 
-    // Draw stars across a 2× wide strip so horizontal wrap scroll has no gap.
-    stars = new Graphics();
-    for (let i = 0; i < 56; i++) {
-      const u = ((i * 47) % 97) / 97;
-      const v = ((i * 31 + 13) % 89) / 89;
-      const x = u * w * 2;
-      const y = h * (0.02 + v * 0.42);
-      const r = 0.7 + (i % 3) * 0.4;
-      stars.circle(x, y, r).fill({
-        color: 0xffffff,
-        alpha: 0.22 + (i % 5) * 0.05,
-      });
-    }
-    container.addChild(stars);
+    farLayer = new Graphics();
+    fillStarDust(farLayer, 40, w, h, { top: 0.02, span: 0.5 }, 1, false);
+    container.addChild(farLayer);
 
-    // Clouds across a 2× wide strip for seamless wrap.
+    midLayer = new Graphics();
+    fillStarDust(midLayer, 48, w, h, { top: 0.04, span: 0.48 }, 2, true);
+    container.addChild(midLayer);
+
+    nearLayer = new Graphics();
+    fillStarDust(nearLayer, 36, w, h, { top: 0.06, span: 0.44 }, 3, true);
+    container.addChild(nearLayer);
+
     clouds = new Graphics();
     const cloudSpecs = [
       { cx: w * 0.18, cy: h * 0.78, rx: w * 0.12, ry: h * 0.035 },
@@ -69,14 +99,66 @@ export function createBackdrop(width: number, height: number): Backdrop {
     ];
     for (const c of cloudSpecs) {
       clouds.ellipse(c.cx, c.cy, c.rx, c.ry).fill({
-        color: 0xffffff,
-        alpha: 0.16,
+        color: 0x3a386a,
+        alpha: 0.28,
       });
     }
     container.addChild(clouds);
 
+    speedLines = new Graphics();
+    container.addChild(speedLines);
+
     lastW = w;
     lastH = h;
+  }
+
+  function redrawSpeedLines(intensity: number): void {
+    if (!speedLines) return;
+    speedLines.clear();
+    const i = clamp01(intensity);
+    if (i < 0.02) return;
+
+    const n = VIEW_CONFIG.SPEED_LINE_COUNT;
+    const alphaMax = VIEW_CONFIG.SPEED_LINE_ALPHA_MAX * i;
+    const w = screenW;
+    const h = screenH;
+    const lenBase = 28 + i * 52;
+
+    for (let k = 0; k < n; k++) {
+      // Deterministic pseudo-scatter + intensity-driven density (draw fewer when low i).
+      if (k / n > i * 0.85 + 0.15) continue;
+      const u = ((k * 53 + 7) % 97) / 97;
+      const v = ((k * 29 + 19) % 89) / 89;
+      const x1 = u * w;
+      const y1 = h * (0.08 + v * 0.55);
+      const len = lenBase * (0.55 + (k % 5) * 0.12);
+      // Slight diagonal (speed-line feel), mostly horizontal leftward.
+      const x0 = x1 - len;
+      const y0 = y1 + len * 0.08;
+      speedLines.moveTo(x0, y0).lineTo(x1, y1);
+      speedLines.stroke({
+        width: 1.2 + (k % 3) * 0.4,
+        color: 0xffffff,
+        alpha: alphaMax * (0.35 + (k % 4) * 0.15),
+        cap: "round",
+      });
+    }
+  }
+
+  function layerOffset(
+    periodMs: number,
+    intensity: number,
+    bobPeriod: number,
+    bobAmp: number,
+  ): { x: number; y: number } {
+    const boost = 1 + (VIEW_CONFIG.PARALLAX_SPEED_BOOST - 1) * clamp01(intensity);
+    const period = Math.max(1_000, periodMs / boost);
+    const w = screenW > 0 ? screenW : 1;
+    const u = (scrollMs % period) / period;
+    return {
+      x: -u * w,
+      y: Math.sin((scrollMs * 2 * Math.PI) / bobPeriod) * bobAmp,
+    };
   }
 
   rebuild(width, height);
@@ -88,25 +170,54 @@ export function createBackdrop(width: number, height: number): Backdrop {
         rebuild(nextW, nextH);
       }
     },
-    tick(deltaMS: number): void {
+    tick(deltaMS: number, intensity = 0): void {
       const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
+      const i = clamp01(intensity);
       scrollMs += dt;
-      const w = screenW > 0 ? screenW : 1;
 
-      if (stars) {
-        // Slow starfield drift left; wrap every screen width.
-        const starPeriod = 48_000;
-        const starU = (scrollMs % starPeriod) / starPeriod;
-        stars.position.x = -starU * w;
-        stars.position.y = Math.sin((scrollMs * 2 * Math.PI) / 22_000) * 4;
+      if (farLayer) {
+        const o = layerOffset(
+          VIEW_CONFIG.PARALLAX_FAR_PERIOD_MS,
+          i,
+          28_000,
+          3,
+        );
+        farLayer.position.set(o.x, o.y);
       }
-
+      if (midLayer) {
+        const o = layerOffset(
+          VIEW_CONFIG.PARALLAX_MID_PERIOD_MS,
+          i,
+          18_000,
+          4,
+        );
+        midLayer.position.set(o.x, o.y);
+      }
+      if (nearLayer) {
+        const o = layerOffset(
+          VIEW_CONFIG.PARALLAX_NEAR_PERIOD_MS,
+          i,
+          12_000,
+          5,
+        );
+        nearLayer.position.set(o.x, o.y);
+      }
       if (clouds) {
-        // Faster cloud drift + gentle bob.
-        const cloudPeriod = 28_000;
+        const boost = 1 + (VIEW_CONFIG.PARALLAX_SPEED_BOOST - 1) * i;
+        const cloudPeriod = Math.max(4_000, 28_000 / boost);
+        const w = screenW > 0 ? screenW : 1;
         const cloudU = (scrollMs % cloudPeriod) / cloudPeriod;
         clouds.position.x = -cloudU * w;
         clouds.position.y = Math.sin((scrollMs * 2 * Math.PI) / 9_000) * 5;
+      }
+
+      // Redraw speed lines when intensity changes meaningfully (avoid clear every frame).
+      if (Math.abs(i - lastIntensity) > 0.02 || (i > 0.02 && lastIntensity <= 0.02)) {
+        redrawSpeedLines(i);
+        lastIntensity = i;
+      } else if (i < 0.02 && lastIntensity >= 0.02) {
+        redrawSpeedLines(0);
+        lastIntensity = 0;
       }
     },
   };

@@ -110,7 +110,6 @@ export function createCrashScene(app: Application): CrashScene {
 
   function sync(snapshot: CrashSnapshot, deltaMS: number): void {
     ensurePlot();
-    backdrop.tick(deltaMS);
 
     viewMode = reduceViewMode(
       viewMode,
@@ -131,6 +130,16 @@ export function createCrashScene(app: Application): CrashScene {
       latchedCrashMult,
       latchedCashOut,
     } = viewMode;
+
+    // Parallax always; speed-line intensity only while climbing.
+    let climbIntensity = 0;
+    if (mode === "climb") {
+      const m = Number.isFinite(snapshot.multiplier) ? snapshot.multiplier : 1;
+      const at = VIEW_CONFIG.SPEED_LINE_INTENSITY_AT;
+      climbIntensity = Math.min(1, Math.max(0, (m - 1) / Math.max(1, at - 1)));
+    }
+    backdrop.tick(deltaMS, climbIntensity);
+
     curve.container.alpha = trailAlpha;
     rocket.container.visible = rocketVisible;
 

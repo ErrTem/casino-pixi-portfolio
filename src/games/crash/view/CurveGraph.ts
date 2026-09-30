@@ -91,17 +91,43 @@ function severStub(
   return [start, end];
 }
 
+function strokeNeonStack(
+  glow: Graphics,
+  halo: Graphics,
+  core: Graphics,
+  points: readonly PlotPoint[],
+  color: number,
+): void {
+  strokePath(
+    glow,
+    points,
+    VIEW_CONFIG.GLOW_OUTER_WIDTH,
+    color,
+    VIEW_CONFIG.GLOW_OUTER_ALPHA,
+  );
+  strokePath(
+    halo,
+    points,
+    VIEW_CONFIG.HALO_WIDTH,
+    color,
+    VIEW_CONFIG.HALO_ALPHA,
+  );
+  strokePath(core, points, VIEW_CONFIG.CORE_WIDTH, color, 1);
+}
+
 export function createCurveGraph(): CurveGraph {
   const container = new Container();
+  const glow = new Graphics();
   const halo = new Graphics();
   const core = new Graphics();
-  container.addChild(halo, core);
+  container.addChild(glow, halo, core);
 
   function redraw(
     points: readonly PlotPoint[],
     color: number,
     severed: boolean,
   ): void {
+    glow.clear();
     halo.clear();
     core.clear();
     if (points.length < 2) return;
@@ -110,26 +136,12 @@ export function createCurveGraph(): CurveGraph {
       ? truncateToRatio(points, VIEW_CONFIG.SEVER_KEEP_RATIO)
       : points;
 
-    strokePath(
-      halo,
-      main,
-      VIEW_CONFIG.HALO_WIDTH,
-      color,
-      VIEW_CONFIG.HALO_ALPHA,
-    );
-    strokePath(core, main, VIEW_CONFIG.CORE_WIDTH, color, 1);
+    strokeNeonStack(glow, halo, core, main, color);
 
     if (severed) {
       const stub = severStub(points, VIEW_CONFIG.SEVER_KEEP_RATIO);
       if (stub) {
-        strokePath(
-          halo,
-          stub,
-          VIEW_CONFIG.HALO_WIDTH,
-          color,
-          VIEW_CONFIG.HALO_ALPHA,
-        );
-        strokePath(core, stub, VIEW_CONFIG.CORE_WIDTH, color, 1);
+        strokeNeonStack(glow, halo, core, stub, color);
       }
     }
   }
