@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-09-27 after Phase 4)
 Phase: 06 (enhance and rework UI/buttons/behavior) — VERIFYING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-09-29 — Completed 06-04-PLAN.md
+Last activity: 2026-09-30 - Completed quick task 260930-h4h: Crash theater polish (parallax, tip trail/glow/camera, × pulse/gold)
 Progress: [██████████] 100%
 
 ## Performance Metrics
@@ -154,6 +154,12 @@ None yet.
 ### Blockers/Concerns
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260930-h4h | Crash theater polish: parallax + speed lines; tip-follow neon trail; × pulse/gold after 10× | 2026-09-30 | 72d4d4a | [260930-h4h-crash-theater-polish-1-parallax-star-dus](./quick/260930-h4h-crash-theater-polish-1-parallax-star-dus/) |
 
 ### Roadmap Evolution
 
