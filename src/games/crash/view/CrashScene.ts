@@ -1,0 +1,385 @@
+import {
+  Application,
+  // BlurFilter,
+  Container,
+  Graphics,
+  // Rectangle,
+  type Texture,
+} from "pixi.js";
+import { formatMult } from "../hud/format.js";
+import { lastWinFromBets } from "../hud/lastWin.js";
+import type { BetSnap, CrashSnapshot } from "../logic/index.js";
+import { createBackdrop } from "./Backdrop.js";
+import { createCurveGraph } from "./CurveGraph.js";
+import { createExplosion } from "./Explosion.js";
+import { formatWaitCountdown } from "./formatWaitCountdown.js";
+import { formatYouWin } from "./formatYouWin.js";
+import {
+  multiplierAtProgress,
+  pathProgress,
+  plotPoint,
+  plotScaleFor,
+  type PlotPoint,
+  type PlotRect,
+} from "./pathMapping.js";
+import { createRocket } from "./Rocket.js";
+import { createTheaterText, theaterTintForMult } from "./TheaterText.js";
+import { VIEW_CONFIG } from "./viewConfig.js";
+import {
+  createInitialViewMode,
+  reduceViewMode,
+  type ViewModeState,
+} from "./viewMode.js";
+
+export interface CrashScene {
+  sync: (snapshot: CrashSnapshot, deltaMS: number) => void;
+}
+
+export interface CrashSceneOptions {
+  cloudTextures?: readonly Texture[];
+  treeTextures?: readonly Texture[];
+  rocketTextures?: readonly Texture[];
+  explosionTextures?: readonly Texture[];
+}
+
+function buildPlot(screenW: number, screenH: number): PlotRect {
+  const top = VIEW_CONFIG.PLOT_TOP_RATIO * screenH;
+  return {
+    x: 24,
+    y: top,
+    width: Math.max(1, screenW - 48),
+    height: Math.max(1, screenH - top - 24),
+  };
+}
+
+function samplePoints(
+  tipMult: number,
+  plot: PlotRect,
+): PlotPoint[] {
+  const scale = plotScaleFor(tipMult);
+  const mMax = Math.max(1, tipMult);
+  const uMax = pathProgress(mMax);
+  // Even spacing along the diagonal - avoids clustering dots at high ×.
+  const need = Math.ceil(Math.max(1, uMax) * VIEW_CONFIG.PATH_SINE_CYCLES * 8);
+  const n = Math.min(
+    VIEW_CONFIG.SAMPLE_COUNT_MAX,
+    Math.max(VIEW_CONFIG.SAMPLE_COUNT, need),
+  );
+  const pts: PlotPoint[] = [];
+  for (let i = 0; i < n; i++) {
+    const t = n <= 1 ? 0 : i / (n - 1);
+    const m = multiplierAtProgress(uMax * t);
+    pts.push(plotPoint(m, plot, scale));
+  }
+  // Ensure exact tip sample.
+  if (pts.length > 0) {
+    pts[pts.length - 1] = plotPoint(mMax, plot, scale);
+  }
+  return pts;
+}
+
+function drawFlashRect(g: Graphics, w: number, h: number): void {
+  g.clear();
+  g.rect(0, 0, w, h).fill({ color: VIEW_CONFIG.CRASH_COLOR });
+}
+
+/**
+ * backdrop (screen-fixed) -> world (curve+rocket) -> theater (upper third) -> flash
+ */
+export function createCrashScene(
+  app: Application,
+  options: CrashSceneOptions = {},
+): CrashScene {
+  const backdrop = createBackdrop(app.screen.width, app.screen.height, {
+    cloudTextures: options.cloudTextures,
+    treeTextures: options.treeTextures,
+  });
+  const curve = createCurveGraph();
+  const rocket = createRocket({ bodyTextures: options.rocketTextures });
+  const explosion = createExplosion({ frames: options.explosionTextures });
+  const theater = createTheaterText();
+  const flash = new Graphics();
+  drawFlashRect(flash, app.screen.width, app.screen.height);
+  flash.alpha = 0;
+
+  const world = new Container({ label: "crash-world" });
+  world.addChild(curve.container, rocket.container, explosion.container);
+
+  // Theater stays a stage child outside world - upper-third, clear of craft (D-20).
+  // Flash screen-fixed. NEVER write app.stage.x / app.stage.y.
+  app.stage.addChild(backdrop.container, world, theater.container, flash);
+
+  // motion blur on backdrop only after 10x
+  // const speedBlur = new BlurFilter({
+  //   strength: 0,
+  //   quality: VIEW_CONFIG.SPEED_BLUR_QUALITY,
+  //   kernelSize: 5,
+  // });
+  // speedBlur.strengthX = 0;
+  // speedBlur.strengthY = 0;
+
+  let viewMode: ViewModeState = createInitialViewMode();
+  let plot = buildPlot(app.screen.width, app.screen.height);
+  let lastW = app.screen.width;
+  let lastH = app.screen.height;
+  let holdDrawn = false;
+  let idleElapsedMs = 0;
+  /** Latched world transform at crash frame (D-19). */
+  let frozenWorld: {
+    x: number;
+    y: number;
+    rotation: number;
+    pivotX: number;
+    pivotY: number;
+  } | null = null;
+  let prevBets: [BetSnap, BetSnap] | null = null;
+  let winBannerRemainingMs = 0;
+  let winBannerPayout = 0;
+
+  theater.layout(lastW, lastH);
+
+  function ensurePlot(): void {
+    const w = app.screen.width;
+    const h = app.screen.height;
+    if (w !== lastW || h !== lastH) {
+      lastW = w;
+      lastH = h;
+      plot = buildPlot(w, h);
+      holdDrawn = false;
+      theater.layout(w, h);
+      backdrop.rebuildIfNeeded(w, h);
+      drawFlashRect(flash, w, h);
+    }
+  }
+
+  function sync(snapshot: CrashSnapshot, deltaMS: number): void {
+    ensurePlot();
+
+    viewMode = reduceViewMode(
+      viewMode,
+      {
+        phase: snapshot.phase,
+        multiplier: snapshot.multiplier,
+        cashOutAt: snapshot.cashOutAt,
+        history: snapshot.history,
+      },
+      deltaMS,
+    );
+
+    const {
+      mode,
+      modeElapsedMs,
+      rocketVisible,
+      trailAlpha,
+      latchedCrashMult,
+    } = viewMode;
+
+    // parallax x scrolls while climbing
+    const climbing = mode === "climb";
+    let parallaxSpeed = 0;
+    let climbMult = 1;
+    let altitudeMult = 1;
+    if (climbing) {
+      climbMult = Number.isFinite(snapshot.multiplier)
+        ? Math.max(1, snapshot.multiplier)
+        : 1;
+      altitudeMult = climbMult;
+      const at = VIEW_CONFIG.PARALLAX_INTENSITY_AT;
+      parallaxSpeed = Math.min(
+        1,
+        Math.max(0, (climbMult - 1) / Math.max(1, at - 1)),
+      );
+    } else if (mode === "crash_hold" || mode === "crash_fade") {
+      // freeze altitude at crash x so the hold doesnt snap back to ground
+      const latched =
+        latchedCrashMult != null && Number.isFinite(latchedCrashMult)
+          ? latchedCrashMult
+          : snapshot.multiplier;
+      altitudeMult = Number.isFinite(latched) ? Math.max(1, latched) : 1;
+    }
+    backdrop.tick(deltaMS, climbing, parallaxSpeed, altitudeMult);
+
+    // speed blur on backdrop after SPEED_BLUR_START_M (horizontal-biased).
+    // if (climbing && climbMult > VIEW_CONFIG.SPEED_BLUR_START_M) {
+    //   const start = VIEW_CONFIG.SPEED_BLUR_START_M;
+    //   const at = Math.max(start + 0.01, VIEW_CONFIG.SPEED_BLUR_AT_M);
+    //   const t = Math.min(1, Math.max(0, (climbMult - start) / (at - start)));
+    //   speedBlur.strengthX = VIEW_CONFIG.SPEED_BLUR_STRENGTH_X * t;
+    //   speedBlur.strengthY = VIEW_CONFIG.SPEED_BLUR_STRENGTH_Y * t;
+    //   backdrop.container.filters = [speedBlur];
+    //   backdrop.container.filterArea = new Rectangle(0, 0, lastW, lastH);
+    // } else {
+    //   speedBlur.strengthX = 0;
+    //   speedBlur.strengthY = 0;
+    //   backdrop.container.filters = null;
+    // }
+
+    curve.container.alpha = trailAlpha;
+    rocket.container.visible = rocketVisible;
+
+    // flash from crash_hold clock only
+    if (mode === "crash_hold" && modeElapsedMs < VIEW_CONFIG.FLASH_MS) {
+      const t = modeElapsedMs / VIEW_CONFIG.FLASH_MS;
+      flash.alpha = VIEW_CONFIG.FLASH_PEAK_ALPHA * (1 - t);
+    } else {
+      flash.alpha = 0;
+    }
+
+    if (mode === "climb") {
+      holdDrawn = false;
+      idleElapsedMs = 0;
+      frozenWorld = null;
+      explosion.hide();
+      const tip = Math.max(1, snapshot.multiplier);
+      const pts = samplePoints(tip, plot);
+      const scale = plotScaleFor(tip);
+      const pos = plotPoint(tip, plot, scale);
+      // hold at identity until the craft reaches the lock point so takeoff reads from ground/left then follow
+      world.pivot.set(0, 0);
+      world.rotation = 0;
+      const lockX = lastW * VIEW_CONFIG.CAMERA_CENTER_X_RATIO;
+      const lockY = lastH * VIEW_CONFIG.CAMERA_CENTER_Y_RATIO;
+      const targetX = pos.x < lockX ? 0 : lockX - pos.x;
+      // pixi Y-down: ground is larger Y follow only after tip rises to lockY
+      const targetY = pos.y > lockY ? 0 : lockY - pos.y;
+      const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
+      const tau = Math.max(1, VIEW_CONFIG.CAMERA_LERP_TAU_MS);
+      const a = 1 - Math.exp(-dt / tau);
+      world.position.set(
+        world.position.x + (targetX - world.position.x) * a,
+        world.position.y + (targetY - world.position.y) * a,
+      );
+      curve.redraw(pts, VIEW_CONFIG.CLIMB_COLOR, false);
+      rocket.syncPose(pos.x, pos.y, 0, true);
+      rocket.container.visible = true;
+    } else if (mode === "crash_hold") {
+      idleElapsedMs = 0;
+      // freeze camera at crash frame
+      if (frozenWorld == null) {
+        frozenWorld = {
+          x: world.position.x,
+          y: world.position.y,
+          rotation: world.rotation,
+          pivotX: world.pivot.x,
+          pivotY: world.pivot.y,
+        };
+      }
+      world.pivot.set(frozenWorld.pivotX, frozenWorld.pivotY);
+      world.position.set(frozenWorld.x, frozenWorld.y);
+      world.rotation = frozenWorld.rotation;
+      if (!holdDrawn) {
+        // no red severed trail on crash - clear the climb path
+        curve.redraw([], 0, false);
+        explosion.playAt(rocket.container.x, rocket.container.y);
+        holdDrawn = true;
+      }
+      rocket.container.visible = false;
+    } else if (mode === "crash_fade") {
+      idleElapsedMs = 0;
+      if (frozenWorld != null) {
+        world.pivot.set(frozenWorld.pivotX, frozenWorld.pivotY);
+        world.position.set(frozenWorld.x, frozenWorld.y);
+        world.rotation = frozenWorld.rotation;
+      }
+      // keep severed geometry; alpha from reducer
+      rocket.container.visible = false;
+    } else {
+      // idle: parked rocket fixed at path origin (no bob)
+      holdDrawn = false;
+      frozenWorld = null;
+      world.pivot.set(0, 0);
+      world.position.set(0, 0);
+      world.rotation = 0;
+      curve.container.alpha = 0;
+      idleElapsedMs = 0;
+      explosion.hide();
+      const scale = plotScaleFor(1);
+      const origin = plotPoint(1, plot, scale);
+      rocket.syncPose(origin.x, origin.y, 0, false);
+      rocket.container.visible = rocketVisible;
+    }
+
+    // theater: countdown while waiting+idle; Crashed x during hold/fade; live x on climb
+    let liveText: string;
+    let liveTint: number;
+    let liveAlpha: number;
+    let titleText: string | null = null;
+    let titlePlacement: "above" | "below" = "below";
+    let celebrate = false;
+
+    const showCountdown =
+      snapshot.phase === "waiting" && mode === "idle";
+
+    const dt = Number.isFinite(deltaMS) ? Math.max(0, deltaMS) : 0;
+    const payoutEdge = prevBets
+      ? lastWinFromBets(prevBets, snapshot.bets)
+      : null;
+    if (payoutEdge != null) {
+      winBannerPayout = payoutEdge;
+      winBannerRemainingMs = VIEW_CONFIG.WIN_BANNER_MS;
+    } else if (winBannerRemainingMs > 0) {
+      winBannerRemainingMs = Math.max(0, winBannerRemainingMs - dt);
+    }
+    prevBets = [
+      { ...snapshot.bets[0] },
+      { ...snapshot.bets[1] },
+    ];
+
+    const bannerActive = winBannerRemainingMs > 0;
+
+    if (bannerActive) {
+      liveText = formatYouWin(winBannerPayout);
+      liveTint = VIEW_CONFIG.WIN_BANNER_TINT;
+      liveAlpha = 1;
+      celebrate = true;
+    } else if (showCountdown) {
+      liveText = formatWaitCountdown(snapshot.waitRemainingMs);
+      liveTint = 0xffffff;
+      liveAlpha = 1;
+      titleText = "NEXT GAME IN";
+      titlePlacement = "above";
+    } else if (mode === "crash_hold" || mode === "crash_fade") {
+      const liveMult =
+        latchedCrashMult != null && Number.isFinite(latchedCrashMult)
+          ? latchedCrashMult
+          : snapshot.multiplier;
+      liveText = formatMult(liveMult);
+      liveTint = VIEW_CONFIG.CRASH_COLOR;
+      liveAlpha = 1;
+      titleText = "Crashed";
+      titlePlacement = "below";
+    } else if (mode === "idle") {
+      if (latchedCrashMult != null && Number.isFinite(latchedCrashMult)) {
+        liveText = formatMult(latchedCrashMult);
+        liveTint = VIEW_CONFIG.CRASH_COLOR;
+        liveAlpha = VIEW_CONFIG.IDLE_CRASH_ALPHA;
+      } else {
+        liveText = "";
+        liveTint = 0xffffff;
+        liveAlpha = 0;
+      }
+    } else {
+      // climb - countdown cleared on flight
+      liveText = formatMult(snapshot.multiplier);
+      liveTint = theaterTintForMult(snapshot.multiplier);
+      liveAlpha = 1;
+    }
+
+    const frozenText = null;
+
+    theater.sync({
+      liveText,
+      liveTint,
+      liveAlpha,
+      titleText,
+      titlePlacement,
+      frozenText,
+      pulseMult: !bannerActive && mode === "climb" ? snapshot.multiplier : null,
+      deltaMS,
+      celebrate,
+      celebrateKick: payoutEdge != null,
+    });
+  }
+
+  return { sync };
+}

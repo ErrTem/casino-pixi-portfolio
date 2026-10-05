@@ -1,0 +1,21 @@
+# IDE
+.idea/
+
+# Dependencies / build
+node_modules/
+dist/
+*.local
+
+# Env
+.env
+.env.*
+
+# Local agent / planning tooling (keep out of public tree)
+.planning/
+.agents/
+.gsd/
+.cursor/
+
+# Local AI tooling
+.claude/
+

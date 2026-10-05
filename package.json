@@ -1,0 +1,25 @@
+{
+  "name": "casino-pixi-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Client-only Crash (Aviator-like) portfolio demo — GameLogic Core",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "pixi.js": "8.21.0",
+    "seedrandom": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/seedrandom": "^3.0.8",
+    "typescript": "~5.8.3",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
+  }
+}
