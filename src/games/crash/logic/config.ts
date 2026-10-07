@@ -8,7 +8,7 @@ export const CRASH_CONFIG = {
   houseEdge: 0.04,
   crashFloor: 1.01,
   crashCap: 100,
-  growthRatePerMs: Math.LN2 / 2000,
+  growthRatePerMs: Math.LN2 / 8000,
   multDecimals: 2,
   historySize: 20,
   maxDeltaMs: 100,
