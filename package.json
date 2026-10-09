@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "pixi.js": "8.21.0",
-    "seedrandom": "^3.0.5"
+    "seedrandom": "^3.0.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",
