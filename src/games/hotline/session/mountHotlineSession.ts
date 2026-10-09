@@ -10,6 +10,8 @@ import {
 } from "../logic/index.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
 
+const LAST_WIN_TWEEN_MS = 900;
+
 export async function mountHotlineSession(
   ctx: ShellContext,
 ): Promise<GameSession> {
@@ -47,6 +49,7 @@ export async function mountHotlineSession(
       if (result.ok && view) {
         ctx.audio.unlock();
         ctx.audio.play("spin");
+        settleArmed = true;
         view.scene.startSpin(game.getSnapshot().grid);
       }
       return result;
@@ -55,16 +58,31 @@ export async function mountHotlineSession(
     getSnapshot: () => visibleSnapshot(game.getSnapshot()),
   };
 
-  // last win stays hidden until the last reel lands
+  // last win and the win part of the balance stay hidden until the last reel lands
   function visibleSnapshot(snap: HotlineSnapshot): HotlineSnapshot {
-    if (view?.scene.isSpinning()) return { ...snap, phase: "idle" };
-    return snap;
+    if (!view?.scene.isSpinning()) return snap;
+    const balanceCents = Math.round(Number.parseFloat(snap.balanceDisplay) * 100);
+    const winCents = Math.round(Number.parseFloat(snap.lastWinDisplay) * 100);
+    const held =
+      Number.isFinite(balanceCents) && Number.isFinite(winCents)
+        ? ((balanceCents - winCents) / 100).toFixed(2)
+        : snap.balanceDisplay;
+    return { ...snap, phase: "idle", balanceDisplay: held };
   }
 
   const hud = mountHotlineHud(screen, hudGame, {
     audio: ctx.audio,
     betStepCount: config.math.betStepsCents.length,
+    lastWinTweenMs: LAST_WIN_TWEEN_MS,
   });
+
+  // armed by a spin, fires once when the reels come to rest
+  let settleArmed = false;
+  function onSettled(snap: HotlineSnapshot): void {
+    settleArmed = false;
+    const paid = snap.lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
+    if (paid > 0) ctx.audio.play("win");
+  }
 
   const menuEl = screen.querySelector("[data-action=menu]");
   if (!(menuEl instanceof HTMLButtonElement)) {
@@ -120,6 +138,7 @@ export async function mountHotlineSession(
   onTick = (ticker: Ticker): void => {
     // scene first so the hud reads the motion state after this frame
     view!.scene.sync(game.getSnapshot(), ticker.deltaMS);
+    if (settleArmed && !view!.scene.isSpinning()) onSettled(game.getSnapshot());
     hud.render(hudGame.getSnapshot());
   };
   ctx.app.ticker.add(onTick);

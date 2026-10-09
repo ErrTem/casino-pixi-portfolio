@@ -2,6 +2,7 @@ import { Container, Graphics, type Application } from "pixi.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import type { HotlineSnapshot } from "../logic/index.js";
 import { createReelWindow } from "./reels/createReelWindow.js";
+import { createWinLinesOverlay, type WinGeometry } from "./WinLinesOverlay.js";
 
 export interface HotlineSceneHooks {
   /** fires as each reel lands, left to right */
@@ -22,7 +23,6 @@ const PALETTE = [
   0xe8e8f0, 0xff4d4d, 0x4dffd2,
 ];
 const PHONE_COLORS = [0xff2e93, 0x00e5ff, 0xffd400];
-const WIN_OUTLINE = 0xffffff;
 const CELL_GAP = 4;
 
 function snapshotKey(snap: HotlineSnapshot): string {
@@ -51,9 +51,9 @@ export function createHotlineScene(
     colorFor,
     onReelStop: hooks.onReelStop,
   });
-  // win outlines sit above the masked reels
-  const outlines = new Graphics();
-  root.addChild(phones, reelWindow.container, outlines);
+  // win lines and cell frames sit above the masked reels
+  const overlay = createWinLinesOverlay();
+  root.addChild(phones, reelWindow.container, overlay.container);
   app.stage.addChild(root);
 
   let destroyed = false;
@@ -84,24 +84,31 @@ export function createHotlineScene(
     });
   }
 
-  function drawOutlines(snap: HotlineSnapshot, spinning: boolean): void {
-    outlines.clear();
-    if (spinning) return;
-    const size = cellSize - CELL_GAP;
-    const drawn = new Set<number>();
-    for (const win of snap.lineWins) {
-      for (const c of win.cells) {
-        const idx = c.reel * rows + c.row;
-        if (drawn.has(idx)) continue;
-        drawn.add(idx);
-        const x = gridLeft + c.reel * cellSize + CELL_GAP / 2;
-        const y = gridTop + c.row * cellSize + CELL_GAP / 2;
-        outlines.roundRect(x, y, size, size, 6).stroke({
-          width: 3,
-          color: WIN_OUTLINE,
-        });
-      }
+  function geometry(): WinGeometry {
+    const centers = Array.from({ length: reels }, (_, reel) =>
+      Array.from({ length: rows }, (_, row) => ({
+        x: gridLeft + reel * cellSize + cellSize / 2,
+        y: gridTop + row * cellSize + cellSize / 2,
+      })),
+    );
+    return {
+      centers,
+      cellSize,
+      gap: CELL_GAP,
+      callout: {
+        x: gridLeft + (cellSize * reels) / 2,
+        y: gridTop + cellSize * rows - Math.min(24, cellSize * 0.3),
+      },
+    };
+  }
+
+  // wins show only once every reel is at rest, one payline at a time
+  function showWins(snap: HotlineSnapshot, spinning: boolean): void {
+    if (spinning || snap.lineWins.length === 0) {
+      overlay.clear();
+      return;
     }
+    overlay.showCycle(snap.lineWins, geometry());
   }
 
   return {
@@ -127,14 +134,15 @@ export function createHotlineScene(
         lastKey = key;
         lastSpinning = spinning;
         if (!spinning) reelWindow.setGrid(snapshot.grid);
-        drawOutlines(snapshot, spinning);
+        showWins(snapshot, spinning);
       }
+      if (!spinning) overlay.tick(deltaMS);
     },
 
     startSpin(grid: string[][]): void {
       if (destroyed) return;
       reelWindow.start(grid);
-      outlines.clear();
+      overlay.clear();
     },
 
     isSpinning(): boolean {
@@ -144,6 +152,7 @@ export function createHotlineScene(
     destroy(): void {
       if (destroyed) return;
       destroyed = true;
+      overlay.destroy();
       reelWindow.destroy();
       root.removeFromParent();
       root.destroy({ children: true });
