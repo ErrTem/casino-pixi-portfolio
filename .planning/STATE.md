@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 02
 current_phase_name: HOTLINE Base Playable
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-10-09T19:48:09.170Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-10-09T19:52:30.233Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 02 execution started
-state_head: 065a5d49d12e7223fbca020992783c615ddd1eea
+state_head: 49c1dec8a966174aa37da2fbc1fd3ba08ea98595
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 02 (HOTLINE Base Playable) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 02 execution started
 
@@ -64,6 +64,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01 P03 | 15min | 2 tasks | 10 files |
 | Phase 01 P04 | 15min | 2 tasks | 2 files |
 | Phase 02 P01 | 10min | 2 tasks | 6 files |
+| Phase 02 P02 | 10min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Icons already in 01-01; walkthrough swap fixed binary contents only
 - [Phase 01]: Phase 1 walkthrough signed off SHELL-01..04 and CFG-02 after icon swap
 - [Phase 02]: 02-01: paytable values are multipliers of total bet, illustrative 40x5 payline table
+- [Phase 02]: 02-02: line pays max of wild-only and substituted run, ties to substituted
 
 ### Pending Todos
 
@@ -104,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-09T19:48:09.127Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-10-09T19:52:30.183Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
