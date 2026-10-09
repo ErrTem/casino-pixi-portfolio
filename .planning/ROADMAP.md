@@ -29,7 +29,13 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
   3. Mute preference set in menu or Crash still applies after switching between menu and Crash
   4. Menu/HUD shows a clear portfolio demo / no real money label
   5. Booting with `?seed=` produces a reproducible Crash session via the shared boot seam
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Walking skeleton: menu to Crash and back on one shell-owned Application, leak-free teardown and launch races
+- [ ] 01-02-PLAN.md — Green baseline, seed replay test, mute key moved to portfolio-demo:mute with legacy migrate
+- [ ] 01-03-PLAN.md — Menu front door: Retro Computer header, Crash and disabled HOTLINE tiles, shared menu Sound toggle
+- [ ] 01-04-PLAN.md — User-supplied tile icons and visitor walkthrough sign-off
 **UI hint**: yes
 
 ### Phase 2: HOTLINE Base Playable
@@ -91,7 +97,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Portfolio Shell + Crash Session | 0/TBD | Not started | - |
+| 1. Portfolio Shell + Crash Session | 0/4 | Planned | - |
 | 2. HOTLINE Base Playable | 0/TBD | Not started | - |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
