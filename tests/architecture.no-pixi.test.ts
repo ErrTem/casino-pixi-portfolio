@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const ROOT = join(import.meta.dirname, "..");
 const LOGIC_DIRS = [
   join(ROOT, "src", "games", "crash", "logic"),
+  join(ROOT, "src", "games", "hotline", "logic"),
   join(ROOT, "src", "shared"),
 ];
 const VIEW_DIR = join(ROOT, "src", "games", "crash", "view");
