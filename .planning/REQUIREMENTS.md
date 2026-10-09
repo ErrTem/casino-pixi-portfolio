@@ -39,7 +39,7 @@
 
 ### Config
 
-- [ ] **CFG-01**: HOTLINE loads bet steps, symbol weights, token odds, bonus prizes, and jackpot multipliers from backend-shaped JSON validated at boot
+- [x] **CFG-01**: HOTLINE loads bet steps, symbol weights, token odds, bonus prizes, and jackpot multipliers from backend-shaped JSON validated at boot
 - [x] **CFG-02**: User can boot with `?seed=` for reproducible demo sessions (shared boot seam with Crash)
 
 ### Presentation
@@ -81,7 +81,7 @@ Deferred — not in current roadmap phases.
 | SHELL-03 | Phase 1 | Complete |
 | SHELL-04 | Phase 1 | Complete |
 | CFG-02 | Phase 1 | Complete |
-| CFG-01 | Phase 2 | Pending |
+| CFG-01 | Phase 2 | Complete |
 | BASE-01 | Phase 2 | Pending |
 | BASE-02 | Phase 2 | Pending |
 | BASE-03 | Phase 2 | Pending |
