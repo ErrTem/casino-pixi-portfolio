@@ -76,7 +76,9 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
     },
 
     setBetStepIndex(index: number): void {
-      betStepIndex = Math.max(0, Math.min(steps.length - 1, index));
+      // bad input keeps the current step, anything else lands on a real step
+      if (!Number.isFinite(index)) return;
+      betStepIndex = Math.max(0, Math.min(steps.length - 1, Math.floor(index)));
     },
 
     getSnapshot(): HotlineSnapshot {
