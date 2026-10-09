@@ -130,6 +130,47 @@ describe("shell HUD layout (UI-01 / VIS-02 / D-01)", () => {
   });
 });
 
+describe("hotline screen template (D-09 / D-13 / BASE-02)", () => {
+  const tpl = (): string => innerById(html, "hotline-screen-template");
+
+  it("defines the hotline template with the shared zone ids", () => {
+    expect(html).toMatch(/id=["']hotline-screen-template["']/);
+    expect(html).toMatch(/id=["']hotline-screen["']/);
+    const t = tpl();
+    expect(t).toMatch(/id=["']top-chrome["']/);
+    expect(t).toMatch(/id=["']game-canvas-host["']/);
+    expect(t).toMatch(/id=["']hud-bar["']/);
+  });
+
+  it("keeps the hotline canvas host free of data-action and data-field nodes", () => {
+    const host = innerById(tpl(), "game-canvas-host");
+    expect(host).not.toMatch(/data-action\s*=/);
+    expect(host).not.toMatch(/data-field\s*=/);
+  });
+
+  it("puts balance, last win, menu and mute under top-chrome", () => {
+    const top = innerById(tpl(), "top-chrome");
+    expect(hasAttr(top, "field", "balance")).toBe(true);
+    expect(hasAttr(top, "field", "last-win")).toBe(true);
+    expect(hasAttr(top, "action", "menu")).toBe(true);
+    expect(hasAttr(top, "action", "mute")).toBe(true);
+  });
+
+  it("puts spin, bet steppers, bet readout and the fixed 40 lines under hud-bar", () => {
+    const bar = innerById(tpl(), "hud-bar");
+    expect(hasAttr(bar, "action", "spin")).toBe(true);
+    expect(hasAttr(bar, "action", "bet-dec")).toBe(true);
+    expect(hasAttr(bar, "action", "bet-inc")).toBe(true);
+    expect(hasAttr(bar, "field", "bet")).toBe(true);
+    expect(hasAttr(bar, "field", "lines")).toBe(true);
+    expect(bar).toMatch(/40 lines/i);
+  });
+
+  it("adds no free text bet input to the hotline template", () => {
+    expect(tpl()).not.toMatch(/data-field\s*=\s*["']bet-input["']/);
+  });
+});
+
 describe("portfolio chrome (SHELL-04 / D-13)", () => {
   it("page title names the portfolio, not Crash Demo", () => {
     const titleMatch = html.match(/<title>([^<]*)<\/title>/i);

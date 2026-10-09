@@ -18,12 +18,12 @@ describe("gameRegistry (SHELL-01 / SHELL-04)", () => {
     expect(crash!.iconUrl).toBe("/assets/menu/icon-crash.png");
   });
 
-  it("hotline is disabled stub with hotline icon path and no mount", () => {
+  it("hotline is enabled with a mount and the hotline icon path", () => {
     const hotline = GAMES.find((g) => g.id === "hotline");
     expect(hotline).toBeDefined();
     expect(hotline!.title).toBe("HOTLINE");
-    expect(hotline!.enabled).toBe(false);
-    expect(hotline!.mount).toBeUndefined();
+    expect(hotline!.enabled).toBe(true);
+    expect(typeof hotline!.mount).toBe("function");
     expect(hotline!.iconUrl).toBe("/assets/menu/icon-hotline.png");
   });
 

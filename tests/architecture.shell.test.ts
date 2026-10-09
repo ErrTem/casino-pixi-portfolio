@@ -15,6 +15,14 @@ const SESSION_FILE = join(
   "session",
   "mountCrashSession.ts",
 );
+const HOTLINE_SESSION_FILE = join(
+  ROOT,
+  "src",
+  "games",
+  "hotline",
+  "session",
+  "mountHotlineSession.ts",
+);
 const HUD_FILE = join(ROOT, "src", "games", "crash", "hud", "CrashHud.ts");
 
 const INNER_HTML_USE = /\.innerHTML\b/;
@@ -70,6 +78,24 @@ describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () 
     expect(code).not.toMatch(/\baudio\s*\.\s*dispose\s*\(/);
     expect(code).not.toMatch(/ctx\.audio\.dispose/);
     expect(code).not.toMatch(/\bapp\s*\.\s*destroy\s*\(/);
+  });
+
+  it("Gate B2: mountHotlineSession loads config first, tears down like crash, keeps shell resources", () => {
+    const { code } = readRel(HOTLINE_SESSION_FILE);
+    expect(code).toMatch(/loadHotlineConfig\s*\(/);
+    expect(code).toMatch(/createHotlineGame\s*\(/);
+    expect(code.indexOf("loadHotlineConfig(")).toBeLessThan(
+      code.indexOf("createHotlineGame("),
+    );
+    expect(code).toMatch(/ticker\s*\.\s*remove\s*\(/);
+    expect(code).toMatch(/hud\s*\.\s*dispose\s*\(/);
+    expect(code).toMatch(/scene\s*\.\s*destroy\s*\(/);
+    expect(code).toMatch(/resizeTo\s*=\s*null/);
+    expect(code).toMatch(/\.stop\s*\(/);
+    expect(code).toMatch(/canvas\s*\.\s*remove\s*\(/);
+    expect(code).not.toMatch(/\baudio\s*\.\s*dispose\s*\(/);
+    expect(code).not.toMatch(/\bapp\s*\.\s*destroy\s*\(/);
+    expect(code).not.toMatch(/\.innerHTML\b/);
   });
 
   it("Gate C: CrashHud declares dispose and removes keydown by name", () => {
