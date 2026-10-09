@@ -1,6 +1,8 @@
 import type { AudioPort } from "../../../shared/audio/AudioPort.js";
 import { saveMutePref } from "../../../shared/audio/mutePref.js";
 import type { HotlineGame, HotlineSnapshot } from "../logic/index.js";
+import { formatMoney } from "./format.js";
+import { createLastWinTween } from "./lastWinTween.js";
 
 export interface HotlineHud {
   render(snap: HotlineSnapshot): void;
@@ -12,6 +14,10 @@ export interface MountHotlineHudOptions {
   audio?: AudioPort;
   /** number of selectable bet steps from config math.betStepsCents */
   betStepCount: number;
+  /** count up time for the last win readout, 0 or missing shows it at once */
+  lastWinTweenMs?: number;
+  /** clock for the count up, defaults to performance.now */
+  now?: () => number;
 }
 
 function need<T extends Element>(root: Element, selector: string): T {
@@ -27,6 +33,12 @@ export function mountHotlineHud(
   options: MountHotlineHudOptions,
 ): HotlineHud {
   const { audio, betStepCount } = options;
+  const tweenMs = options.lastWinTweenMs ?? 0;
+  const now = options.now ?? (() => performance.now());
+  const lastWinTween = createLastWinTween(tweenMs);
+  // set while a count up is running, null once it lands or the win is hidden
+  let tweenTarget: number | null = null;
+  let tweenText = "";
 
   const balanceEl = need(root, "[data-field=balance]");
   const lastWinEl = need(root, "[data-field=last-win]");
@@ -50,12 +62,37 @@ export function mountHotlineHud(
     muteBtn.setAttribute("aria-pressed", muted ? "true" : "false");
   }
 
+  // last win text, counts up from zero once per settled spin
+  function lastWinText(snap: HotlineSnapshot): string {
+    if (snap.phase !== "settled") {
+      tweenTarget = null;
+      tweenText = "";
+      return "-";
+    }
+    const target = Number.parseFloat(snap.lastWinDisplay);
+    if (tweenMs <= 0 || !Number.isFinite(target) || target <= 0) {
+      tweenTarget = null;
+      return snap.lastWinDisplay;
+    }
+    const t = now();
+    if (tweenText !== snap.lastWinDisplay) {
+      tweenText = snap.lastWinDisplay;
+      tweenTarget = target;
+      lastWinTween.start(target, t);
+    }
+    if (tweenTarget === null || lastWinTween.isDone(t)) {
+      tweenTarget = null;
+      return snap.lastWinDisplay;
+    }
+    return formatMoney(lastWinTween.valueAt(t));
+  }
+
   function render(snap: HotlineSnapshot): void {
     if (disposed) return;
     balanceEl.textContent = snap.balanceDisplay;
     betEl.textContent = snap.betDisplay;
     linesEl.textContent = `${snap.paylineCount} lines`;
-    lastWinEl.textContent = snap.phase === "settled" ? snap.lastWinDisplay : "-";
+    lastWinEl.textContent = lastWinText(snap);
     decBtn.disabled = snap.betStepIndex <= 0;
     incBtn.disabled = snap.betStepIndex >= betStepCount - 1;
     syncMuteLabel();

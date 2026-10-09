@@ -93,6 +93,36 @@ describe("HotlineHud bet steps (D-13)", () => {
     expect(els["[data-field=lines]"].textContent).toBe("40 lines");
   });
 
+  it("counts the last win up when a tween time is set (D-15)", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud", config });
+    const { root, els } = makeRoot();
+    let clock = 0;
+    const hud = mountHotlineHud(root, game, {
+      betStepCount: config.math.betStepsCents.length,
+      lastWinTweenMs: 1000,
+      now: () => clock,
+    });
+    let won = false;
+    for (let i = 0; i < 400 && !won; i += 1) {
+      game.spin();
+      won = Number.parseFloat(game.getSnapshot().lastWinDisplay) > 0;
+    }
+    expect(won).toBe(true);
+    const target = game.getSnapshot().lastWinDisplay;
+    clock = 5000;
+    hud.render(game.getSnapshot());
+    expect(els["[data-field=last-win]"].textContent).toBe("0.00");
+    clock = 5400;
+    hud.render(game.getSnapshot());
+    const mid = Number.parseFloat(els["[data-field=last-win]"].textContent);
+    expect(mid).toBeGreaterThan(0);
+    expect(mid).toBeLessThanOrEqual(Number.parseFloat(target));
+    clock = 6100;
+    hud.render(game.getSnapshot());
+    expect(els["[data-field=last-win]"].textContent).toBe(target);
+  });
+
   it("dispose removes listeners", () => {
     const { els, hud } = setup();
     hud.dispose();
