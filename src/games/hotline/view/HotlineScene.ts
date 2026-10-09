@@ -1,9 +1,18 @@
-import { Container, Graphics, Text, type Application } from "pixi.js";
+import { Container, Graphics, type Application } from "pixi.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import type { HotlineSnapshot } from "../logic/index.js";
+import { createReelWindow } from "./reels/createReelWindow.js";
+
+export interface HotlineSceneHooks {
+  /** fires as each reel lands, left to right */
+  onReelStop?: (reelIndex: number) => void;
+}
 
 export interface HotlineScene {
-  sync: (snapshot: HotlineSnapshot) => void;
+  sync: (snapshot: HotlineSnapshot, deltaMS: number) => void;
+  /** spin the reels and land them on `grid` */
+  startSpin: (grid: string[][]) => void;
+  isSpinning: () => boolean;
   destroy: () => void;
 }
 
@@ -16,11 +25,6 @@ const PHONE_COLORS = [0xff2e93, 0x00e5ff, 0xffd400];
 const WIN_OUTLINE = 0xffffff;
 const CELL_GAP = 4;
 
-interface Cell {
-  box: Graphics;
-  label: Text;
-}
-
 function snapshotKey(snap: HotlineSnapshot): string {
   const wins = snap.lineWins.map((w) => `${w.lineIndex}:${w.count}`).join(",");
   return `${snap.grid.map((reel) => reel.join(",")).join("|")}#${wins}`;
@@ -29,6 +33,7 @@ function snapshotKey(snap: HotlineSnapshot): string {
 export function createHotlineScene(
   app: Application,
   config: HotlineConfig,
+  hooks: HotlineSceneHooks = {},
 ): HotlineScene {
   const { reels, rows, symbolWeights } = config.math;
   const symbolIds = Object.keys(symbolWeights[0]);
@@ -39,38 +44,36 @@ export function createHotlineScene(
 
   const root = new Container();
   const phones = new Graphics();
-  const cells: Cell[] = [];
-  root.addChild(phones);
-  for (let reel = 0; reel < reels; reel += 1) {
-    for (let row = 0; row < rows; row += 1) {
-      const box = new Graphics();
-      const label = new Text({
-        text: "",
-        style: { fontFamily: "sans-serif", fontSize: 14, fill: 0x0b0b12 },
-      });
-      label.anchor.set(0.5);
-      root.addChild(box, label);
-      cells.push({ box, label });
-    }
-  }
+  const reelWindow = createReelWindow({
+    reels,
+    rows,
+    fillerIds: symbolIds,
+    colorFor,
+    onReelStop: hooks.onReelStop,
+  });
+  // win outlines sit above the masked reels
+  const outlines = new Graphics();
+  root.addChild(phones, reelWindow.container, outlines);
   app.stage.addChild(root);
 
   let destroyed = false;
   let lastKey = "";
   let lastW = 0;
   let lastH = 0;
-  let lastSnap: HotlineSnapshot | null = null;
+  let lastSpinning = false;
+  let gridLeft = 0;
+  let gridTop = 0;
+  let cellSize = 0;
 
-  function draw(snap: HotlineSnapshot, w: number, h: number): void {
+  function layout(w: number, h: number): void {
     const phoneBand = Math.min(h * 0.16, 72);
     const margin = 12;
     const availW = Math.max(1, w - margin * 2);
     const availH = Math.max(1, h - phoneBand - margin * 2);
-    const cell = Math.max(8, Math.min(availW / reels, availH / rows));
-    const gridW = cell * reels;
-    const gridH = cell * rows;
-    const left = (w - gridW) / 2;
-    const top = phoneBand + margin + (availH - gridH) / 2;
+    cellSize = Math.max(8, Math.min(availW / reels, availH / rows));
+    gridLeft = (w - cellSize * reels) / 2;
+    gridTop = phoneBand + margin + (availH - cellSize * rows) / 2;
+    reelWindow.layout(gridLeft, gridTop, cellSize, CELL_GAP);
 
     // three phone slots above the reels
     phones.clear();
@@ -79,51 +82,69 @@ export function createHotlineScene(
       const cx = w * ((i + 1) / (PHONE_COLORS.length + 1));
       phones.circle(cx, phoneBand / 2 + 4, r).fill(color);
     });
+  }
 
-    const winCells = new Set<number>();
+  function drawOutlines(snap: HotlineSnapshot, spinning: boolean): void {
+    outlines.clear();
+    if (spinning) return;
+    const size = cellSize - CELL_GAP;
+    const drawn = new Set<number>();
     for (const win of snap.lineWins) {
-      for (const c of win.cells) winCells.add(c.reel * rows + c.row);
-    }
-
-    for (let reel = 0; reel < reels; reel += 1) {
-      for (let row = 0; row < rows; row += 1) {
-        const idx = reel * rows + row;
-        const { box, label } = cells[idx];
-        const id = snap.grid[reel]?.[row] ?? "";
-        const x = left + reel * cell + CELL_GAP / 2;
-        const y = top + row * cell + CELL_GAP / 2;
-        const size = cell - CELL_GAP;
-        box.clear();
-        box.roundRect(x, y, size, size, 6).fill(colorFor(id));
-        if (winCells.has(idx)) {
-          box.roundRect(x, y, size, size, 6).stroke({
-            width: 3,
-            color: WIN_OUTLINE,
-          });
-        }
-        label.text = id;
-        label.style.fontSize = Math.max(8, Math.floor(size * 0.18));
-        label.position.set(x + size / 2, y + size / 2);
+      for (const c of win.cells) {
+        const idx = c.reel * rows + c.row;
+        if (drawn.has(idx)) continue;
+        drawn.add(idx);
+        const x = gridLeft + c.reel * cellSize + CELL_GAP / 2;
+        const y = gridTop + c.row * cellSize + CELL_GAP / 2;
+        outlines.roundRect(x, y, size, size, 6).stroke({
+          width: 3,
+          color: WIN_OUTLINE,
+        });
       }
     }
   }
 
   return {
-    sync(snapshot: HotlineSnapshot): void {
+    sync(snapshot: HotlineSnapshot, deltaMS: number): void {
       if (destroyed) return;
       const w = app.screen.width;
       const h = app.screen.height;
+      const resized = w !== lastW || h !== lastH;
+      if (resized) {
+        lastW = w;
+        lastH = h;
+        layout(w, h);
+      }
+
+      reelWindow.update(deltaMS);
+      const spinning = reelWindow.isSpinning();
       const key = snapshotKey(snapshot);
-      lastSnap = snapshot;
-      if (key === lastKey && w === lastW && h === lastH) return;
-      lastKey = key;
-      lastW = w;
-      lastH = h;
-      draw(lastSnap, w, h);
+      if (
+        resized ||
+        key !== lastKey ||
+        spinning !== lastSpinning
+      ) {
+        lastKey = key;
+        lastSpinning = spinning;
+        if (!spinning) reelWindow.setGrid(snapshot.grid);
+        drawOutlines(snapshot, spinning);
+      }
     },
+
+    startSpin(grid: string[][]): void {
+      if (destroyed) return;
+      reelWindow.start(grid);
+      outlines.clear();
+    },
+
+    isSpinning(): boolean {
+      return reelWindow.isSpinning();
+    },
+
     destroy(): void {
       if (destroyed) return;
       destroyed = true;
+      reelWindow.destroy();
       root.removeFromParent();
       root.destroy({ children: true });
     },

@@ -1,6 +1,10 @@
 import type { Application } from "pixi.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
-import { createHotlineScene, type HotlineScene } from "./HotlineScene.js";
+import {
+  createHotlineScene,
+  type HotlineScene,
+  type HotlineSceneHooks,
+} from "./HotlineScene.js";
 
 export interface MountedHotlineView {
   scene: HotlineScene;
@@ -11,6 +15,7 @@ export interface MountedHotlineView {
 export async function mountHotlineView(
   app: Application,
   config: HotlineConfig,
+  hooks: HotlineSceneHooks = {},
 ): Promise<MountedHotlineView> {
   const refresh = (): void => {
     const next = Math.min(window.devicePixelRatio || 1, 2);
@@ -28,6 +33,6 @@ export async function mountHotlineView(
     vv?.removeEventListener("resize", refresh);
   };
 
-  const scene = createHotlineScene(app, config);
+  const scene = createHotlineScene(app, config, hooks);
   return { scene, dispose };
 }

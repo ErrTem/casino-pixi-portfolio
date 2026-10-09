@@ -40,6 +40,9 @@ const PITCH_HZ: Record<SfxEvent, number> = {
   takeoff: 660,
   cash_out: 880,
   crash: 160,
+  spin: 330,
+  reel_stop: 520,
+  win: 990,
 };
 
 export function createBeepAudioPort(
