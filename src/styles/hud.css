@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Retro Computer";
+  src: url("../shared/fonts/retrocomputerrusbydaymarius.ttf") format("truetype");
+  font-display: swap;
+}
+
 :root {
   /* Sampled from the frames. Surfaces: desktop crash field and cards.
      Accent: its primary button. Danger / warning: dashboard gauge.
@@ -438,6 +444,7 @@ input {
 .primary-cta:focus-visible,
 .mute-toggle:focus-visible,
 .reset-demo:focus-visible,
+.menu-back:focus-visible,
 .autoplay-btn:focus-visible,
 .stake-stepper button:focus-visible,
 .auto-co-stepper button:focus-visible,
@@ -677,7 +684,8 @@ input {
 }
 
 .mute-toggle,
-.reset-demo {
+.reset-demo,
+.menu-back {
   padding: 0.35rem 0.7rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -692,8 +700,159 @@ input {
 }
 
 .mute-toggle:not(:disabled):hover,
-.reset-demo:not(:disabled):hover {
+.reset-demo:not(:disabled):hover,
+.menu-back:not(:disabled):hover {
   background: var(--border);
+}
+
+/* portfolio menu screen */
+.menu-screen {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.menu-bar {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.menu-header {
+  flex: 0 0 auto;
+  width: min(100%, 40rem);
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  padding-bottom: 0.45rem;
+  text-align: center;
+}
+
+.menu-title {
+  margin: 0;
+  font-family: "Retro Computer", "Segoe UI", system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.menu-subtitle {
+  margin: 0.45rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0 max(0.75rem, env(safe-area-inset-right)) 0
+    max(0.75rem, env(safe-area-inset-left));
+  width: min(100%, 40rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 520px) {
+  .menu-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+}
+
+.menu-tile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  position: relative;
+}
+
+.menu-tile:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--card) 80%, var(--border));
+}
+
+.menu-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.menu-tile:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.menu-tile:disabled .menu-tile__icon {
+  filter: grayscale(1);
+}
+
+.menu-tile__icon-wrap {
+  flex: 0 0 4.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--field) 0%,
+    color-mix(in srgb, var(--border) 70%, var(--accent)) 100%
+  );
+}
+
+.menu-tile__icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-tile__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.menu-tile__title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.menu-tile__blurb {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.menu-tile__chip {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .reset-demo--emphasize {

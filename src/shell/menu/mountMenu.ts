@@ -34,6 +34,11 @@ export function mountMenu(
     handler: () => void;
   }> = [];
 
+  const imageListeners: Array<{
+    el: HTMLImageElement;
+    handler: () => void;
+  }> = [];
+
   for (const game of options.games) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
@@ -41,19 +46,50 @@ export function mountMenu(
     btn.className = "menu-tile";
     btn.setAttribute("data-game", game.id);
 
+    const iconWrap = document.createElement("span");
+    iconWrap.className = "menu-tile__icon-wrap";
+
+    const img = document.createElement("img");
+    img.className = "menu-tile__icon";
+    img.src = game.iconUrl;
+    img.alt = "";
+    img.width = 96;
+    img.height = 96;
+    img.decoding = "async";
+    const onImgError = (): void => {
+      img.hidden = true;
+    };
+    img.addEventListener("error", onImgError);
+    imageListeners.push({ el: img, handler: onImgError });
+    iconWrap.append(img);
+
+    const textWrap = document.createElement("span");
+    textWrap.className = "menu-tile__text";
+
     const titleSpan = document.createElement("span");
     titleSpan.className = "menu-tile__title";
     titleSpan.textContent = game.title;
-    btn.append(titleSpan);
 
-    if (game.enabled) {
+    const blurbSpan = document.createElement("span");
+    blurbSpan.className = "menu-tile__blurb";
+    blurbSpan.textContent = game.blurb;
+
+    textWrap.append(titleSpan, blurbSpan);
+    btn.append(iconWrap, textWrap);
+
+    if (!game.enabled) {
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      const chip = document.createElement("span");
+      chip.className = "menu-tile__chip";
+      chip.textContent = "Coming soon";
+      btn.append(chip);
+    } else {
       const handler = (): void => {
         options.onLaunch(game.id);
       };
       btn.addEventListener("click", handler);
       listeners.push({ el: btn, handler });
-    } else {
-      btn.disabled = true;
     }
 
     li.append(btn);
@@ -70,6 +106,9 @@ export function mountMenu(
       disposed = true;
       for (const { el, handler } of listeners) {
         el.removeEventListener("click", handler);
+      }
+      for (const { el, handler } of imageListeners) {
+        el.removeEventListener("error", handler);
       }
       main.remove();
     },

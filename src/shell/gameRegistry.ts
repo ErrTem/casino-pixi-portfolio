@@ -19,4 +19,11 @@ export const GAMES: readonly GameDefinition[] = [
       return mountCrashSession(ctx);
     },
   },
+  {
+    id: "hotline",
+    title: "HOTLINE",
+    blurb: "Neon motel slot",
+    iconUrl: "/assets/menu/icon-hotline.png",
+    enabled: false,
+  },
 ];
