@@ -117,6 +117,20 @@ describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () 
     }
   });
 
+  it("Gate B4: hotline win feedback cycles lines, tweens last win and plays win after settle", () => {
+    const session = readRel(HOTLINE_SESSION_FILE);
+    expect(session.code).toMatch(/play\(\s*"win"\s*\)/);
+    const scene = readRel(
+      join(ROOT, "src", "games", "hotline", "view", "HotlineScene.ts"),
+    );
+    expect(scene.code).toMatch(/createWinLinesOverlay/);
+    expect(scene.code).toMatch(/overlay\s*\.\s*destroy\s*\(/);
+    const hud = readRel(
+      join(ROOT, "src", "games", "hotline", "hud", "HotlineHud.ts"),
+    );
+    expect(hud.code).toMatch(/lastWinTweenValue|createLastWinTween/);
+  });
+
   it("Gate C: CrashHud declares dispose and removes keydown by name", () => {
     const { src, code } = readRel(HUD_FILE);
     expect(src).toMatch(/dispose\s*\(\s*\)\s*:\s*void/);
