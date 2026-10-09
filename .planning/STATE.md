@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: HOTLINE + multi-game menu
 current_phase: 01
 current_phase_name: Portfolio Shell + Crash Session
-status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-10-09T13:46:28.959Z"
+status: verifying
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-10-09T17:05:29.189Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 01 execution started
-state_head: ae50b371c4c3ef23a1fc959f114839bbe13da51d
+state_head: e4a0672e0badf2b114216372d06749b5edaad4bb
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 
 Phase: 01 (Portfolio Shell + Crash Session) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-09 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P01 | 7min | 2 tasks | 17 files |
 | Phase 01 P02 | 8min | 2 tasks | 4 files |
 | Phase 01 P03 | 15min | 2 tasks | 10 files |
+| Phase 01 P04 | 15min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Menu Sound uses bindMuteButton on the shell AudioPort; CrashHud mute left as-is
 - [Phase 01]: HOTLINE stays enabled:false with no mount; Coming soon chip only
 - [Phase 01]: Icon error listener hides img so CSS fill remains
+- [Phase 01]: Icons already in 01-01; walkthrough swap fixed binary contents only
+- [Phase 01]: Phase 1 walkthrough signed off SHELL-01..04 and CFG-02 after icon swap
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-09T13:46:28.936Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-10-09T17:05:29.163Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
