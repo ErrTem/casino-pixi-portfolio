@@ -10,7 +10,7 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
 
 ## Phases
 
-- [ ] **Phase 1: Portfolio Shell + Crash Session** - Menu launches Crash or returns home; shared mute/seed/demo chrome; one long-lived Pixi Application
+- [x] **Phase 1: Portfolio Shell + Crash Session** - Menu launches Crash or returns home; shared mute/seed/demo chrome; one long-lived Pixi Application (completed 2026-10-09)
 - [ ] **Phase 2: HOTLINE Base Playable** - Zod JSON config, 5×4 / 40-line math, spin/bet HUD, motel CRT presentation
 - [ ] **Phase 3: Diskette Collectors + Trigger Queue** - Colored tokens fly into three phones; meters grow; random triggers enqueue combo nights
 - [ ] **Phase 4: Three Bonuses + Combo Nights** - Green free spins, Red Hold & Win, Purple locker Pick'em, ordered combo queue
@@ -32,7 +32,7 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
   4. Menu/HUD shows a clear portfolio demo / no real money label
   5. Booting with `?seed=` produces a reproducible Crash session via the shared boot seam
 
-**Plans:** 4/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 **Wave 1**
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Portfolio Shell + Crash Session | 4/4 | In Progress|  |
+| 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
 | 2. HOTLINE Base Playable | 0/TBD | Not started | - |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
