@@ -1,9 +1,12 @@
+import type { AudioPort } from "../../shared/audio/AudioPort.js";
 import { MENU_COPY } from "../gameRegistry.js";
+import { bindMuteButton } from "../muteBinding.js";
 import type { Disposable, GameDefinition, GameId } from "../types.js";
 
 export interface MountMenuOptions {
   games: readonly GameDefinition[];
   onLaunch(id: GameId): void;
+  audio: AudioPort;
 }
 
 export function mountMenu(
@@ -12,6 +15,18 @@ export function mountMenu(
 ): Disposable {
   const main = document.createElement("main");
   main.className = "app-shell menu-screen";
+
+  const bar = document.createElement("div");
+  bar.className = "menu-bar";
+
+  const muteBtn = document.createElement("button");
+  muteBtn.type = "button";
+  muteBtn.className = "mute-toggle";
+  muteBtn.setAttribute("data-action", "mute");
+  muteBtn.setAttribute("aria-pressed", "false");
+  bar.append(muteBtn);
+
+  const unbindMute = bindMuteButton(muteBtn, options.audio);
 
   const header = document.createElement("header");
   header.className = "menu-header";
@@ -96,7 +111,7 @@ export function mountMenu(
     list.append(li);
   }
 
-  main.append(header, list);
+  main.append(bar, header, list);
   root.append(main);
 
   let disposed = false;
@@ -104,6 +119,7 @@ export function mountMenu(
     dispose() {
       if (disposed) return;
       disposed = true;
+      unbindMute();
       for (const { el, handler } of listeners) {
         el.removeEventListener("click", handler);
       }

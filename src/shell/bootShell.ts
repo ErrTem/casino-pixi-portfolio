@@ -43,7 +43,8 @@ export async function bootShell(): Promise<() => void> {
 
   const router = createRouter({
     games: GAMES,
-    showMenu: (onLaunch) => mountMenu(root, { games: GAMES, onLaunch }),
+    showMenu: (onLaunch) =>
+      mountMenu(root, { games: GAMES, onLaunch, audio }),
     buildContext: createContextFactory({ app, root, audio, seed }),
   });
   router.start();
