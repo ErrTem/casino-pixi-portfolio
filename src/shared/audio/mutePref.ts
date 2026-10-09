@@ -1,4 +1,5 @@
-export const MUTE_STORAGE_KEY = "crash-demo:mute";
+export const MUTE_STORAGE_KEY = "portfolio-demo:mute";
+export const LEGACY_MUTE_STORAGE_KEY = "crash-demo:mute";
 
 export interface MuteStore {
   getItem(key: string): string | null;
@@ -38,21 +39,45 @@ function resolveStore(store?: MuteStore): MuteStore {
   return memoryStore();
 }
 
+function parseMuteFlag(raw: string | null): boolean | null {
+  if (raw === "1") return true;
+  if (raw === "0") return false;
+  return null;
+}
+
 /**
- * load mute preference. 1 = muted 0 = unmuted
- * missing key -> unmuted (false)
+ * load mute preference under portfolio-demo:mute
+ * one-shot read of crash-demo:mute when the new key is absent
+ * missing or malformed -> unmuted (false)
  */
 export function loadMutePref(store?: MuteStore): boolean {
   try {
     const s = resolveStore(store);
-    return s.getItem(MUTE_STORAGE_KEY) === "1";
+    const current = parseMuteFlag(s.getItem(MUTE_STORAGE_KEY));
+    if (current !== null) return current;
+
+    const legacy = parseMuteFlag(s.getItem(LEGACY_MUTE_STORAGE_KEY));
+    if (legacy !== null) {
+      s.setItem(MUTE_STORAGE_KEY, legacy ? "1" : "0");
+      return legacy;
+    }
+    return false;
   } catch {
-    return memoryFallback.get(MUTE_STORAGE_KEY) === "1";
+    const current = parseMuteFlag(memoryFallback.get(MUTE_STORAGE_KEY) ?? null);
+    if (current !== null) return current;
+    const legacy = parseMuteFlag(
+      memoryFallback.get(LEGACY_MUTE_STORAGE_KEY) ?? null,
+    );
+    if (legacy !== null) {
+      memoryFallback.set(MUTE_STORAGE_KEY, legacy ? "1" : "0");
+      return legacy;
+    }
+    return false;
   }
 }
 
 /**
- * persist mute preference as "1"|"0" under crash-demo:mute
+ * persist mute preference as "1"|"0" under portfolio-demo:mute
  * last write wins. Storage throw -> in-memory fallback
  */
 export function saveMutePref(muted: boolean, store?: MuteStore): void {
