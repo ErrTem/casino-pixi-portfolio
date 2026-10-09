@@ -1,7 +1,10 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
 import { evaluatePaylines } from "./evaluatePaylines.js";
 import { createHotlineGame } from "./HotlineGame.js";
+import { createWallet } from "./Wallet.js";
 
 const config = loadHotlineConfig();
 const START = config.math.startingBalanceCents;
@@ -106,5 +109,90 @@ describe("createHotlineGame", () => {
     game.setBetStepIndex(999);
     expect(game.getSnapshot().betStepIndex).toBe(last);
     expect(cents(game.getSnapshot().betDisplay)).toBe(config.math.betStepsCents[last]);
+  });
+});
+
+describe("bet steps", () => {
+  const steps = config.math.betStepsCents;
+
+  it("floors fractional indexes onto a real step", () => {
+    const game = createHotlineGame({ seed: "f", config });
+    game.setBetStepIndex(2.7);
+    expect(game.getSnapshot().betStepIndex).toBe(2);
+    expect(cents(game.getSnapshot().betDisplay)).toBe(steps[2]);
+  });
+
+  it("ignores a non finite index and keeps the current step", () => {
+    const game = createHotlineGame({ seed: "n", config });
+    game.setBetStepIndex(4);
+    game.setBetStepIndex(Number.NaN);
+    expect(game.getSnapshot().betStepIndex).toBe(4);
+    game.setBetStepIndex(Number.POSITIVE_INFINITY);
+    expect(game.getSnapshot().betStepIndex).toBe(4);
+    expect(cents(game.getSnapshot().betDisplay)).toBe(steps[4]);
+  });
+
+  it("deducts exactly the selected step on every step", () => {
+    steps.forEach((step, i) => {
+      const game = createHotlineGame({ seed: "d", config });
+      game.setBetStepIndex(i);
+      expect(game.spin().ok).toBe(true);
+      const snap = game.getSnapshot();
+      const won = snap.lineWins.reduce((s, w) => s + w.payoutCents, 0);
+      expect(cents(snap.balanceDisplay)).toBe(START - step + won);
+    });
+  });
+
+  it("wallet refuses stakes that are not config steps", () => {
+    const wallet = createWallet(START, steps);
+    expect(wallet.placeBet(15)).toEqual({ ok: false, reason: "invalid_step" });
+    expect(wallet.placeBet(10.5)).toEqual({ ok: false, reason: "invalid_amount" });
+    expect(wallet.placeBet(Number.NaN)).toEqual({ ok: false, reason: "invalid_amount" });
+    expect(wallet.getBalanceCents()).toBe(START);
+    expect(wallet.placeBet(steps[0])).toEqual({ ok: true });
+    expect(wallet.getBalanceCents()).toBe(START - steps[0]);
+  });
+
+  it("wallet refuses a step above the balance", () => {
+    const wallet = createWallet(50, steps);
+    expect(wallet.placeBet(100)).toEqual({ ok: false, reason: "insufficient_balance" });
+    expect(wallet.getBalanceCents()).toBe(50);
+  });
+});
+
+describe("feature tables stay out of base settlement", () => {
+  const dir = import.meta.dirname;
+  const files = ["HotlineGame.ts", "evaluatePaylines.ts", "SpinEngine.ts", "Wallet.ts"];
+
+  function strip(src: string): string {
+    return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+  }
+
+  it("no logic source touches config.features or its tables", () => {
+    for (const name of files) {
+      const code = strip(readFileSync(join(dir, name), "utf8"));
+      expect(code, name).not.toMatch(/\bfeatures\b/);
+      expect(code, name).not.toMatch(/\b(tokenOdds|bonusPrizes|jackpotMultipliers)\b/);
+    }
+  });
+
+  it("spin outcome does not change when feature tables change", () => {
+    const altered = {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          meterTarget: 1,
+          perSpinChance: { pink: 1, cyan: 1, yellow: 1 },
+        },
+      },
+    };
+    const a = createHotlineGame({ seed: "ft", config });
+    const b = createHotlineGame({ seed: "ft", config: altered });
+    for (let i = 0; i < 10; i++) {
+      a.spin();
+      b.spin();
+      expect(b.getSnapshot()).toEqual(a.getSnapshot());
+    }
   });
 });
