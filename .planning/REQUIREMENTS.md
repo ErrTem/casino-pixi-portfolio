@@ -7,9 +7,9 @@
 
 ### Shell
 
-- [ ] **SHELL-01**: User can open a game menu and launch Crash or HOTLINE
-- [ ] **SHELL-02**: User can return from either game to the menu without leaking tickers or audio handlers
-- [ ] **SHELL-03**: User mute preference persists across menu and both games
+- [x] **SHELL-01**: User can open a game menu and launch Crash or HOTLINE
+- [x] **SHELL-02**: User can return from either game to the menu without leaking tickers or audio handlers
+- [x] **SHELL-03**: User mute preference persists across menu and both games
 - [ ] **SHELL-04**: Menu/HUD shows a clear portfolio demo / no real money label
 
 ### Base
@@ -40,7 +40,7 @@
 ### Config
 
 - [ ] **CFG-01**: HOTLINE loads bet steps, symbol weights, token odds, bonus prizes, and jackpot multipliers from backend-shaped JSON validated at boot
-- [ ] **CFG-02**: User can boot with `?seed=` for reproducible demo sessions (shared boot seam with Crash)
+- [x] **CFG-02**: User can boot with `?seed=` for reproducible demo sessions (shared boot seam with Crash)
 
 ### Presentation
 
@@ -76,11 +76,11 @@ Deferred — not in current roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Pending |
-| SHELL-02 | Phase 1 | Pending |
-| SHELL-03 | Phase 1 | Pending |
+| SHELL-01 | Phase 1 | Complete |
+| SHELL-02 | Phase 1 | Complete |
+| SHELL-03 | Phase 1 | Complete |
 | SHELL-04 | Phase 1 | Pending |
-| CFG-02 | Phase 1 | Pending |
+| CFG-02 | Phase 1 | Complete |
 | CFG-01 | Phase 2 | Pending |
 | BASE-01 | Phase 2 | Pending |
 | BASE-02 | Phase 2 | Pending |
@@ -99,6 +99,7 @@ Deferred — not in current roadmap phases.
 | PRES-02 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 21 total
 - Mapped to phases: 21
 - Unmapped: 0
