@@ -74,37 +74,35 @@ Deferred — not in current roadmap phases.
 
 ## Traceability
 
-Filled during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | — | Pending |
-| SHELL-02 | — | Pending |
-| SHELL-03 | — | Pending |
-| SHELL-04 | — | Pending |
-| BASE-01 | — | Pending |
-| BASE-02 | — | Pending |
-| BASE-03 | — | Pending |
-| BASE-04 | — | Pending |
-| COLL-01 | — | Pending |
-| COLL-02 | — | Pending |
-| COLL-03 | — | Pending |
-| BONUS-01 | — | Pending |
-| BONUS-02 | — | Pending |
-| BONUS-03 | — | Pending |
-| BONUS-04 | — | Pending |
-| GAMBLE-01 | — | Pending |
-| GAMBLE-02 | — | Pending |
-| CFG-01 | — | Pending |
-| CFG-02 | — | Pending |
-| PRES-01 | — | Pending |
-| PRES-02 | — | Pending |
+| SHELL-01 | Phase 1 | Pending |
+| SHELL-02 | Phase 1 | Pending |
+| SHELL-03 | Phase 1 | Pending |
+| SHELL-04 | Phase 1 | Pending |
+| CFG-02 | Phase 1 | Pending |
+| CFG-01 | Phase 2 | Pending |
+| BASE-01 | Phase 2 | Pending |
+| BASE-02 | Phase 2 | Pending |
+| BASE-03 | Phase 2 | Pending |
+| PRES-01 | Phase 2 | Pending |
+| COLL-01 | Phase 3 | Pending |
+| COLL-02 | Phase 3 | Pending |
+| COLL-03 | Phase 3 | Pending |
+| BONUS-01 | Phase 4 | Pending |
+| BONUS-02 | Phase 4 | Pending |
+| BONUS-03 | Phase 4 | Pending |
+| BONUS-04 | Phase 4 | Pending |
+| GAMBLE-01 | Phase 5 | Pending |
+| GAMBLE-02 | Phase 5 | Pending |
+| BASE-04 | Phase 5 | Pending |
+| PRES-02 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-10-09*
-*Last updated: 2026-10-09 after initialization*
+*Last updated: 2026-10-09 after roadmap creation*
