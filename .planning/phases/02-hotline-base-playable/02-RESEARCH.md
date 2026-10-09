@@ -431,22 +431,25 @@ Exact symbol count/names: Claude discretion (CONTEXT). No diskettes / meter fill
 | A4 | `zod` SUS `too-new` is a false positive on latest publish date | Package audit | Checkpoint still required |
 | A5 | Router `onError` + console is sufficient “loud fail” for bad config (no dedicated overlay) | CFG-01 / D-03 | User might miss console in casual playtest |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact 40 payline coordinates**
+1. **Exact 40 payline coordinates** — RESOLVED
    - What we know: Must be 40 fixed lines on 5×4, LTR from reel 1 (BASE-01, PROJECT.md).
    - What's unclear: Official Witch Pots line map not in repo.
    - Recommendation: Author a documented 40-line table in JSON; adjust later if reference overlays demand it. Flag as discretionary unless user supplies a map.
+   - RESOLVED: Adopt illustrative documented 40×5 row-index paths in `hotline.config.json` (assumption A1). Exact Witch Pots coordinates are not required for Phase 2; correct later only if a user-supplied map arrives.
 
-2. **Paytable units**
+2. **Paytable units** — RESOLVED
    - What we know: Wins credit wallet in cents; bet steps in config.
    - What's unclear: Multipliers × bet vs absolute prize cents.
    - Recommendation: Prefer **multipliers of total bet** (or bet-per-line × line) stored as rationals/hundredths — document in schema comments; keep consistent for Phase 4 bonuses.
+   - RESOLVED: Paytable entries are multipliers of total bet (assumption A3). `evaluatePaylines` computes `payoutCents` from multiplier × `betCents`; document in schema comments for Phase 4 bonus consistency.
 
-3. **Font URL for Pixi Assets**
+3. **Font URL for Pixi Assets** — RESOLVED
    - What we know: DOM `@font-face` already points at `../shared/fonts/retrocomputerrusbydaymarius.ttf` [VERIFIED: hud.css:1-5].
    - What's unclear: Best `Assets.load` URL under Vite.
    - Recommendation: Try import URL / `public/` copy in Wave 2; verify title renders before PRES-01 sign-off.
+   - RESOLVED: Load Retro Computer for Pixi title via `Assets.load` of the shared TTF at `src/shared/fonts/retrocomputerrusbydaymarius.ttf` (assumption A2). Copy to `public/fonts/` only if Vite URL resolution fails during PRES-01 wiring.
 
 ## Environment Availability
 

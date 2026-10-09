@@ -64,20 +64,32 @@ Plans:
   4. HOTLINE loads bet steps, symbol weights, and related tables from validated backend-shaped JSON at boot (bad config fails loud)
   5. HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font
 
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Tracer: Zod config + payline math + session/HUD; menu launches playable HOTLINE spins
+- [ ] 02-01-PLAN.md — Tracer: Zod config + payline/Wild math + HotlineGame spin facade
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md — LTR staggered reels, win-line cycle overlay, widened beep SFX
+- [ ] 02-02-PLAN.md — Session/HUD/registry: menu launches playable HOTLINE spins
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-03-PLAN.md — Asset list, user art handoff, rooftop/CRT/phones/Retro title (PRES-01)
+- [ ] 02-03-PLAN.md — LTR staggered reels + widened beep SFX
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 02-04-PLAN.md — Win-line cycle overlay + DOM last-win count-up
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 02-05-PLAN.md — Asset list + user art handoff
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 02-06-PLAN.md — Rooftop/CRT/phones/Retro title + symbol textures (PRES-01)
 
 **UI hint**: yes
 
