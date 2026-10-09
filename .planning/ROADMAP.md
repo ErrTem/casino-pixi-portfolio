@@ -32,13 +32,13 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
   4. Menu/HUD shows a clear portfolio demo / no real money label
   5. Booting with `?seed=` produces a reproducible Crash session via the shared boot seam
 
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 **Wave 1**
 
 - [x] 01-01-PLAN.md — Walking skeleton: menu to Crash and back on one shell-owned Application, leak-free teardown and launch races
-- [ ] 01-02-PLAN.md — Green baseline, seed replay test, mute key moved to portfolio-demo:mute with legacy migrate
+- [x] 01-02-PLAN.md — Green baseline, seed replay test, mute key moved to portfolio-demo:mute with legacy migrate
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Portfolio Shell + Crash Session | 1/4 | In Progress|  |
+| 1. Portfolio Shell + Crash Session | 2/4 | In Progress|  |
 | 2. HOTLINE Base Playable | 0/TBD | Not started | - |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
