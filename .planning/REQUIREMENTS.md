@@ -10,7 +10,7 @@
 - [x] **SHELL-01**: User can open a game menu and launch Crash or HOTLINE
 - [x] **SHELL-02**: User can return from either game to the menu without leaking tickers or audio handlers
 - [x] **SHELL-03**: User mute preference persists across menu and both games
-- [ ] **SHELL-04**: Menu/HUD shows a clear portfolio demo / no real money label
+- [x] **SHELL-04**: Menu/HUD shows a clear portfolio demo / no real money label
 
 ### Base
 
@@ -79,7 +79,7 @@ Deferred — not in current roadmap phases.
 | SHELL-01 | Phase 1 | Complete |
 | SHELL-02 | Phase 1 | Complete |
 | SHELL-03 | Phase 1 | Complete |
-| SHELL-04 | Phase 1 | Pending |
+| SHELL-04 | Phase 1 | Complete |
 | CFG-02 | Phase 1 | Complete |
 | CFG-01 | Phase 2 | Pending |
 | BASE-01 | Phase 2 | Pending |
