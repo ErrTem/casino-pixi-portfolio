@@ -64,32 +64,36 @@ Plans:
   4. HOTLINE loads bet steps, symbol weights, and related tables from validated backend-shaped JSON at boot (bad config fails loud)
   5. HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font
 
-**Plans:** 6 plans
+**Plans:** 7 plans
 
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Tracer: Zod config + payline/Wild math + HotlineGame spin facade
+- [ ] 02-01-PLAN.md — Tracer: Zod full-envelope config + loadHotlineConfig
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md — Session/HUD/registry: menu launches playable HOTLINE spins
+- [ ] 02-02-PLAN.md — Tracer: Wallet/SpinEngine/paylines + HotlineGame spin facade
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-03-PLAN.md — LTR staggered reels + widened beep SFX
+- [ ] 02-03-PLAN.md — Session/HUD/registry: menu launches playable HOTLINE spins
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-04-PLAN.md — Win-line cycle overlay + DOM last-win count-up
+- [ ] 02-04-PLAN.md — LTR staggered reels + widened beep SFX
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 02-05-PLAN.md — Asset list + user art handoff
+- [ ] 02-05-PLAN.md — Win-line cycle overlay + DOM last-win count-up
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
-- [ ] 02-06-PLAN.md — Rooftop/CRT/phones/Retro title + symbol textures (PRES-01)
+- [ ] 02-06-PLAN.md — Asset list + user art handoff
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [ ] 02-07-PLAN.md — Rooftop/CRT/phones/Retro title + symbol textures (PRES-01)
 
 **UI hint**: yes
 
@@ -148,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
-| 2. HOTLINE Base Playable | 0/TBD | Not started | - |
+| 2. HOTLINE Base Playable | 0/7 | Not started | - |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
