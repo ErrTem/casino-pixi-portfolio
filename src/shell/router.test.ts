@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createContextFactory, createRouter } from "./router.js";
-import type { GameDefinition, GameId, ShellContext } from "./types.js";
+import type { Disposable, GameDefinition, GameId, ShellContext } from "./types.js";
 import type { AudioPort } from "../shared/audio/AudioPort.js";
+import { bindMuteButton, type MuteButton } from "./muteBinding.js";
 
 function fakeAudio(): AudioPort {
   return {
@@ -12,6 +13,53 @@ function fakeAudio(): AudioPort {
     },
     unlock() {},
     dispose() {},
+  };
+}
+
+function statefulFakeAudio(initialMuted = false): AudioPort & {
+  unlockCount: number;
+} {
+  let muted = initialMuted;
+  let unlockCount = 0;
+  return {
+    get unlockCount() {
+      return unlockCount;
+    },
+    play() {},
+    setMuted(next: boolean) {
+      muted = next;
+    },
+    isMuted() {
+      return muted;
+    },
+    unlock() {
+      unlockCount += 1;
+    },
+    dispose() {},
+  };
+}
+
+function fakeMuteButton(): MuteButton & {
+  attrs: Map<string, string>;
+  click(): void;
+} {
+  const listeners = new Set<() => void>();
+  const attrs = new Map<string, string>();
+  return {
+    textContent: null,
+    attrs,
+    setAttribute(name: string, value: string) {
+      attrs.set(name, value);
+    },
+    addEventListener(_type: "click", listener: () => void) {
+      listeners.add(listener);
+    },
+    removeEventListener(_type: "click", listener: () => void) {
+      listeners.delete(listener);
+    },
+    click() {
+      for (const listener of [...listeners]) listener();
+    },
   };
 }
 
@@ -365,6 +413,91 @@ describe("createRouter launch races", () => {
     expect(sessionDisposes).toBe(1);
     expect(menuMounts).toBe(1);
     expect(ctx).not.toBeNull();
+  });
+});
+
+describe("router mute cycle (SHELL-03 / D-12 / D-15)", () => {
+  it("mute holds across two menu launch leave cycles on one AudioPort", async () => {
+    const audio = statefulFakeAudio(false);
+    const saves: boolean[] = [];
+    const menuButtons: Array<ReturnType<typeof fakeMuteButton>> = [];
+    let menuMounts = 0;
+    const contexts: ShellContext[] = [];
+
+    const showMenu = (): Disposable => {
+      menuMounts++;
+      const button = fakeMuteButton();
+      menuButtons.push(button);
+      const unbind = bindMuteButton(button, audio, (m) => {
+        saves.push(m);
+      });
+      let disposed = false;
+      return {
+        dispose() {
+          if (disposed) return;
+          disposed = true;
+          unbind();
+        },
+      };
+    };
+
+    const crash: GameDefinition = {
+      id: "crash",
+      title: "Crash",
+      blurb: "b",
+      iconUrl: "/x.png",
+      enabled: true,
+      async mount(ctx) {
+        contexts.push(ctx);
+        return { dispose() {} };
+      },
+    };
+
+    const router = createRouter({
+      games: [crash],
+      showMenu,
+      buildContext: createContextFactory({
+        app: {} as never,
+        root: {} as never,
+        audio,
+        seed: "abc",
+      }),
+    });
+
+    router.start();
+    expect(menuMounts).toBe(1);
+    expect(menuButtons[0]!.textContent).toBe("Sound: On");
+
+    menuButtons[0]!.click();
+    expect(audio.isMuted()).toBe(true);
+    expect(saves).toEqual([true]);
+
+    await router.launch("crash");
+    expect(contexts[0]!.audio).toBe(audio);
+    expect(contexts[0]!.audio.isMuted()).toBe(true);
+
+    contexts[0]!.audio.setMuted(!contexts[0]!.audio.isMuted());
+    expect(audio.isMuted()).toBe(false);
+    contexts[0]!.requestMenu();
+    expect(menuMounts).toBe(2);
+    expect(menuButtons[1]!.textContent).toBe("Sound: On");
+
+    const savesBeforeDisposedClick = saves.length;
+    menuButtons[0]!.click();
+    expect(audio.isMuted()).toBe(false);
+    expect(saves.length).toBe(savesBeforeDisposedClick);
+
+    menuButtons[1]!.click();
+    expect(audio.isMuted()).toBe(true);
+    expect(saves.at(-1)).toBe(true);
+
+    await router.launch("crash");
+    expect(contexts[1]!.audio).toBe(contexts[0]!.audio);
+    expect(contexts[1]!.audio.isMuted()).toBe(true);
+
+    contexts[1]!.requestMenu();
+    expect(menuMounts).toBe(3);
+    expect(menuButtons[2]!.textContent).toBe("Sound: Off");
   });
 });
 
