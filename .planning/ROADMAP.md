@@ -52,7 +52,7 @@ Plans:
 
 ### Phase 2: HOTLINE Base Playable
 
-**Goal:** Visitor launches HOTLINE and plays base spins on a 5×4 / 40-line game with bet/balance HUD, Wild substitutes, backend-shaped JSON config, and Hotline Miami rooftop + CRT framing
+**Goal:** As a portfolio visitor, I want to launch HOTLINE and play base spins on a 5×4 / 40-line game, so that I feel a Witch Pots–style slot in Hotline Miami dress with working config and CRT framing.
 **Mode:** mvp
 **Depends on:** Phase 1
 **Requirements:** CFG-01, BASE-01, BASE-02, BASE-03, PRES-01
@@ -64,7 +64,21 @@ Plans:
   4. HOTLINE loads bet steps, symbol weights, and related tables from validated backend-shaped JSON at boot (bad config fails loud)
   5. HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Tracer: Zod config + payline math + session/HUD; menu launches playable HOTLINE spins
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — LTR staggered reels, win-line cycle overlay, widened beep SFX
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-03-PLAN.md — Asset list, user art handoff, rooftop/CRT/phones/Retro title (PRES-01)
+
 **UI hint**: yes
 
 ### Phase 3: Diskette Collectors + Trigger Queue
