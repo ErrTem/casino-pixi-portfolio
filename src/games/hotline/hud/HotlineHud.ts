@@ -1,0 +1,106 @@
+import type { AudioPort } from "../../../shared/audio/AudioPort.js";
+import { saveMutePref } from "../../../shared/audio/mutePref.js";
+import type { HotlineGame, HotlineSnapshot } from "../logic/index.js";
+
+export interface HotlineHud {
+  render(snap: HotlineSnapshot): void;
+  /** removes listeners */
+  dispose(): void;
+}
+
+export interface MountHotlineHudOptions {
+  audio?: AudioPort;
+  /** number of selectable bet steps from config math.betStepsCents */
+  betStepCount: number;
+}
+
+function need<T extends Element>(root: Element, selector: string): T {
+  const el = root.querySelector<T>(selector);
+  if (!el) throw new Error(`hotline hud: ${selector} missing`);
+  return el;
+}
+
+// thin html binder: commands in, snapshot text out
+export function mountHotlineHud(
+  root: Element,
+  game: HotlineGame,
+  options: MountHotlineHudOptions,
+): HotlineHud {
+  const { audio, betStepCount } = options;
+
+  const balanceEl = need(root, "[data-field=balance]");
+  const lastWinEl = need(root, "[data-field=last-win]");
+  const betEl = need(root, "[data-field=bet]");
+  const linesEl = need(root, "[data-field=lines]");
+  const statusEl = need(root, "[data-field=status]");
+  const spinBtn = need<HTMLButtonElement>(root, "[data-action=spin]");
+  const decBtn = need<HTMLButtonElement>(root, "[data-action=bet-dec]");
+  const incBtn = need<HTMLButtonElement>(root, "[data-action=bet-inc]");
+  const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
+  if (audio && !muteBtn) {
+    throw new Error("hotline hud: [data-action=mute] missing");
+  }
+
+  let disposed = false;
+
+  function syncMuteLabel(): void {
+    if (!muteBtn || !audio) return;
+    const muted = audio.isMuted();
+    muteBtn.textContent = muted ? "Sound: Off" : "Sound: On";
+    muteBtn.setAttribute("aria-pressed", muted ? "true" : "false");
+  }
+
+  function render(snap: HotlineSnapshot): void {
+    if (disposed) return;
+    balanceEl.textContent = snap.balanceDisplay;
+    betEl.textContent = snap.betDisplay;
+    linesEl.textContent = `${snap.paylineCount} lines`;
+    lastWinEl.textContent = snap.phase === "settled" ? snap.lastWinDisplay : "-";
+    decBtn.disabled = snap.betStepIndex <= 0;
+    incBtn.disabled = snap.betStepIndex >= betStepCount - 1;
+    syncMuteLabel();
+  }
+
+  const onSpin = (): void => {
+    audio?.unlock();
+    const result = game.spin();
+    statusEl.textContent = result.ok ? "" : result.reason;
+    render(game.getSnapshot());
+  };
+
+  // bet steps only move through config indexes, the game clamps the rest
+  const nudgeBet = (delta: number): void => {
+    const current = game.getSnapshot().betStepIndex;
+    game.setBetStepIndex(current + delta);
+    render(game.getSnapshot());
+  };
+  const onDec = (): void => nudgeBet(-1);
+  const onInc = (): void => nudgeBet(1);
+
+  const onMute = (): void => {
+    if (!audio) return;
+    audio.unlock();
+    const next = !audio.isMuted();
+    audio.setMuted(next);
+    saveMutePref(next);
+    syncMuteLabel();
+  };
+
+  spinBtn.addEventListener("click", onSpin);
+  decBtn.addEventListener("click", onDec);
+  incBtn.addEventListener("click", onInc);
+  muteBtn?.addEventListener("click", onMute);
+  syncMuteLabel();
+
+  return {
+    render,
+    dispose(): void {
+      if (disposed) return;
+      disposed = true;
+      spinBtn.removeEventListener("click", onSpin);
+      decBtn.removeEventListener("click", onDec);
+      incBtn.removeEventListener("click", onInc);
+      muteBtn?.removeEventListener("click", onMute);
+    },
+  };
+}

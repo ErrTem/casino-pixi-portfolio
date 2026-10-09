@@ -24,6 +24,12 @@ export const GAMES: readonly GameDefinition[] = [
     title: "HOTLINE",
     blurb: "Neon motel slot",
     iconUrl: "/assets/menu/icon-hotline.png",
-    enabled: false,
+    enabled: true,
+    async mount(ctx) {
+      const { mountHotlineSession } = await import(
+        "../games/hotline/session/mountHotlineSession.js"
+      );
+      return mountHotlineSession(ctx);
+    },
   },
 ];

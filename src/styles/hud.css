@@ -914,3 +914,27 @@ input {
     min-width: 8rem;
   }
 }
+
+.hotline-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+
+.hotline-bet {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hotline-lines {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--muted);
+}

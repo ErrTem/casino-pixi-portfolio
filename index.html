@@ -287,6 +287,74 @@
         </footer>
       </div>
     </template>
+    <template id="hotline-screen-template">
+      <div id="hotline-screen" class="app-shell hotline-screen">
+        <header id="top-chrome" class="top-chrome">
+          <div class="top-chrome__balance">
+            <span class="money-icon" aria-hidden="true">$</span>
+            <div class="balance" data-field="balance">-</div>
+            <div class="last-win" aria-label="Last win">
+              <span class="last-win__label">Last</span>
+              <span class="last-win__value" data-field="last-win">-</span>
+            </div>
+          </div>
+          <div class="top-chrome__actions">
+            <button type="button" data-action="menu" class="menu-back">
+              Menu
+            </button>
+            <button
+              type="button"
+              data-action="mute"
+              class="mute-toggle"
+              aria-pressed="false"
+            >
+              Sound: On
+            </button>
+          </div>
+        </header>
+
+        <!-- reserved pixi mount, keep empty of monetary controls -->
+        <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
+          <p class="canvas-placeholder">Game view</p>
+        </div>
+
+        <footer id="hud-bar" class="hud-bar">
+          <div class="hotline-bar">
+            <div class="stake-group">
+              <div class="stake-stepper">
+                <button
+                  type="button"
+                  data-action="bet-dec"
+                  aria-label="Decrease bet"
+                >
+                  −
+                </button>
+                <div class="stake-display">
+                  <span class="hotline-bet" data-field="bet">-</span>
+                  <span class="stake-currency" aria-hidden="true">$</span>
+                </div>
+                <button
+                  type="button"
+                  data-action="bet-inc"
+                  aria-label="Increase bet"
+                >
+                  +
+                </button>
+              </div>
+              <span class="hotline-lines" data-field="lines">40 lines</span>
+            </div>
+            <button
+              type="button"
+              data-action="spin"
+              class="primary-cta primary-cta--bet"
+            >
+              <span class="primary-cta__label">SPIN</span>
+            </button>
+          </div>
+          <span data-field="status" class="hud-status" aria-live="polite"></span>
+        </footer>
+      </div>
+    </template>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
