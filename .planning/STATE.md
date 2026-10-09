@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 02
 current_phase_name: HOTLINE Base Playable
 status: executing
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-10-09T19:57:37.827Z"
+stopped_at: Completed 02-04-PLAN.md
+last_updated: "2026-10-09T20:04:19.497Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 02 execution started
-state_head: e6beb9606fdfb5bfcd074d062278960781d0a84e
+state_head: 80b8f4e884f26efec05d26fb51a3ea7fafa8b1b7
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 02 (HOTLINE Base Playable) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 02 execution started
 
@@ -66,6 +66,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 02 P01 | 10min | 2 tasks | 6 files |
 | Phase 02 P02 | 10min | 2 tasks | 8 files |
 | Phase 02 P03 | 10min | 2 tasks | 14 files |
+| Phase 02 P04 | 20min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Phase 1 walkthrough signed off SHELL-01..04 and CFG-02 after icon swap
 - [Phase 02]: 02-01: paytable values are multipliers of total bet, illustrative 40x5 payline table
 - [Phase 02]: 02-02: line pays max of wild-only and substituted run, ties to substituted
+- [Phase 02]: 02-04: reels animate a pre-settled spin, hud last win held until the last reel lands
 
 ### Pending Todos
 
@@ -107,6 +109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-09T19:57:37.777Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-10-09T20:04:19.445Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
