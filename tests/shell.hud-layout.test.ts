@@ -130,3 +130,27 @@ describe("shell HUD layout (UI-01 / VIS-02 / D-01)", () => {
   });
 });
 
+describe("portfolio chrome (SHELL-04 / D-13)", () => {
+  it("page title names the portfolio, not Crash Demo", () => {
+    const titleMatch = html.match(/<title>([^<]*)<\/title>/i);
+    expect(titleMatch).toBeTruthy();
+    const title = titleMatch![1];
+    expect(title).toMatch(/portfolio/i);
+    expect(title).not.toMatch(/Crash Demo/);
+  });
+
+  it("hud.css loads Retro Computer and menu tile chip / menu-back styles", () => {
+    expect(css).toMatch(/@font-face/);
+    expect(css).toMatch(/retrocomputerrusbydaymarius\.ttf/);
+    expect(css).toMatch(/\.menu-tile__chip/);
+    expect(css).toMatch(/\.menu-back/);
+  });
+
+  it("index.html has no persistent demo banner or disclaimer element", () => {
+    expect(html).not.toMatch(/\bid=["'][^"']*(banner|disclaimer)[^"']*["']/i);
+    expect(html).not.toMatch(
+      /\bclass=["'][^"']*(banner|disclaimer)[^"']*["']/i,
+    );
+  });
+});
+
