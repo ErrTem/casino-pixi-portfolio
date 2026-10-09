@@ -114,4 +114,19 @@ describe("shell HUD layout (UI-01 / VIS-02 / D-01)", () => {
     expect(hasAttr(hist, "field", "history")).toBe(true);
     expect(hasAttr(hist, "field", "session-stats")).toBe(true);
   });
+
+  it("places Menu (data-action=menu) under #top-chrome and not under canvas host (D-14)", () => {
+    const top = innerById(html, "top-chrome");
+    const host = innerById(html, "game-canvas-host");
+    expect(hasAttr(top, "action", "menu")).toBe(true);
+    expect(hasAttr(host, "action", "menu")).toBe(false);
+    expect(host).not.toMatch(/data-action\s*=/);
+  });
+
+  it("keeps empty #app and crash screen template for session clone", () => {
+    expect(html).toMatch(/id=["']crash-screen-template["']/);
+    expect(html).toMatch(/id=["']crash-screen["']/);
+    expect(innerById(html, "app").trim()).toBe("");
+  });
 });
+

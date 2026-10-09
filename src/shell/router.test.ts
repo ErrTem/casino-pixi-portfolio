@@ -15,6 +15,20 @@ function fakeAudio(): AudioPort {
   };
 }
 
+function deferred<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (err: unknown) => void;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (err: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe("createRouter happy path", () => {
   it("start shows the menu once and state is menu", () => {
     let menuMounts = 0;
@@ -169,3 +183,188 @@ describe("createRouter happy path", () => {
     expect(router.state).toBe("menu");
   });
 });
+
+describe("createRouter launch races", () => {
+  it("leave during load aborts signal, shows menu, disposes late session once", async () => {
+    const mount = deferred<{ dispose: () => void }>();
+    let sessionDisposes = 0;
+    let menuMounts = 0;
+    let sawAbort = false;
+    let ctx: ShellContext | null = null;
+
+    const crash: GameDefinition = {
+      id: "crash",
+      title: "Crash",
+      blurb: "b",
+      iconUrl: "/x.png",
+      enabled: true,
+      async mount(c) {
+        ctx = c;
+        c.signal.addEventListener("abort", () => {
+          sawAbort = true;
+        });
+        return mount.promise;
+      },
+    };
+
+    const router = createRouter({
+      games: [crash],
+      showMenu() {
+        menuMounts++;
+        return { dispose() {} };
+      },
+      buildContext: createContextFactory({
+        app: {} as never,
+        root: {} as never,
+        audio: fakeAudio(),
+        seed: "abc",
+      }),
+    });
+
+    router.start();
+    const launchP = router.launch("crash");
+    expect(router.state).toBe("launching");
+    ctx!.requestMenu();
+    expect(sawAbort).toBe(true);
+    expect(menuMounts).toBe(2);
+    expect(router.state).toBe("menu");
+
+    mount.resolve({
+      dispose() {
+        sessionDisposes++;
+      },
+    });
+    await launchP;
+    expect(sessionDisposes).toBe(1);
+    expect(router.state).toBe("menu");
+
+    ctx!.requestMenu();
+    expect(menuMounts).toBe(2);
+  });
+
+  it("two synchronous launch calls mount once", async () => {
+    let mountCount = 0;
+    const crash: GameDefinition = {
+      id: "crash",
+      title: "Crash",
+      blurb: "b",
+      iconUrl: "/x.png",
+      enabled: true,
+      async mount() {
+        mountCount++;
+        return { dispose() {} };
+      },
+    };
+    const router = createRouter({
+      games: [crash],
+      showMenu() {
+        return { dispose() {} };
+      },
+      buildContext: createContextFactory({
+        app: {} as never,
+        root: {} as never,
+        audio: fakeAudio(),
+        seed: "abc",
+      }),
+    });
+    router.start();
+    const a = router.launch("crash");
+    const b = router.launch("crash");
+    await Promise.all([a, b]);
+    expect(mountCount).toBe(1);
+    expect(router.state).toBe("game");
+  });
+
+  it("mount reject calls onError and returns to menu", async () => {
+    const err = new Error("boom");
+    let seen: unknown = null;
+    let menuMounts = 0;
+    const crash: GameDefinition = {
+      id: "crash",
+      title: "Crash",
+      blurb: "b",
+      iconUrl: "/x.png",
+      enabled: true,
+      async mount() {
+        throw err;
+      },
+    };
+    const router = createRouter({
+      games: [crash],
+      showMenu() {
+        menuMounts++;
+        return { dispose() {} };
+      },
+      buildContext: createContextFactory({
+        app: {} as never,
+        root: {} as never,
+        audio: fakeAudio(),
+        seed: "abc",
+      }),
+      onError(e) {
+        seen = e;
+      },
+    });
+    router.start();
+    await router.launch("crash");
+    expect(seen).toBe(err);
+    expect(router.state).toBe("menu");
+    expect(menuMounts).toBe(2);
+  });
+
+  it("dispose while launching aborts, disposes late session once, no remenu", async () => {
+    const mount = deferred<{ dispose: () => void }>();
+    let sessionDisposes = 0;
+    let menuMounts = 0;
+    let sawAbort = false;
+    let ctx: ShellContext | null = null;
+
+    const crash: GameDefinition = {
+      id: "crash",
+      title: "Crash",
+      blurb: "b",
+      iconUrl: "/x.png",
+      enabled: true,
+      async mount(c) {
+        ctx = c;
+        c.signal.addEventListener("abort", () => {
+          sawAbort = true;
+        });
+        return mount.promise;
+      },
+    };
+
+    const router = createRouter({
+      games: [crash],
+      showMenu() {
+        menuMounts++;
+        return { dispose() {} };
+      },
+      buildContext: createContextFactory({
+        app: {} as never,
+        root: {} as never,
+        audio: fakeAudio(),
+        seed: "abc",
+      }),
+    });
+
+    router.start();
+    expect(menuMounts).toBe(1);
+    const launchP = router.launch("crash");
+    router.dispose();
+    expect(sawAbort).toBe(true);
+    expect(router.state).toBe("disposed");
+    router.dispose();
+
+    mount.resolve({
+      dispose() {
+        sessionDisposes++;
+      },
+    });
+    await launchP;
+    expect(sessionDisposes).toBe(1);
+    expect(menuMounts).toBe(1);
+    expect(ctx).not.toBeNull();
+  });
+});
+
