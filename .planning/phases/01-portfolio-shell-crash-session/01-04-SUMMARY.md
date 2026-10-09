@@ -110,7 +110,7 @@ Each task was committed atomically:
 1. **Task 1: User generates and places the two menu tile icons** - `f122a36` (prior 01-01 commit; no duplicate assets commit). PNG verify passed on continuation.
 2. **Task 2: Visitor walkthrough + icon swap fix** - `e4a0672` (assets: swap crash and hotline menu icons)
 
-**Plan metadata:** (docs commit after this SUMMARY)
+**Plan metadata:** `3749fda` (docs: complete plan)
 
 ## Files Created/Modified
 
