@@ -25,7 +25,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** Portfolio visitor opens the menu, launches HOTLINE, and plays the full Witch Pots-style loop in Hotline Miami dress with backend-shaped JSON configs.
-**Current focus:** Phase 01 — Portfolio Shell + Crash Session
+**Current focus:** Phase 2 — HOTLINE Base Playable
 
 ## Current Position
 

@@ -22,10 +22,13 @@ A portfolio visitor can open the menu, launch **HOTLINE**, and feel the full Wit
 - ✓ Crash game demo (logic, Pixi view, HUD, seeded RNG, client wallet) — existing
 - ✓ Shared audio/mute, money helpers, boot seed parsing — existing
 - ✓ Vite + TypeScript + PixiJS 8.21 + Vitest toolchain — existing
+- ✓ Shared game menu / shell to choose Crash, HOTLINE (stub), and future games — Phase 1
+- ✓ Crash session adapter with leak-free leave; one shell-owned Pixi Application — Phase 1
+- ✓ Portfolio mute key (`portfolio-demo:mute`) + boot seed reuse across launches — Phase 1
+- ✓ Menu tile icons (user-supplied) for Crash and HOTLINE — Phase 1
 
 ### Active
 
-- [ ] Shared game menu / shell to choose Crash, HOTLINE, and future games
 - [ ] HOTLINE slot: 5x4 grid, 40 fixed paylines, left-to-right wins
 - [ ] Three rotary-phone meters on motel rooftop; colored diskette tokens fill them
 - [ ] Green line: 24 free spins with extra Wild masks on reels 2-5
@@ -46,7 +49,7 @@ A portfolio visitor can open the menu, launch **HOTLINE**, and feel the full Wit
 
 ## Context
 
-**Brownfield repo:** `D:\pixi\casino-pixi-portfolio`. Structure already suggests multi-game: `src/games/crash/`, `src/shared/`. `main.ts` currently boots Crash only.
+**Brownfield repo:** `D:\pixi\casino-pixi-portfolio`. Structure is multi-game: `src/shell/`, `src/games/crash/`, `src/shared/`. Shell boots the menu; Crash mounts as a session on the shell-owned Application.
 
 **Mechanics reference (3 Witch Pots):**
 - Field 5x4, 40 fixed lines, wins left-to-right from reel 1
@@ -83,16 +86,18 @@ A portfolio visitor can open the menu, launch **HOTLINE**, and feel the full Wit
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Stay in this repo (not a new project) | Portfolio already multi-game shaped; Crash reuse | — Pending |
-| Game title HOTLINE | Short, on-brand, easy to menu-label | — Pending |
-| Three rotary phones 1:1 with Witch Pots | Familiar feature map; clear UI | — Pending |
-| Diskette tokens | Readable color flight; Miami/tech flavor | — Pending |
-| VHS SURVIVE/DIE gamble | Replaces card gamble; brand-fit; simple 50/50 UX | — Pending |
-| Menu shell for Crash + HOTLINE (+ future) | Portfolio needs one entry; Crash stays playable | — Pending |
-| JSON backend-shaped configs | Shows real iGaming config thinking without a server | — Pending |
-| User owns art generation | Keeps visual quality and authorship | — Pending |
-| Retro Computer font in shared/fonts | Hotline Miami typography locked | — Pending |
-| Comment / anti-AI style rules | Cleaner portfolio review | — Pending |
+| Stay in this repo (not a new project) | Portfolio already multi-game shaped; Crash reuse | Locked |
+| Game title HOTLINE | Short, on-brand, easy to menu-label | Locked |
+| Three rotary phones 1:1 with Witch Pots | Familiar feature map; clear UI | — Pending (Phase 3+) |
+| Diskette tokens | Readable color flight; Miami/tech flavor | — Pending (Phase 3+) |
+| VHS SURVIVE/DIE gamble | Replaces card gamble; brand-fit; simple 50/50 UX | — Pending (Phase 5) |
+| Menu shell for Crash + HOTLINE (+ future) | Portfolio needs one entry; Crash stays playable | Shipped Phase 1 (HOTLINE stub) |
+| One long-lived shell-owned Pixi Application | Avoid remount churn; Crash is a thin session | Shipped Phase 1 |
+| Mute under `portfolio-demo:mute` with legacy migrate | Shared preference across demos | Shipped Phase 1 |
+| JSON backend-shaped configs | Shows real iGaming config thinking without a server | — Pending (Phase 2) |
+| User owns art generation | Keeps visual quality and authorship | Confirmed Phase 1 (menu icons) |
+| Retro Computer font in shared/fonts | Hotline Miami typography locked | Used on menu Phase 1 |
+| Comment / anti-AI style rules | Cleaner portfolio review | Locked |
 
 ## Evolution
 
@@ -112,4 +117,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-09 after initialization*
+*Last updated: 2026-10-09 after Phase 1*
