@@ -6,6 +6,8 @@ export interface ReelStripOptions {
   /** symbol ids used as filler while the strip is spinning */
   fillerIds: string[];
   colorFor: (symbolId: string) => number;
+  /** shifts the filler sequence so neighbour reels do not blur identically */
+  fillerShift?: number;
   onStop?: () => void;
 }
 
@@ -78,7 +80,8 @@ export function createReelStrip(options: ReelStripOptions): ReelStrip {
   function filler(n: number): string {
     const len = fillerIds.length;
     if (len === 0) return "";
-    return fillerIds[((n % len) + len) % len];
+    const at = n + (options.fillerShift ?? 0);
+    return fillerIds[((at % len) + len) % len];
   }
 
   function paintCell(index: number, symbol: string): void {

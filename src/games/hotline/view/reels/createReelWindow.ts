@@ -38,6 +38,7 @@ export function createReelWindow(options: ReelWindowOptions): ReelWindow {
       rows,
       fillerIds,
       colorFor,
+      fillerShift: reel * 3,
       onStop: () => {
         if (!destroyed) options.onReelStop?.(reel);
       },
