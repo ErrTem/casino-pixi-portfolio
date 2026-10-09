@@ -131,7 +131,7 @@ Each task was committed atomically (TDD RED → GREEN per task):
 3. **Task 2 RED:** `82611ca` — `test(01-03): add failing mute binding and router mute cycle tests`
 4. **Task 2 GREEN:** `ae50b37` — `feat(01-03): shared mute binder on menu with shell AudioPort`
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `a0008e1` (docs: complete plan)
 
 ## TDD Gate Compliance
 
