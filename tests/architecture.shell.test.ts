@@ -98,6 +98,25 @@ describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () 
     expect(code).not.toMatch(/\.innerHTML\b/);
   });
 
+  it("Gate B3: hotline reels are first party and the session wires spin and reel_stop beeps", () => {
+    const { code } = readRel(HOTLINE_SESSION_FILE);
+    expect(code).toMatch(/play\(\s*"spin"\s*\)/);
+    expect(code).toMatch(/play\(\s*"reel_stop"\s*\)/);
+    const scene = readRel(
+      join(ROOT, "src", "games", "hotline", "view", "HotlineScene.ts"),
+    );
+    expect(scene.code).toMatch(/createReelWindow/);
+    const reelFiles = collectTsFiles(
+      join(ROOT, "src", "games", "hotline", "view", "reels"),
+    );
+    expect(reelFiles.length).toBeGreaterThan(0);
+    const pkg = readFileSync(join(ROOT, "package.json"), "utf8");
+    expect(pkg).not.toMatch(/pixi-reels|"gsap"|"howler"/);
+    for (const file of reelFiles) {
+      expect(readRel(file).code).not.toMatch(/from\s+["'](gsap|howler|pixi-reels)/);
+    }
+  });
+
   it("Gate C: CrashHud declares dispose and removes keydown by name", () => {
     const { src, code } = readRel(HUD_FILE);
     expect(src).toMatch(/dispose\s*\(\s*\)\s*:\s*void/);
