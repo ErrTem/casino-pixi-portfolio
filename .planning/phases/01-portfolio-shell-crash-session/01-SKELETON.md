@@ -62,7 +62,7 @@ Each later phase adds one vertical slice on top of this skeleton without alterin
 |---|---|---|
 | `src/shell/types.ts` | `GameId`, `ShellContext`, `GameSession`, `GameDefinition`, `Disposable` | 01-01 |
 | `src/shell/router.ts` | `createRouter`, `createContextFactory`, `Router`, `RouterDeps`, `RouterState` | 01-01 |
-| `src/shell/router.test.ts` | router happy path, seed/audio identity, launch races | 01-01 |
+| `src/shell/router.test.ts` | router happy path, seed/audio identity, launch races, mute cycle across leave and launch | 01-01, 01-03 |
 | `src/shell/gameRegistry.ts` | `GAMES`, `MENU_COPY` | 01-01, 01-03 |
 | `src/shell/gameRegistry.test.ts` | order, stub, copy voice | 01-03 |
 | `src/shell/bootShell.ts` | `bootShell` | 01-01, 01-03 |

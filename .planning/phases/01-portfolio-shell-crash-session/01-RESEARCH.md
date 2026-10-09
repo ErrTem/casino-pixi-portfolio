@@ -513,19 +513,24 @@ Also update `<title>` (index.html:8, currently `Crash Demo - Portfolio`) to a po
 | A5 | Icon sizing guidance (256x256 source for a ~64-96 px tile) is adequate for DPR 2-3 | Asset List | User regenerates icons; low |
 | A6 | The `<template>` in `index.html` is acceptable to the user for the Crash markup location (vs a TS string) | Pattern 5 | Minor refactor of where markup lives; tests would need path tweak |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **SHELL-04 vs D-13 (is there a visible "no real money" label at all?)**
+All three questions are resolved in the phase plans; nothing here is left open for execution.
+
+1. **SHELL-04 vs D-13 (is there a visible "no real money" label at all?)** (RESOLVED)
    - What we know: roadmap criterion 4 says "Menu/HUD shows a clear portfolio demo / no real money label"; D-13 forbids a dedicated or persistent disclaimer banner and says the requirement is met by "page title, Reset demo, menu copy".
    - What's unclear: whether a short subtitle in the menu header counts as "menu copy" or as a banner.
    - Recommendation: honor D-13 literally. Put the voice in (a) `<title>`, (b) one short subtitle line under the menu title (menu only, not shown in Crash), for example "Portfolio demos. Play money only." (exact string is Claude's discretion), (c) keep `Reset demo` in Crash. Do not add anything to the Crash chrome. Have the plan state this explicitly so verification of criterion 4 checks the menu subtitle and title.
+   - **RESOLVED:** D-13 honored literally. 01-01 adds `MENU_COPY.subtitle` "Portfolio pieces. Play money only." (menu only); 01-03 sets `<title>` to `Casino Demos - Portfolio`, asserts the play-money subtitle and banned wording in `gameRegistry.test.ts`, and asserts no banner element in `tests/shell.hud-layout.test.ts`; Crash chrome gets only the Menu button (D-14), no disclaimer. 01-04 walkthrough step 1 checks criterion 4 against the title and subtitle.
 
-2. **Baseline repairs (Pitfall 10)**
+2. **Baseline repairs (Pitfall 10)** (RESOLVED)
    - What's unclear: whether the user wants tsc/test fixes in this phase; they block `npm run build` and a green suite gate.
    - Recommendation: include as a small Wave 0 task, called out as non-gameplay fixes.
+   - **RESOLVED:** included as non-gameplay fixes. The `Rocket.setBodyTexture` interface fix is 01-01 Task 1 step 1 (the tracer compiles that path); the `sessionStats` multiplication-sign label fix is 01-02 Task 1.
 
-3. **Should the menu mute button also appear while a game is loading?**
+3. **Should the menu mute button also appear while a game is loading?** (RESOLVED)
    - Not needed; the menu is gone during load; the Crash screen has its own mute button.
+   - **RESOLVED:** no plan work. The router disposes the menu synchronously on launch (01-01), and the Crash screen's own Sound button covers the loading window.
 
 ## Asset List for D-07 (menu icons, user-generated)
 
