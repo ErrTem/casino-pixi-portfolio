@@ -64,6 +64,7 @@ export async function mountCrashSession(
       ctx.app.ticker.remove(onTick);
       onTick = null;
     }
+    hud.dispose();
     if (view) {
       view.scene.destroy();
       view.dispose();
