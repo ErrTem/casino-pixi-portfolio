@@ -40,7 +40,8 @@ type PresentPhase =
   | "flights"
   | "fs_gap"
   | "splash"
-  | "beat";
+  | "beat"
+  | "pick";
 
 const FEATURE_TITLE: Record<TokenColor, string> = {
   green: "Free Spins",
@@ -145,6 +146,7 @@ export async function mountHotlineSession(
     lastSpinWasFree = false;
     nightStarted = false;
     splashContinue = null;
+    overlay.hideLockers();
     overlay.hideSplash();
   }
 
@@ -177,6 +179,23 @@ export async function mountHotlineSession(
       advanceNight();
       return;
     }
+    if (color === "purple") {
+      present = "pick";
+      busy = true;
+      hud.setBusy(true);
+      overlay.showLockerGrid({
+        onPick(index) {
+          const revealed = game.pickLocker(index);
+          if (revealed === null) return;
+          overlay.revealLocker(index, `x${revealed}`);
+          // pick_reveal beep lands in 04-05; queue_step keeps the edge audible
+          ctx.audio.play("queue_step");
+          advanceNight();
+        },
+      });
+      return;
+    }
+    // red stub beat until 04-04
     present = "beat";
     beatElapsed = 0;
   }
@@ -228,6 +247,7 @@ export async function mountHotlineSession(
     }
 
     if (step.kind === "feature_exit") {
+      overlay.hideLockers();
       showSplash(
         {
           title: `${FEATURE_TITLE[step.color]} Total`,

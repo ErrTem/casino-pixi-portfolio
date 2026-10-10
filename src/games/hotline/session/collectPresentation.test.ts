@@ -129,8 +129,13 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/pickLocker/);
     expect(src).toMatch(/showLockerGrid/);
     expect(src).toMatch(/hideLockers/);
-    expect(src).toMatch(/locker-pick/);
     expect(src).not.toMatch(/\.increment\s*\(/);
+    const overlaySrc = readFileSync(
+      join(import.meta.dirname, "../hud/FeatureOverlay.ts"),
+      "utf8",
+    );
+    expect(overlaySrc).toMatch(/locker-pick/);
+    expect(overlaySrc).not.toMatch(/\.innerHTML\s*=/);
   });
 
   it("session source plays collector beep events on presentation edges (D-16)", () => {
