@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/hud/comboStripModel.test.ts src/games/hotline/hud/HotlineHud.test.ts --reporter=tap",
+  "exitCode": 1,
+  "targetTest": "marks activeIndex cell active with prior done and later pending",
+  "targetFile": "src/games/hotline/hud/comboStripModel.test.ts",
+  "expected": "three cells Green done, Red active, Purple pending",
+  "actual": "stub returns empty array (AssertionError expected length 3)",
+  "output": "TAP version 13\nok 1 - returns empty cells for an empty path\nnot ok 2 - marks activeIndex cell active with prior done and later pending\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected [] to have a length of 3 but got +0\"\n  actual: \"0\"\n  expected: \"3\"\n  ...\nnot ok 3 - labels nested entries with a nested suffix\nnot ok 4 - setComboPath builds span steps with active and done classes (D-18)\nnot ok 5 - hud source uses createElement and textContent for setComboPath\n# tests 16\n# pass 12\n# fail 4\n"
+}

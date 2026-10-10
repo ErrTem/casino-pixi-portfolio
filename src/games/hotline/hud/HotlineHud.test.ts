@@ -9,6 +9,8 @@ import { mountHotlineHud } from "./HotlineHud.js";
 class FakeEl {
   textContent = "";
   disabled = false;
+  className = "";
+  children: FakeEl[] = [];
   private listeners = new Map<string, Set<() => void>>();
   addEventListener(type: string, fn: () => void): void {
     if (!this.listeners.has(type)) this.listeners.set(type, new Set());
@@ -18,6 +20,14 @@ class FakeEl {
     this.listeners.get(type)?.delete(fn);
   }
   setAttribute(): void {}
+  appendChild(child: FakeEl): FakeEl {
+    this.children.push(child);
+    return child;
+  }
+  replaceChildren(...nodes: FakeEl[]): void {
+    this.children = [...nodes];
+    if (nodes.length === 0) this.textContent = "";
+  }
   click(): void {
     for (const fn of this.listeners.get("click") ?? []) fn();
   }
@@ -169,6 +179,46 @@ describe("HotlineHud busy lock and combo strip (D-10, D-14)", () => {
     expect(els["[data-field=combo]"].textContent).toBe("COMBO: Green → Red");
     hud.setCombo("");
     expect(els["[data-field=combo]"].textContent).toBe("");
+  });
+
+  it("setComboPath builds span steps with active and done classes (D-18)", () => {
+    const { els, hud } = setup();
+    expect(typeof hud.setComboPath).toBe("function");
+    const g = globalThis as { document?: { createElement: (tag: string) => FakeEl } };
+    const prev = g.document;
+    g.document = {
+      createElement: () => new FakeEl(),
+    };
+    try {
+      const combo = els["[data-field=combo]"];
+      hud.setComboPath([
+        { label: "Green", state: "done" },
+        { label: "Red", state: "active" },
+        { label: "Purple", state: "pending" },
+      ]);
+      expect(combo.children).toHaveLength(3);
+      expect(combo.children[0].textContent).toBe("Green");
+      expect(combo.children[0].className).toMatch(/hotline-combo-step/);
+      expect(combo.children[0].className).toMatch(/\bdone\b/);
+      expect(combo.children[1].textContent).toBe("Red");
+      expect(combo.children[1].className).toMatch(/\bactive\b/);
+      expect(combo.children[2].textContent).toBe("Purple");
+      expect(combo.children[2].className).not.toMatch(/\bactive\b/);
+      expect(combo.children[2].className).not.toMatch(/\bdone\b/);
+      hud.setComboPath([]);
+      expect(combo.children).toHaveLength(0);
+    } finally {
+      if (prev) g.document = prev;
+      else delete g.document;
+    }
+  });
+
+  it("hud source uses createElement and textContent for setComboPath", () => {
+    const src = readFileSync(join(import.meta.dirname, "HotlineHud.ts"), "utf8");
+    expect(src).toMatch(/setComboPath/);
+    expect(src).toMatch(/createElement\s*\(\s*["']span["']\s*\)/);
+    expect(src).toMatch(/hotline-combo-step/);
+    expect(src).not.toMatch(/\.innerHTML\b/);
   });
 });
 

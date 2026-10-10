@@ -1,0 +1,253 @@
+﻿TAP version 13
+1..2
+not ok 1 - src/games/hotline/hud/comboStripModel.test.ts # time=10.53ms {
+    1..1
+    not ok 1 - buildComboStripCells (D-18) # time=10.03ms {
+        1..3
+        not ok 1 - marks activeIndex cell active with prior done and later pending # time=8.43ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to have a length of 3 but got +0"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/hud/comboStripModel.test.ts:13:19"
+            actual: "0"
+            expected: "3"
+            ...
+        not ok 2 - labels nested entries with a nested suffix # time=0.60ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to have a length of 3 but got +0"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/hud/comboStripModel.test.ts:26:19"
+            actual: "0"
+            expected: "3"
+            ...
+        ok 3 - returns empty cells for an empty path # time=0.54ms
+    }
+}
+not ok 2 - src/games/hotline/hud/HotlineHud.test.ts # time=29.93ms {
+    1..3
+    ok 1 - HotlineHud bet steps (D-13) # time=17.97ms {
+        1..7
+        ok 1 - walks only the config steps with bet inc and dec # time=11.57ms
+        ok 2 - shows the selected step as the bet readout # time=0.97ms
+        ok 3 - spin updates balance from the snapshot and keeps 40 lines # time=1.84ms
+        ok 4 - counts the last win up when a tween time is set (D-15) # time=1.15ms
+        ok 5 - dispose removes listeners # time=0.49ms
+        ok 6 - throws loud when a required node is missing # time=1.05ms
+        ok 7 - hud source writes text only and has no free bet input # time=0.40ms
+    }
+    not ok 2 - HotlineHud busy lock and combo strip (D-10, D-14) # time=10.10ms {
+        1..4
+        ok 1 - setBusy disables spin and bet steppers # time=1.64ms
+        ok 2 - setCombo writes combo strip via textContent only # time=0.63ms
+        not ok 3 - setComboPath builds span steps with active and done classes (D-18) # time=6.54ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected 'undefined' to be 'function' // Object.is equality"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/hud/HotlineHud.test.ts:186:37"
+            actual: "undefined"
+            expected: "function"
+            ...
+        not ok 4 - hud source uses createElement and textContent for setComboPath # time=1.21ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected 'import type { AudioPort } from \"../..ΓÇª' to match /setComboPath/"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/hud/HotlineHud.test.ts:218:17"
+            actual: "import type { AudioPort } from \"../../../shared/audio/AudioPort.js\";
+import { saveMutePref } from \"../../../shared/audio/mutePref.js\";
+import type { HotlineGame, HotlineSnapshot } from \"../logic/index.js\";
+import { formatMoney } from \"./format.js\";
+import { createLastWinTween } from \"./lastWinTween.js\";
+
+export interface HotlineHud {
+  render(snap: HotlineSnapshot): void;
+  /** lock spin and bet steppers through flights and combo stub */
+  setBusy(busy: boolean): void;
+  /** combo strip copy via textContent only */
+  setCombo(text: string): void;
+  /** free spins remaining line via textContent only */
+  setFeatureLine(text: string): void;
+  /** removes listeners */
+  dispose(): void;
+}
+
+export interface MountHotlineHudOptions {
+  audio?: AudioPort;
+  /** number of selectable bet steps from config math.betStepsCents */
+  betStepCount: number;
+  /** count up time for the last win readout, 0 or missing shows it at once */
+  lastWinTweenMs?: number;
+  /** clock for the count up, defaults to performance.now */
+  now?: () => number;
+}
+
+function need<T extends Element>(root: Element, selector: string): T {
+  const el = root.querySelector<T>(selector);
+  if (!el) throw new Error(`hotline hud: ${selector} missing`);
+  return el;
+}
+
+// thin html binder: commands in, snapshot text out
+export function mountHotlineHud(
+  root: Element,
+  game: HotlineGame,
+  options: MountHotlineHudOptions,
+): HotlineHud {
+  const { audio, betStepCount } = options;
+  const tweenMs = options.lastWinTweenMs ?? 0;
+  const now = options.now ?? (() => performance.now());
+  const lastWinTween = createLastWinTween(tweenMs);
+  // set while a count up is running, null once it lands or the win is hidden
+  let tweenTarget: number | null = null;
+  let tweenText = \"\";
+
+  const balanceEl = need(root, \"[data-field=balance]\");
+  const lastWinEl = need(root, \"[data-field=last-win]\");
+  const betEl = need(root, \"[data-field=bet]\");
+  const linesEl = need(root, \"[data-field=lines]\");
+  const statusEl = need(root, \"[data-field=status]\");
+  const comboEl = need(root, \"[data-field=combo]\");
+  const featureEl = need(root, \"[data-field=feature]\");
+  const spinBtn = need<HTMLButtonElement>(root, \"[data-action=spin]\");
+  const decBtn = need<HTMLButtonElement>(root, \"[data-action=bet-dec]\");
+  const incBtn = need<HTMLButtonElement>(root, \"[data-action=bet-inc]\");
+  const muteBtn = root.querySelector<HTMLButtonElement>(\"[data-action=mute]\");
+  if (audio && !muteBtn) {
+    throw new Error(\"hotline hud: [data-action=mute] missing\");
+  }
+
+  let disposed = false;
+  let busy = false;
+  let lastSnap: HotlineSnapshot | null = null;
+
+  function syncMuteLabel(): void {
+    if (!muteBtn || !audio) return;
+    const muted = audio.isMuted();
+    muteBtn.textContent = muted ? \"Sound: Off\" : \"Sound: On\";
+    muteBtn.setAttribute(\"aria-pressed\", muted ? \"true\" : \"false\");
+  }
+
+  // last win text, counts up from zero once per settled spin
+  function lastWinText(snap: HotlineSnapshot): string {
+    if (snap.phase !== \"settled\") {
+      tweenTarget = null;
+      tweenText = \"\";
+      return \"-\";
+    }
+    const target = Number.parseFloat(snap.lastWinDisplay);
+    if (tweenMs <= 0 || !Number.isFinite(target) || target <= 0) {
+      tweenTarget = null;
+      return snap.lastWinDisplay;
+    }
+    const t = now();
+    if (tweenText !== snap.lastWinDisplay) {
+      tweenText = snap.lastWinDisplay;
+      tweenTarget = target;
+      lastWinTween.start(target, t);
+    }
+    if (tweenTarget === null || lastWinTween.isDone(t)) {
+      tweenTarget = null;
+      return snap.lastWinDisplay;
+    }
+    return formatMoney(lastWinTween.valueAt(t));
+  }
+
+  function syncControls(snap: HotlineSnapshot): void {
+    if (busy) {
+      spinBtn.disabled = true;
+      decBtn.disabled = true;
+      incBtn.disabled = true;
+      return;
+    }
+    spinBtn.disabled = false;
+    decBtn.disabled = snap.betStepIndex <= 0;
+    incBtn.disabled = snap.betStepIndex >= betStepCount - 1;
+  }
+
+  function render(snap: HotlineSnapshot): void {
+    if (disposed) return;
+    lastSnap = snap;
+    balanceEl.textContent = snap.balanceDisplay;
+    betEl.textContent = snap.betDisplay;
+    linesEl.textContent = `${snap.paylineCount} lines`;
+    lastWinEl.textContent = lastWinText(snap);
+    syncControls(snap);
+    syncMuteLabel();
+  }
+
+  const onSpin = (): void => {
+    audio?.unlock();
+    const result = game.spin();
+    statusEl.textContent = result.ok ? \"\" : result.reason;
+    render(game.getSnapshot());
+  };
+
+  // bet steps only move through config indexes, the game clamps the rest
+  const nudgeBet = (delta: number): void => {
+    const current = game.getSnapshot().betStepIndex;
+    game.setBetStepIndex(current + delta);
+    render(game.getSnapshot());
+  };
+  const onDec = (): void => nudgeBet(-1);
+  const onInc = (): void => nudgeBet(1);
+
+  const onMute = (): void => {
+    if (!audio) return;
+    audio.unlock();
+    const next = !audio.isMuted();
+    audio.setMuted(next);
+    saveMutePref(next);
+    syncMuteLabel();
+  };
+
+  spinBtn.addEventListener(\"click\", onSpin);
+  decBtn.addEventListener(\"click\", onDec);
+  incBtn.addEventListener(\"click\", onInc);
+  muteBtn?.addEventListener(\"click\", onMute);
+  syncMuteLabel();
+
+  return {
+    render,
+    setBusy(next: boolean): void {
+      if (disposed) return;
+      busy = next;
+      if (lastSnap) {
+        syncControls(lastSnap);
+        return;
+      }
+      spinBtn.disabled = busy;
+      decBtn.disabled = busy;
+      incBtn.disabled = busy;
+    },
+    setCombo(text: string): void {
+      if (disposed) return;
+      comboEl.textContent = text;
+    },
+    setFeatureLine(text: string): void {
+      if (disposed) return;
+      featureEl.textContent = text;
+    },
+    dispose(): void {
+      if (disposed) return;
+      disposed = true;
+      spinBtn.removeEventListener(\"click\", onSpin);
+      decBtn.removeEventListener(\"click\", onDec);
+      incBtn.removeEventListener(\"click\", onInc);
+      muteBtn?.removeEventListener(\"click\", onMute);
+    },
+  };
+}
+"
+            expected: "/setComboPath/"
+            ...
+    }
+    ok 3 - HotlineHud free spins feature line (D-02) # time=1.43ms {
+        1..3
+        ok 1 - setFeatureLine writes [data-field=feature] via textContent # time=0.64ms
+        ok 2 - setFeatureLine ignores calls after dispose # time=0.36ms
+        ok 3 - throws when [data-field=feature] is missing # time=0.39ms
+    }
+}
