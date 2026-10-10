@@ -250,6 +250,7 @@ describe("green free spins night (BONUS-01)", () => {
     isNightActive: () => boolean;
     nextNightStep: () => { kind: string; totalCents?: number; color?: string };
     spinFree: () => SpinResult;
+    pickLocker: (index: number) => number | null;
   };
 
   function forcedGreen(retriggerChance = 0): HotlineConfig {
@@ -414,6 +415,61 @@ describe("green free spins night (BONUS-01)", () => {
     expect(cents(game.getSnapshot().balanceDisplay)).toBe(
       startBal - bet + baseWin + fsWins,
     );
+  });
+
+  function forcedPurple(): HotlineConfig {
+    return {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          meterTarget: config.features.tokenOdds.meterTarget,
+          perSpinChance: { green: 0, red: 0, purple: 1 },
+          triggerChance: { green: 0, red: 0, purple: 1 },
+        },
+      },
+    };
+  }
+
+  it("forced purple night credits wallet once at feature_exit after five picks", () => {
+    const cfg = forcedPurple();
+    const game = createHotlineGame({
+      seed: "purple-pick-night",
+      config: cfg,
+    }) as NightApi;
+    expect(typeof game.pickLocker).toBe("function");
+
+    const startBal = cents(game.getSnapshot().balanceDisplay);
+    const bet = cfg.math.betStepsCents[0];
+    expect(game.spin()).toEqual({ ok: true });
+    const afterBase = game.getSnapshot();
+    const baseWin = afterBase.lineWins.reduce((s, w) => s + w.payoutCents, 0);
+    expect(game.isNightActive()).toBe(true);
+
+    expect(game.nextNightStep()).toMatchObject({
+      kind: "feature_start",
+      color: "purple",
+    });
+    expect(game.nextNightStep()).toEqual({ kind: "wait" });
+
+    const balDuring = cents(game.getSnapshot().balanceDisplay);
+    expect(balDuring).toBe(startBal - bet + baseWin);
+
+    for (const idx of [0, 1, 2, 3, 4]) {
+      expect(game.pickLocker(idx)).not.toBeNull();
+    }
+    expect(game.pickLocker(5)).toBeNull();
+
+    const exit = game.nextNightStep();
+    expect(exit.kind).toBe("feature_exit");
+    if (exit.kind !== "feature_exit") throw new Error("expected feature_exit");
+    expect(exit.color).toBe("purple");
+    expect(exit.totalCents).toBeGreaterThan(0);
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(
+      startBal - bet + baseWin + exit.totalCents,
+    );
+    expect(game.nextNightStep()).toEqual({ kind: "done" });
+    expect(game.isNightActive()).toBe(false);
   });
 });
 
