@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/hud/HotlineHud.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nnot ok 1 - setBusy disables spin and bet steppers\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected 'undefined' to be 'function' // Object.is equality\"\n  actual: \"undefined\"\n  expected: \"function\"\n  ...\nnot ok 2 - setCombo writes combo strip via textContent only\n# tests 9\n# pass 7\n# fail 2\n",
+  "targetTest": "setBusy disables spin and bet steppers",
+  "targetFile": "src/games/hotline/hud/HotlineHud.test.ts",
+  "expected": "function",
+  "actual": "undefined"
+}

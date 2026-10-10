@@ -33,6 +33,7 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-field=bet]",
     "[data-field=lines]",
     "[data-field=status]",
+    "[data-field=combo]",
     "[data-action=spin]",
     "[data-action=bet-dec]",
     "[data-action=bet-inc]",
@@ -145,3 +146,34 @@ describe("HotlineHud bet steps (D-13)", () => {
     expect(src).toMatch(/setBetStepIndex\(/);
   });
 });
+
+describe("HotlineHud busy lock and combo strip (D-10, D-14)", () => {
+  it("setBusy disables spin and bet steppers", () => {
+    const { els, hud } = setup();
+    expect(typeof (hud as { setBusy?: unknown }).setBusy).toBe("function");
+    const busyHud = hud as typeof hud & {
+      setBusy: (busy: boolean) => void;
+    };
+    expect(els["[data-action=spin]"].disabled).toBe(false);
+    busyHud.setBusy(true);
+    expect(els["[data-action=spin]"].disabled).toBe(true);
+    expect(els["[data-action=bet-dec]"].disabled).toBe(true);
+    expect(els["[data-action=bet-inc]"].disabled).toBe(true);
+    busyHud.setBusy(false);
+    expect(els["[data-action=spin]"].disabled).toBe(false);
+  });
+
+  it("setCombo writes combo strip via textContent only", () => {
+    const { els, hud } = setup();
+    expect(typeof (hud as { setCombo?: unknown }).setCombo).toBe("function");
+    const comboHud = hud as typeof hud & {
+      setCombo: (text: string) => void;
+    };
+    expect(els["[data-field=combo]"].textContent).toBe("");
+    comboHud.setCombo("COMBO: Green → Red");
+    expect(els["[data-field=combo]"].textContent).toBe("COMBO: Green → Red");
+    comboHud.setCombo("");
+    expect(els["[data-field=combo]"].textContent).toBe("");
+  });
+});
+
