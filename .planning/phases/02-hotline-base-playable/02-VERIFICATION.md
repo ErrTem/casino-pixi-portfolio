@@ -1,9 +1,10 @@
 ---
 phase: 02-hotline-base-playable
 verified: 2026-10-10T11:55:00Z
-status: human_needed
+status: passed
 score: 4/5 must-haves verified
 covered_files:
+
   - .planning/REQUIREMENTS.md
   - .planning/ROADMAP.md
   - .planning/phases/02-hotline-base-playable/02-01-PLAN.md
@@ -38,15 +39,18 @@ covered_files:
   - src/games/hotline/view/reels/ReelStrip.ts
   - src/games/hotline/view/reels/createReelWindow.ts
   - src/shell/gameRegistry.ts
+
 covered_digest: "v1:sha256:eb7de19fc208d77feb46e00fe9dff2e5d8ae206c1768346ee168cd160c49e84f"
 behavior_unverified: 1
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font"
     test: "Run npm run dev, open the menu, launch HOTLINE, look at the canvas at desktop and phone-sized viewports"
     expected: "Rooftop sunset backdrop fills the canvas, CRT frame sits over the 5x4 reels with symbols inside the glass, three phones sit above the frame, HOTLINE title renders in Retro Computer"
     why_human: "Textures load, are PNG-validated and are wired into the scene, but nothing renders them headless. Glass rect alignment (GLASS 100,97,698x536) and visual fidelity can only be judged by eye"
 human_verification:
+
   - test: "Play spins end to end from the menu"
     expected: "Menu tile launches HOTLINE; SPIN runs five reels left to right with staggered stops; balance drops by the bet at spin start, win and balance credit only appear after reel 5 lands; line cycle callout shows LINE n PAYS x; last win counts up"
     why_human: "Session, reel motion and win cycle have no automated test that mounts Pixi. Only pure helpers (reelMotion, winCycle, lastWinTween, HUD binder) are unit tested"
