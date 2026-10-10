@@ -109,20 +109,25 @@ Plans:
   2. Phone meters visibly grow (signal bars / neon intensity) as tokens accumulate
   3. Landing a token can randomly trigger that phone's bonus; multiple phones can enqueue as combo nights (queue stub ready for Phase 4 features)
 
-**Plans:** 3 plans
+**Plans:** 5 plans
 
 Plans:
 **Wave 1**
 
 - [ ] 03-01-PLAN.md — Diskette ASSET-LIST + user PNG handoff (D-15)
+- [ ] 03-02-PLAN.md — Tracer: config + collectors math + HotlineGame.collectorOutcome (D-01, D-05..D-07, D-09, D-11)
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2** *(blocked on Wave 1 art + logic)*
 
-- [ ] 03-02-PLAN.md — Tracer: config/logic/win-gate/TokenFlight/meters/combo stub + Spin busy
+- [ ] 03-03-PLAN.md — Finite win gate + TokenFlight arcs + PhonesLayer meters (COLL-01, COLL-02)
 
-**Wave 3** *(blocked on Wave 2 completion)*
+**Wave 3** *(blocked on Wave 2)*
 
-- [ ] 03-03-PLAN.md — Collector beep SFX (D-16) + visitor walkthrough sign-off
+- [ ] 03-04-PLAN.md — Session busy FSM + HUD combo strip + Spin lock (COLL-03, D-10..D-14)
+
+**Wave 4** *(blocked on Wave 3)*
+
+- [ ] 03-05-PLAN.md — Collector beep SFX (D-16) + visitor walkthrough sign-off
 
 **UI hint**: yes
 

@@ -455,22 +455,25 @@ Place under `public/assets/hotline/` beside existing `phone-*.png`. No meter PNG
 
 **If this table is empty:** All claims in this research were verified or cited — no user confirmation needed.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Win-gate exact duration**
+1. **Win-gate exact duration** (RESOLVED)
    - What we know: D-13 requires tokens after win cycle finishes; cycle is infinite today.
    - What's unclear: One pass vs fixed ms vs "until last-win tween done".
    - Recommendation: One pass at existing `CYCLE_MS` (1100), plus clear overlay; do not block on Continue. Flag A2.
+   - **Resolution:** Adopt one-pass `CYCLE_MS` win gate then clear; plans use `WinCycle.isDone()` after one full pass (A2). No fixed wall-clock gate and no Continue tap.
 
-2. **Meter reset timing: trigger land vs stub pop**
+2. **Meter reset timing: trigger land vs stub pop** (RESOLVED)
    - What we know: D-07 resets on bonus trigger; D-12 resets as stub pops.
    - What's unclear: Whether bars should empty at enqueue (land) or at stub beat.
    - Recommendation: Empty on stub pop (D-12 presentation); treat stub as Phase 3 stand-in for bonus start so D-07 holds. Phase 4 keeps the same reset-on-feature-start semantics.
+   - **Resolution:** Meter bars empty on stub pop per D-12 (not at land enqueue). Stub stands in for bonus start so D-07 holds.
 
-3. **Forced-trigger debug for demos**
+3. **Forced-trigger debug for demos** (RESOLVED)
    - What we know: FEATURES.md lists forced-trigger tools as P2.
    - What's unclear: Whether Phase 3 needs a `?forceTokens=` seam.
    - Recommendation: Out of scope unless discuss-phase reopens; use high `perSpinChance`/`triggerChance` in a temporary fixture for manual QA.
+   - **Resolution:** Out of Phase 3 scope. No `?forceTokens=` seam. Manual QA may temporarily raise `perSpinChance`/`triggerChance` in local JSON, then restore.
 
 ## Environment Availability
 
