@@ -6,32 +6,44 @@ describe("createWinCycle", () => {
     const cycle = createWinCycle(1000);
     cycle.reset(2);
     expect(cycle.active()).toBe(0);
+    expect(cycle.isDone()).toBe(false);
     expect(cycle.advance(400)).toBe(false);
     expect(cycle.active()).toBe(0);
     expect(cycle.advance(600)).toBe(true);
     expect(cycle.active()).toBe(1);
+    expect(cycle.isDone()).toBe(false);
   });
 
-  it("wraps back to the first line", () => {
+  it("is done after one pass and does not wrap", () => {
     const cycle = createWinCycle(500);
     cycle.reset(2);
     cycle.advance(500);
     expect(cycle.active()).toBe(1);
-    cycle.advance(500);
-    expect(cycle.active()).toBe(0);
+    expect(cycle.isDone()).toBe(false);
+    expect(cycle.advance(500)).toBe(false);
+    expect(cycle.isDone()).toBe(true);
+    expect(cycle.active()).toBe(-1);
+    expect(cycle.advance(500)).toBe(false);
+    expect(cycle.isDone()).toBe(true);
   });
 
-  it("never leaves a single line", () => {
+  it("finishes a single line after one interval", () => {
     const cycle = createWinCycle(300);
     cycle.reset(1);
-    expect(cycle.advance(5000)).toBe(false);
     expect(cycle.active()).toBe(0);
+    expect(cycle.isDone()).toBe(false);
+    expect(cycle.advance(299)).toBe(false);
+    expect(cycle.isDone()).toBe(false);
+    expect(cycle.advance(1)).toBe(false);
+    expect(cycle.isDone()).toBe(true);
+    expect(cycle.active()).toBe(-1);
   });
 
   it("reports no active line when empty", () => {
     const cycle = createWinCycle(300);
     cycle.reset(0);
     expect(cycle.active()).toBe(-1);
+    expect(cycle.isDone()).toBe(true);
     expect(cycle.advance(1000)).toBe(false);
   });
 
@@ -40,6 +52,7 @@ describe("createWinCycle", () => {
     cycle.reset(5);
     cycle.advance(10_000);
     expect(cycle.active()).toBe(1);
+    expect(cycle.isDone()).toBe(false);
   });
 
   it("ignores bad deltas", () => {
@@ -48,5 +61,6 @@ describe("createWinCycle", () => {
     expect(cycle.advance(NaN)).toBe(false);
     expect(cycle.advance(-50)).toBe(false);
     expect(cycle.active()).toBe(0);
+    expect(cycle.isDone()).toBe(false);
   });
 });

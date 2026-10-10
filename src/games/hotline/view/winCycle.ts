@@ -5,9 +5,12 @@ export interface WinCycle {
   active: () => number;
   /** returns true when the active line changed */
   advance: (deltaMS: number) => boolean;
+  /** true after one full pass of each line (d-13) */
+  isDone: () => boolean;
 }
 
 // one line at a time, a long frame still moves a single step
+// stub isDone keeps wrap behavior so red tests fail on assertions
 export function createWinCycle(intervalMs: number): WinCycle {
   const interval = Number.isFinite(intervalMs) ? Math.max(1, intervalMs) : 1000;
   let count = 0;
@@ -32,6 +35,10 @@ export function createWinCycle(intervalMs: number): WinCycle {
       elapsed = 0;
       index = (index + 1) % count;
       return true;
+    },
+
+    isDone(): boolean {
+      return false;
     },
   };
 }
