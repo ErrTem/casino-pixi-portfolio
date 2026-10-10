@@ -149,7 +149,7 @@ Each task was committed atomically:
 2. **Task 1 GREEN: wire collector outcome on spin settle** - `d38aeb7` (feat)
 3. **Task 2: Harden seed parity and queue order coverage** - `f457540` (test)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `31b4a55` (docs: complete plan)
 
 ## Files Created/Modified
 
