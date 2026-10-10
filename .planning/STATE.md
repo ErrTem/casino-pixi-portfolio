@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 04
 current_phase_name: Three Bonuses + Combo Nights
 status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-10-10T22:54:32.428Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-10-10T22:59:22.090Z"
 last_activity: 2026-10-11
 last_activity_desc: Phase 04 execution started
-state_head: 0454662830ee416801cc78db2a548e4cfb611da1
+state_head: d1e524228df71c518bbc2dd55b31f9f69c764a10
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 21
-  completed_plans: 19
+  completed_plans: 20
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 04 (Three Bonuses + Combo Nights) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-11 — Phase 04 execution started
 
@@ -80,6 +80,7 @@ Progress: [██████░░░░] 60%
 | Phase 04 P01 | 15min | 2 tasks | 15 files |
 | Phase 04 P02 | 8min | 2 tasks | 9 files |
 | Phase 04 P03 | 12min | 2 tasks | 12 files |
+| Phase 04 P04 | 8min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,9 @@ Recent decisions affecting current work:
 - [Phase 04]: All 12 locker multipliers pre-assigned at createPickEm from weighted pickEm ladder
 - [Phase 04]: Wallet credit stays on feature_exit; settleFeature once when pickEm.isDone
 - [Phase 04]: Locker grid is procedural CSS neon buttons; no new PNG assets
+- [Phase 04]: Hold respin cadence HOLD_RESPIN_MS=320 for ticker-driven empty-cell flicker
+- [Phase 04]: Start cells are cash-only; jackpot tiers can land on later respins
+- [Phase 04]: setHoldMode(false) on enterIdle dispose destroy and hold exit paths
 
 ### Pending Todos
 
@@ -143,6 +147,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-10T22:54:32.353Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-10-10T22:59:22.017Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
