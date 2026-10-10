@@ -144,7 +144,7 @@ Plans:
   3. Purple phone opens a locker Pick'em where the user reveals cash prizes until the round ends
   4. When multiple phones trigger, bonuses run in a clear ordered combo queue (including nesting during free spins where config allows)
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans executed
 
 Plans:
 **Wave 1**
@@ -165,7 +165,7 @@ Plans:
 
 **Wave 5** *(blocked on Waves 1–4)*
 
-- [ ] 04-05-PLAN.md — Combo path highlight, feature beeps, integration gates (BONUS-04)
+- [x] 04-05-PLAN.md — Combo path highlight, feature beeps, integration gates (BONUS-04)
 
 **UI hint**: yes
 
@@ -195,7 +195,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
-| 4. Three Bonuses + Combo Nights | 4/5 | In Progress|  |
+| 4. Three Bonuses + Combo Nights | 5/5 | In Progress|  |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
 
 ## Coverage Map
