@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/shared/audio/createBeepAudioPort.test.ts src/games/hotline/session/collectPresentation.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nok 1 - keeps hotline events distinct from each other\nok 2 - stays silent while muted and after dispose\nnot ok 3 - plays every sfx event with a finite pitch\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected false to be true // Object.is equality\"\n  actual: \"false\"\n  expected: \"true\"\n  ...\nnot ok 4 - keeps collector events distinct from each other\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected 1 to be 4 // Object.is equality\"\n  actual: \"1\"\n  expected: \"4\"\n  ...\nok 5 - grows one land at a time from a pre-spin baseline\nok 6 - soft caps each color at meterTarget\nok 7 - formats green to red to purple labels\nok 8 - uses raw counts so this spin is not already booked\nok 9 - session source locks busy through flights and stub without double booking\nnot ok 10 - session source plays collector beep events on presentation edges (D-16)\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected session source to match /play\\\\s*\\\\(\\\\s*[\\\"']token_spawn[\\\"']\\\\s*\\\\)/\"\n  actual: \"mountHotlineSession without collector play ids\"\n  expected: \"play token_spawn token_land phone_trigger queue_step\"\n  ...\n# tests 10\n# pass 7\n# fail 3\n",
+  "targetTest": "keeps collector events distinct from each other",
+  "targetFile": "src/shared/audio/createBeepAudioPort.test.ts",
+  "expected": "4",
+  "actual": "1"
+}

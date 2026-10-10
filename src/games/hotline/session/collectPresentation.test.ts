@@ -69,4 +69,16 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/resetPhoneMeter/);
     expect(src).not.toMatch(/\.increment\s*\(/);
   });
+
+  it("session source plays collector beep events on presentation edges (D-16)", () => {
+    const src = readFileSync(
+      join(import.meta.dirname, "mountHotlineSession.ts"),
+      "utf8",
+    );
+    expect(src).toMatch(/play\s*\(\s*["']token_spawn["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']token_land["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']phone_trigger["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']queue_step["']\s*\)/);
+    expect(src).toMatch(/unlock\s*\(\s*\)/);
+  });
 });
