@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 04
 current_phase_name: Three Bonuses + Combo Nights
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-10-10T22:33:58.844Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-10-10T22:43:53.612Z"
 last_activity: 2026-10-11
-last_activity_desc: Phase 03 complete, transitioned to Phase 4
-state_head: fbf7a71b9dfd36ea153c3e414426e559d631820c
+last_activity_desc: Phase 04 execution started
+state_head: 9cc8820055a095fb96856549b924cd11abf7d4b2
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 21
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** Portfolio visitor opens the menu, launches HOTLINE, and plays the full Witch Pots-style loop in Hotline Miami dress with backend-shaped JSON configs.
-**Current focus:** Phase 4 — Three Bonuses + Combo Nights
+**Current focus:** Phase 04 — Three Bonuses + Combo Nights
 
 ## Current Position
 
-Phase: 04 (Three Bonuses + Combo Nights) — READY TO EXECUTE
-Plan: Not started
+Phase: 04 (Three Bonuses + Combo Nights) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-10-11 — Phase 03 complete, transitioned to Phase 4
+Last activity: 2026-10-11 — Phase 04 execution started
 
 Progress: [██████░░░░] 60%
 
@@ -77,6 +77,7 @@ Progress: [██████░░░░] 60%
 | Phase 03 P03 | 5min | 2 tasks | 8 files |
 | Phase 03 P04 | 7min | 2 tasks | 9 files |
 | Phase 03 P05 | 15min | 2 tasks | 5 files |
+| Phase 04 P01 | 15min | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,10 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-04: progressive meter fills from pre-spin raw counts; stub 700ms beats; bet steppers locked while busy
 - [Phase 03]: 03-05: collector beep Hz 700/840/560/480; keep beep AudioPort (D-16)
 - [Phase 03]: 03-05: walkthrough approved for COLL-01 COLL-02 COLL-03
+- [Phase 04]: createNight is the only path for single and combo features; Phase 3 stub drain removed
+- [Phase 04]: Green exit totals free spin line wins only; nested wins count in night_total (A5)
+- [Phase 04]: night_total splash only when path length is 2 or more (A6)
+- [Phase 04]: Red and purple stub settle at zero cents until 04-03 and 04-04
 
 ### Pending Todos
 
@@ -131,6 +136,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-10T22:02:48.967Z
-Stopped at: Phase 4 context gathered
-Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\04-three-bonuses-combo-nights\04-CONTEXT.md
+Last session: 2026-10-10T22:43:53.537Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None
