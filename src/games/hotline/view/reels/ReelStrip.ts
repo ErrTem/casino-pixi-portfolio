@@ -1,11 +1,12 @@
-import { Container, Graphics, Text } from "pixi.js";
+import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { LAND_MS, SPIN_CELLS_PER_MS, landOffset } from "./reelMotion.js";
 
 export interface ReelStripOptions {
   rows: number;
   /** symbol ids used as filler while the strip is spinning */
   fillerIds: string[];
-  colorFor: (symbolId: string) => number;
+  /** texture for a symbol id, undefined when the id has no art */
+  textureFor: (symbolId: string) => Texture | undefined;
   /** shifts the filler sequence so neighbour reels do not blur identically */
   fillerShift?: number;
   onStop?: () => void;
@@ -28,15 +29,13 @@ export interface ReelStrip {
 type Mode = "idle" | "spinning" | "landing";
 
 interface Cell {
-  holder: Container;
-  box: Graphics;
-  label: Text;
+  holder: Sprite;
   symbol: string;
   drawnSize: number;
 }
 
 export function createReelStrip(options: ReelStripOptions): ReelStrip {
-  const { rows, fillerIds, colorFor } = options;
+  const { rows, fillerIds, textureFor } = options;
   // landing layout: rows target cells, then rows + 1 cells carried over from the spin
   const cellCount = rows * 2 + 1;
 
@@ -48,17 +47,11 @@ export function createReelStrip(options: ReelStripOptions): ReelStrip {
 
   const cells: Cell[] = [];
   for (let i = 0; i < cellCount; i += 1) {
-    const holder = new Container();
-    const box = new Graphics();
-    const label = new Text({
-      text: "",
-      style: { fontFamily: "sans-serif", fontSize: 14, fill: 0x0b0b12 },
-    });
-    label.anchor.set(0.5);
-    holder.addChild(box, label);
+    const holder = new Sprite(Texture.EMPTY);
+    holder.anchor.set(0.5);
     holder.visible = false;
     strip.addChild(holder);
-    cells.push({ holder, box, label, symbol: "", drawnSize: 0 });
+    cells.push({ holder, symbol: "", drawnSize: 0 });
   }
 
   let pitch = 0;
@@ -90,18 +83,29 @@ export function createReelStrip(options: ReelStripOptions): ReelStrip {
     if (cell.symbol === symbol && cell.drawnSize === size) return;
     cell.symbol = symbol;
     cell.drawnSize = size;
-    cell.box.clear();
-    cell.box.roundRect(gap / 2, gap / 2, size, size, 6).fill(colorFor(symbol));
-    cell.label.text = symbol;
-    cell.label.style.fontSize = Math.max(8, Math.floor(size * 0.18));
-    cell.label.position.set(pitch / 2, pitch / 2);
+    if (symbol === "") {
+      cell.holder.texture = Texture.EMPTY;
+      return;
+    }
+    const texture = textureFor(symbol);
+    if (!texture) throw new Error(`hotline reels: no texture for symbol ${symbol}`);
+    cell.holder.texture = texture;
+    cell.holder.width = size;
+    cell.holder.height = size;
+  }
+
+  // sprite is centered in its cell, row is the cell slot in the strip
+  function setRow(index: number, row: number): void {
+    const holder = cells[index].holder;
+    holder.x = pitch / 2;
+    holder.y = row * pitch + pitch / 2;
   }
 
   function place(index: number, symbol: string, row: number): void {
     const cell = cells[index];
     cell.holder.visible = true;
     paintCell(index, symbol);
-    cell.holder.y = row * pitch;
+    setRow(index, row);
   }
 
   function hideFrom(index: number): void {
@@ -169,8 +173,8 @@ export function createReelStrip(options: ReelStripOptions): ReelStrip {
       } else {
         for (let i = 0; i < cellCount; i += 1) {
           cells[i].drawnSize = 0;
-          cells[i].holder.y = i * pitch;
           paintCell(i, cells[i].symbol);
+          setRow(i, i);
         }
         strip.y = landOffset(landStart, SPIN_CELLS_PER_MS * LAND_MS, landElapsed / LAND_MS) * pitch;
       }

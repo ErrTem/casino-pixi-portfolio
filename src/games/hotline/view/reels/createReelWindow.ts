@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, type Texture } from "pixi.js";
 import { createReelStrip, type ReelStrip } from "./ReelStrip.js";
 import { staggerDelayMs } from "./reelMotion.js";
 
@@ -6,7 +6,7 @@ export interface ReelWindowOptions {
   reels: number;
   rows: number;
   fillerIds: string[];
-  colorFor: (symbolId: string) => number;
+  textureFor: (symbolId: string) => Texture | undefined;
   /** fires once per reel as it lands, left to right */
   onReelStop?: (reelIndex: number) => void;
 }
@@ -25,7 +25,7 @@ export interface ReelWindow {
 }
 
 export function createReelWindow(options: ReelWindowOptions): ReelWindow {
-  const { reels, rows, fillerIds, colorFor } = options;
+  const { reels, rows, fillerIds, textureFor } = options;
   const container = new Container();
   const strips: ReelStrip[] = [];
   let pitch = 0;
@@ -37,7 +37,7 @@ export function createReelWindow(options: ReelWindowOptions): ReelWindow {
     const strip = createReelStrip({
       rows,
       fillerIds,
-      colorFor,
+      textureFor,
       fillerShift: reel * 3,
       onStop: () => {
         if (!destroyed) options.onReelStop?.(reel);

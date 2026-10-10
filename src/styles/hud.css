@@ -938,3 +938,14 @@ input {
   text-align: center;
   color: var(--muted);
 }
+
+/* portrait first column, wide screens letterbox instead of reflowing */
+.hotline-screen {
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.hotline-screen .canvas-host {
+  background: #0b0420;
+}
