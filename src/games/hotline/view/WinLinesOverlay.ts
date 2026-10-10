@@ -19,6 +19,8 @@ export interface WinLinesOverlay {
   /** start cycling `wins` one payline at a time, empty list clears */
   showCycle: (wins: readonly LineWin[], geometry: WinGeometry) => void;
   tick: (deltaMS: number) => void;
+  /** true after one finite pass so session can hand off to tokens */
+  isDone: () => boolean;
   clear: () => void;
   destroy: () => void;
 }
@@ -139,11 +141,30 @@ export function createWinLinesOverlay(): WinLinesOverlay {
     },
 
     tick(deltaMS: number): void {
-      if (destroyed || !container.visible) return;
+      if (destroyed || wins.length === 0) return;
+      if (cycle.isDone()) {
+        // clear so collectors can start after the one pass (d-13)
+        wins = [];
+        cycle.reset(0);
+        container.alpha = 1;
+        draw();
+        return;
+      }
       if (cycle.advance(deltaMS)) draw();
+      if (cycle.isDone()) {
+        wins = [];
+        cycle.reset(0);
+        container.alpha = 1;
+        draw();
+        return;
+      }
       // cheap breathing, one alpha write per frame
       if (Number.isFinite(deltaMS) && deltaMS > 0) pulse += deltaMS;
       container.alpha = 0.82 + 0.18 * Math.sin((pulse / PULSE_MS) * Math.PI * 2);
+    },
+
+    isDone(): boolean {
+      return destroyed || cycle.isDone();
     },
 
     clear(): void {

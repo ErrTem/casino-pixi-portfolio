@@ -1,9 +1,9 @@
 {
   "command": "npx vitest run src/games/hotline/view/winCycle.test.ts --reporter=tap",
   "exitCode": 1,
+  "output": "TAP version 13\nok 1 - starts on the first line and advances after one interval\nnot ok 2 - is done after one pass and does not wrap\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected true to be false // Object.is equality\"\n  actual: \"true\"\n  expected: \"false\"\n  ...\nnot ok 3 - finishes a single line after one interval\nnot ok 4 - reports no active line when empty\nok 5 - steps one line per call even after a long frame\nok 6 - ignores bad deltas\n# tests 6\n# pass 3\n# fail 3\n",
   "targetTest": "is done after one pass and does not wrap",
   "targetFile": "src/games/hotline/view/winCycle.test.ts",
   "expected": "after one full pass advance returns false, isDone() true, active -1, no wrap",
-  "actual": "advance still wraps (returns true) and stub isDone stays false",
-  "output": "TAP version 13\nnot ok 2 - is done after one pass and does not wrap\nAssertionError: expected true to be false\nat winCycle.test.ts:23:32\nnot ok 3 - finishes a single line after one interval\nnot ok 4 - reports no active line when empty\n# fail 3\n"
+  "actual": "advance still wraps (returns true) and stub isDone stays false"
 }
