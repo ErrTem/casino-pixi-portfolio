@@ -949,3 +949,16 @@ input {
 .hotline-screen .canvas-host {
   background: #0b0420;
 }
+
+.hotline-combo {
+  min-height: 1.25rem;
+  margin: 0.35rem 0.75rem 0;
+  padding: 0.2rem 0.45rem;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ff4da6;
+  text-align: center;
+}

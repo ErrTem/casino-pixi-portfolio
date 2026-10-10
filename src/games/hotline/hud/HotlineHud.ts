@@ -6,6 +6,10 @@ import { createLastWinTween } from "./lastWinTween.js";
 
 export interface HotlineHud {
   render(snap: HotlineSnapshot): void;
+  /** lock spin and bet steppers through flights and combo stub */
+  setBusy(busy: boolean): void;
+  /** combo strip copy via textContent only */
+  setCombo(text: string): void;
   /** removes listeners */
   dispose(): void;
 }
@@ -45,6 +49,7 @@ export function mountHotlineHud(
   const betEl = need(root, "[data-field=bet]");
   const linesEl = need(root, "[data-field=lines]");
   const statusEl = need(root, "[data-field=status]");
+  const comboEl = need(root, "[data-field=combo]");
   const spinBtn = need<HTMLButtonElement>(root, "[data-action=spin]");
   const decBtn = need<HTMLButtonElement>(root, "[data-action=bet-dec]");
   const incBtn = need<HTMLButtonElement>(root, "[data-action=bet-inc]");
@@ -54,6 +59,8 @@ export function mountHotlineHud(
   }
 
   let disposed = false;
+  let busy = false;
+  let lastSnap: HotlineSnapshot | null = null;
 
   function syncMuteLabel(): void {
     if (!muteBtn || !audio) return;
@@ -87,14 +94,26 @@ export function mountHotlineHud(
     return formatMoney(lastWinTween.valueAt(t));
   }
 
+  function syncControls(snap: HotlineSnapshot): void {
+    if (busy) {
+      spinBtn.disabled = true;
+      decBtn.disabled = true;
+      incBtn.disabled = true;
+      return;
+    }
+    spinBtn.disabled = false;
+    decBtn.disabled = snap.betStepIndex <= 0;
+    incBtn.disabled = snap.betStepIndex >= betStepCount - 1;
+  }
+
   function render(snap: HotlineSnapshot): void {
     if (disposed) return;
+    lastSnap = snap;
     balanceEl.textContent = snap.balanceDisplay;
     betEl.textContent = snap.betDisplay;
     linesEl.textContent = `${snap.paylineCount} lines`;
     lastWinEl.textContent = lastWinText(snap);
-    decBtn.disabled = snap.betStepIndex <= 0;
-    incBtn.disabled = snap.betStepIndex >= betStepCount - 1;
+    syncControls(snap);
     syncMuteLabel();
   }
 
@@ -131,6 +150,21 @@ export function mountHotlineHud(
 
   return {
     render,
+    setBusy(next: boolean): void {
+      if (disposed) return;
+      busy = next;
+      if (lastSnap) {
+        syncControls(lastSnap);
+        return;
+      }
+      spinBtn.disabled = busy;
+      decBtn.disabled = busy;
+      incBtn.disabled = busy;
+    },
+    setCombo(text: string): void {
+      if (disposed) return;
+      comboEl.textContent = text;
+    },
     dispose(): void {
       if (disposed) return;
       disposed = true;
