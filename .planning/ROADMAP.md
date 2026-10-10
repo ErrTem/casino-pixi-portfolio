@@ -64,7 +64,7 @@ Plans:
   4. HOTLINE loads bet steps, symbol weights, and related tables from validated backend-shaped JSON at boot (bad config fails loud)
   5. HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font
 
-**Plans:** 6/7 plans executed
+**Plans:** 7/7 plans executed
 
 Plans:
 **Wave 1**
@@ -93,7 +93,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
-- [ ] 02-07-PLAN.md — Rooftop/CRT/phones/Retro title + symbol textures (PRES-01)
+- [x] 02-07-PLAN.md — Rooftop/CRT/phones/Retro title + symbol textures (PRES-01)
 
 **UI hint**: yes
 
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
-| 2. HOTLINE Base Playable | 6/7 | In Progress|  |
+| 2. HOTLINE Base Playable | 7/7 | In Progress|  |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
