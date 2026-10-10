@@ -279,6 +279,98 @@ describe("green free spins night (BONUS-01)", () => {
     } as HotlineConfig;
   }
 
+  it("keeps base grids identical across a night on the same seed", () => {
+    const quiet = {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          ...config.features.tokenOdds,
+          perSpinChance: { green: 0, red: 0, purple: 0 },
+          triggerChance: { green: 0, red: 0, purple: 0 },
+        },
+        freeSpins: { ...config.features.freeSpins, retriggerChance: 0 },
+      },
+    };
+    const noisy = {
+      ...quiet,
+      features: {
+        ...quiet.features,
+        tokenOdds: {
+          ...quiet.features.tokenOdds,
+          perSpinChance: { green: 1, red: 0, purple: 0 },
+          triggerChance: { green: 1, red: 0, purple: 0 },
+        },
+      },
+    };
+    const a = createHotlineGame({ seed: "stream-iso", config: quiet });
+    const b = createHotlineGame({
+      seed: "stream-iso",
+      config: noisy,
+    }) as NightApi;
+    expect(a.spin().ok).toBe(true);
+    expect(b.spin().ok).toBe(true);
+    expect(b.getSnapshot().grid).toEqual(a.getSnapshot().grid);
+    expect(b.isNightActive()).toBe(true);
+    expect(b.nextNightStep()).toMatchObject({ kind: "feature_start", color: "green" });
+    while (b.isNightActive()) {
+      const step = b.nextNightStep();
+      if (step.kind === "fs_spin") expect(b.spinFree().ok).toBe(true);
+      if (step.kind === "done") break;
+    }
+    expect(a.spin().ok).toBe(true);
+    expect(b.spin().ok).toBe(true);
+    expect(b.getSnapshot().grid).toEqual(a.getSnapshot().grid);
+  });
+
+  it("free spin payouts stay on featureBetCents after mid-night bet change", () => {
+    const cfg = forcedGreen(0);
+    const game = createHotlineGame({ seed: "bet-cap", config: cfg }) as NightApi;
+    game.setBetStepIndex(0);
+    expect(game.spin().ok).toBe(true);
+    const featureBet = cfg.math.betStepsCents[0];
+    expect(game.nextNightStep()).toMatchObject({ kind: "feature_start" });
+    expect(game.nextNightStep()).toEqual({ kind: "fs_spin" });
+    game.setBetStepIndex(cfg.math.betStepsCents.length - 1);
+    expect(game.spinFree().ok).toBe(true);
+    const snap = game.getSnapshot();
+    const expected = evaluatePaylines({
+      grid: snap.grid,
+      paylines: cfg.math.paylines,
+      paytable: cfg.paytable,
+      wildId: cfg.math.wildSymbolId,
+      betCents: featureBet,
+    });
+    expect(snap.lineWins).toEqual(expected);
+    const wrongBet = evaluatePaylines({
+      grid: snap.grid,
+      paylines: cfg.math.paylines,
+      paytable: cfg.paytable,
+      wildId: cfg.math.wildSymbolId,
+      betCents: cfg.math.betStepsCents[cfg.math.betStepsCents.length - 1],
+    });
+    if (expected.reduce((s, w) => s + w.payoutCents, 0) > 0) {
+      expect(snap.lineWins).not.toEqual(wrongBet);
+    }
+  });
+
+  it("replays identical free spin grids for the same seed and calls", () => {
+    const cfg = forcedGreen(0);
+    const a = createHotlineGame({ seed: "fs-replay", config: cfg }) as NightApi;
+    const b = createHotlineGame({ seed: "fs-replay", config: cfg }) as NightApi;
+    for (const g of [a, b]) {
+      g.spin();
+      g.nextNightStep();
+    }
+    for (let i = 0; i < 5; i++) {
+      expect(a.nextNightStep()).toEqual({ kind: "fs_spin" });
+      expect(b.nextNightStep()).toEqual({ kind: "fs_spin" });
+      a.spinFree();
+      b.spinFree();
+      expect(a.getSnapshot().grid).toEqual(b.getSnapshot().grid);
+    }
+  });
+
   it("forced green night runs 24 free spins then exits to done", () => {
     const bundled = loadHotlineConfig();
     expect(bundled.features).toHaveProperty("freeSpins");

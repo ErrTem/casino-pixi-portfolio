@@ -89,6 +89,76 @@ describe("HotlineConfigSchema", () => {
     delete bad.features.jackpotMultipliers;
     expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
   });
+
+  it("rejects freeSpins wildWeights length other than 4", () => {
+    const bad = fixture();
+    bad.features.freeSpins.wildWeights = [9, 9, 9];
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects freeSpins wildWeights not above the base wild weight", () => {
+    const bad = fixture();
+    bad.features.freeSpins.wildWeights = [3, 9, 9, 9];
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects retriggerChance above 1", () => {
+    const bad = fixture();
+    bad.features.freeSpins.retriggerChance = 1.5;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects maxRetriggers below 0", () => {
+    const bad = fixture();
+    bad.features.freeSpins.maxRetriggers = -1;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects pickEm lockers other than 12", () => {
+    const bad = fixture();
+    bad.features.pickEm.lockers = 11;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects pickEm picks other than 5", () => {
+    const bad = fixture();
+    bad.features.pickEm.picks = 6;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects prizeWeights length mismatch", () => {
+    const bad = fixture();
+    bad.features.bonusPrizes[0].prizeWeights = [1, 2];
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects missing pickEm or holdAndWin bonusId", () => {
+    const bad = fixture();
+    bad.features.bonusPrizes = bad.features.bonusPrizes.filter(
+      (b: { bonusId: string }) => b.bonusId !== "pickEm",
+    );
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+    const badHold = fixture();
+    badHold.features.bonusPrizes = badHold.features.bonusPrizes.filter(
+      (b: { bonusId: string }) => b.bonusId !== "holdAndWin",
+    );
+    expect(() => HotlineConfigSchema.parse(badHold)).toThrow(ZodError);
+  });
+
+  it("rejects holdAndWin startCells outside 1..19", () => {
+    const badLow = fixture();
+    badLow.features.holdAndWin.startCells = 0;
+    expect(() => HotlineConfigSchema.parse(badLow)).toThrow(ZodError);
+    const badHigh = fixture();
+    badHigh.features.holdAndWin.startCells = 20;
+    expect(() => HotlineConfigSchema.parse(badHigh)).toThrow(ZodError);
+  });
+
+  it("rejects holdAndWin landChance above 1", () => {
+    const bad = fixture();
+    bad.features.holdAndWin.landChance = 1.1;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
 });
 
 describe("loadHotlineConfig", () => {

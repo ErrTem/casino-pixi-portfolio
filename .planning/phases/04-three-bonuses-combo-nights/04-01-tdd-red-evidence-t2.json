@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/logic/night/createNight.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nok 1 - runs green free spins then red then purple then night total\nok 2 - pauses free spins for red then purple nested and resumes spinsLeft\nnot ok 3 - treats green in an fs queue as retrigger and never nests green\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected 'fs_spin' to be 'feature_exit' // Object.is equality\"\n  actual: \"fs_spin\"\n  expected: \"feature_exit\"\n  ...\nok 4 - returns wait while an fs spin is pending settle\nok 5 - returns wait while a red feature is open and unsettled\nok 6 - skips night_total for a single green with no nesting\nok 7 - shows night_total when green plus one nested red\n# tests 7\n# pass 6\n# fail 1\n",
+  "targetTest": "treats green in an fs queue as retrigger and never nests green",
+  "targetFile": "src/games/hotline/logic/night/createNight.test.ts",
+  "expected": "spinsDone capped at spins + maxRetriggers * retriggerSpins then feature_exit",
+  "actual": "unbounded retrigger keeps returning fs_spin (AssertionError expected feature_exit)"
+}
