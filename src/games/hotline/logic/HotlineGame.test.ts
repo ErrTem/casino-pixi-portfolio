@@ -240,3 +240,81 @@ describe("collector outcome on spin", () => {
   });
 });
 
+describe("green free spins night (BONUS-01)", () => {
+  type NightApi = HotlineGame & {
+    isNightActive: () => boolean;
+    nextNightStep: () => { kind: string; totalCents?: number; color?: string };
+    spinFree: () => SpinResult;
+  };
+
+  function forcedGreen(retriggerChance = 0): HotlineConfig {
+    const base = loadHotlineConfig();
+    return {
+      ...base,
+      features: {
+        ...base.features,
+        tokenOdds: {
+          meterTarget: base.features.tokenOdds.meterTarget,
+          perSpinChance: { green: 1, red: 0, purple: 0 },
+          triggerChance: { green: 1, red: 0, purple: 0 },
+        },
+        freeSpins: {
+          ...("freeSpins" in base.features
+            ? (base.features as { freeSpins: Record<string, unknown> }).freeSpins
+            : {
+                spins: 24,
+                wildWeights: [9, 9, 9, 9],
+                retriggerSpins: 6,
+                maxRetriggers: 3,
+                nested: { red: true, purple: true },
+              }),
+          retriggerChance,
+        },
+      },
+    } as HotlineConfig;
+  }
+
+  it("forced green night runs 24 free spins then exits to done", () => {
+    const bundled = loadHotlineConfig();
+    expect(bundled.features).toHaveProperty("freeSpins");
+    expect(bundled.features).toHaveProperty("holdAndWin");
+    expect(bundled.features).toHaveProperty("pickEm");
+
+    const cfg = forcedGreen(0);
+    const game = createHotlineGame({ seed: "green-night", config: cfg }) as NightApi;
+    expect(typeof game.isNightActive).toBe("function");
+    expect(typeof game.nextNightStep).toBe("function");
+    expect(typeof game.spinFree).toBe("function");
+
+    const startBal = cents(game.getSnapshot().balanceDisplay);
+    const bet = cfg.math.betStepsCents[0];
+    expect(game.spin()).toEqual({ ok: true });
+    const afterBase = game.getSnapshot();
+    const baseWin = afterBase.lineWins.reduce((s, w) => s + w.payoutCents, 0);
+    expect(game.isNightActive()).toBe(true);
+    expect(game.spin()).toEqual({ ok: false, reason: "" });
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(startBal - bet + baseWin);
+
+    expect(game.nextNightStep()).toMatchObject({ kind: "feature_start", color: "green" });
+
+    let fsWins = 0;
+    for (let i = 0; i < 24; i++) {
+      expect(game.nextNightStep()).toEqual({ kind: "fs_spin" });
+      expect(game.spinFree()).toEqual({ ok: true });
+      fsWins += game
+        .getSnapshot()
+        .lineWins.reduce((s, w) => s + w.payoutCents, 0);
+    }
+
+    expect(game.spinFree()).toEqual({ ok: false, reason: expect.any(String) });
+    const exit = game.nextNightStep();
+    expect(exit).toMatchObject({ kind: "feature_exit", color: "green" });
+    expect(exit.totalCents).toBe(fsWins);
+    expect(game.nextNightStep()).toEqual({ kind: "done" });
+    expect(game.isNightActive()).toBe(false);
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(
+      startBal - bet + baseWin + fsWins,
+    );
+  });
+});
+

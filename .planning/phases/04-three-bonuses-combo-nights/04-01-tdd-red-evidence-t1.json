@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/logic/HotlineGame.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nnot ok 1 - forced green night runs 24 free spins then exits to done\nerror: AssertionError: expected { tokenOdds: { …(3) }, …(2) } to have property \"freeSpins\"\n# tests ...\n# fail 1\n",
+  "targetTest": "forced green night runs 24 free spins then exits to done",
+  "targetFile": "src/games/hotline/logic/HotlineGame.test.ts",
+  "expected": "bundled features.freeSpins (and night API: isNightActive, nextNightStep, spinFree; 24 fs_spin then feature_exit then done)",
+  "actual": "features object missing property freeSpins (AssertionError at HotlineGame.test.ts:279)"
+}
