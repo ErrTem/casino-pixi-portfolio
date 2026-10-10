@@ -299,9 +299,9 @@ export async function mountHotlineSession(
     if (step.kind === "night_total") {
       showSplash(
         {
-          title: "Night Total",
+          title: "COMBO NIGHT",
           total: formatCents(step.totalCents),
-          note: "Tap to continue",
+          note: "Night total",
         },
         () => advanceNight(),
       );
