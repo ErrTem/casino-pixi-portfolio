@@ -471,5 +471,65 @@ describe("green free spins night (BONUS-01)", () => {
     expect(game.nextNightStep()).toEqual({ kind: "done" });
     expect(game.isNightActive()).toBe(false);
   });
+
+  function forcedRed(): HotlineConfig {
+    return {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          meterTarget: config.features.tokenOdds.meterTarget,
+          perSpinChance: { green: 0, red: 1, purple: 0 },
+          triggerChance: { green: 0, red: 1, purple: 0 },
+        },
+      },
+    };
+  }
+
+  it("forced red night drives hold respins then credits wallet once at feature_exit", () => {
+    const cfg = forcedRed();
+    const game = createHotlineGame({
+      seed: "red-hold-night",
+      config: cfg,
+    }) as NightApi & {
+      stepHoldRespin: () => { done: boolean };
+      holdSnapshot: () => { done: boolean; cells: unknown[] };
+    };
+    expect(typeof game.stepHoldRespin).toBe("function");
+
+    const startBal = cents(game.getSnapshot().balanceDisplay);
+    const bet = cfg.math.betStepsCents[0];
+    expect(game.spin()).toEqual({ ok: true });
+    const afterBase = game.getSnapshot();
+    const baseWin = afterBase.lineWins.reduce((s, w) => s + w.payoutCents, 0);
+    expect(game.isNightActive()).toBe(true);
+
+    expect(game.nextNightStep()).toMatchObject({
+      kind: "feature_start",
+      color: "red",
+    });
+    expect(game.nextNightStep()).toEqual({ kind: "wait" });
+
+    const balDuring = cents(game.getSnapshot().balanceDisplay);
+    expect(balDuring).toBe(startBal - bet + baseWin);
+
+    let guard = 0;
+    while (!game.stepHoldRespin().done && guard < 80) {
+      guard += 1;
+    }
+    expect(guard).toBeLessThan(80);
+    expect(game.holdSnapshot().done).toBe(true);
+
+    const exit = game.nextNightStep();
+    expect(exit.kind).toBe("feature_exit");
+    if (exit.kind !== "feature_exit") throw new Error("expected feature_exit");
+    expect(exit.color).toBe("red");
+    expect(exit.totalCents).toBeGreaterThan(0);
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(
+      startBal - bet + baseWin + exit.totalCents,
+    );
+    expect(game.nextNightStep()).toEqual({ kind: "done" });
+    expect(game.isNightActive()).toBe(false);
+  });
 });
 

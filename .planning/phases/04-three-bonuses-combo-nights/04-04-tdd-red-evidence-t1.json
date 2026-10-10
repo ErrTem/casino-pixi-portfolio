@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/logic/features/holdAndWin.test.ts src/games/hotline/logic/HotlineGame.test.ts --reporter=tap",
+  "exitCode": 1,
+  "targetTest": "seeds startCells distinct cash prizes and lives equal respins",
+  "targetFile": "src/games/hotline/logic/features/holdAndWin.test.ts",
+  "expected": "startCells length 5 and lives 3 after start",
+  "actual": "stub cells length 0 (AssertionError expected length 5)",
+  "output": "TAP version 13\nok 1 - starts idle with config balance and a 5x4 grid\nnot ok 2 - seeds startCells distinct cash prizes and lives equal respins\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected [] to have a length of 5 but got +0\"\n  actual: \"0\"\n  expected: \"5\"\n  ...\nnot ok 3 - landChance 0 burns exactly three respins then done with no new cells\nnot ok 4 - landChance 1 fills the grid in one respin and awards grand on top\nnot ok 5 - resets lives to respins when at least one cell lands\nnot ok 6 - totals cell payouts plus jackpot tiers with integer cents\nnot ok 7 - terminates within the research bound of 63 respins\nnot ok 8 - draws jackpot tiers from config weights with a fixed rng sequence\nnot ok 9 - forced red night drives hold respins then credits wallet once at feature_exit\n# tests 9\n# pass 1\n# fail 8\n"
+}
