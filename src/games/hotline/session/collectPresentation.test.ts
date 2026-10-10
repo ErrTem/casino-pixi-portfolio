@@ -123,6 +123,9 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/mountFeatureOverlay/);
     expect(src).toMatch(/setFeatureLine/);
     expect(src).toMatch(/formatFeatureLine/);
+    expect(src).toMatch(/setWinCycleMs/);
+    expect(src).toMatch(/FS_WIN_CYCLE_MS/);
+    expect(src).toMatch(/FS_GAP_MS/);
     expect(src).not.toMatch(/\.increment\s*\(/);
   });
 

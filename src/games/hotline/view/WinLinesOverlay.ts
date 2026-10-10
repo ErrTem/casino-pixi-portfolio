@@ -21,6 +21,8 @@ export interface WinLinesOverlay {
   tick: (deltaMS: number) => void;
   /** true after one finite pass so session can hand off to tokens */
   isDone: () => boolean;
+  /** rebuild the line cycle interval for the next showCycle */
+  setIntervalMs: (ms: number) => void;
   clear: () => void;
   destroy: () => void;
 }
@@ -28,7 +30,7 @@ export interface WinLinesOverlay {
 // hotline pink, not the witch pots green
 const NEON = 0xff2e93;
 const NEON_CORE = 0xffe3f1;
-const CYCLE_MS = 1100;
+export const DEFAULT_WIN_CYCLE_MS = 1100;
 const PULSE_MS = 700;
 
 function formatCents(cents: number): string {
@@ -55,7 +57,7 @@ export function createWinLinesOverlay(): WinLinesOverlay {
   container.addChild(frames, glow, halo, core, pill, label);
   container.visible = false;
 
-  const cycle = createWinCycle(CYCLE_MS);
+  let cycle = createWinCycle(DEFAULT_WIN_CYCLE_MS);
   let wins: readonly LineWin[] = [];
   let geometry: WinGeometry | null = null;
   let pulse = 0;
@@ -165,6 +167,13 @@ export function createWinLinesOverlay(): WinLinesOverlay {
 
     isDone(): boolean {
       return destroyed || cycle.isDone();
+    },
+
+    setIntervalMs(ms: number): void {
+      if (destroyed) return;
+      cycle = createWinCycle(ms);
+      cycle.reset(wins.length);
+      pulse = 0;
     },
 
     clear(): void {

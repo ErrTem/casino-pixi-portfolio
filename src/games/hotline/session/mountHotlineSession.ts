@@ -18,6 +18,7 @@ import {
   type NightStep,
   type SpinResult,
 } from "../logic/index.js";
+import { DEFAULT_WIN_CYCLE_MS } from "../view/WinLinesOverlay.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
 import {
   baselineFromMeterFills,
@@ -29,12 +30,15 @@ import {
 
 const LAST_WIN_TWEEN_MS = 900;
 const FEATURE_BEAT_MS = 700;
+const FS_WIN_CYCLE_MS = 480;
+const FS_GAP_MS = 220;
 
 type PresentPhase =
   | "idle"
   | "reels"
   | "win_gate"
   | "flights"
+  | "fs_gap"
   | "splash"
   | "beat";
 
@@ -88,6 +92,8 @@ export async function mountHotlineSession(
   let landed: CollectorSpawn[] = [];
   let pendingOutcome: CollectorOutcome | null = null;
   let beatElapsed = 0;
+  let fsGapElapsed = 0;
+  let lastSpinWasFree = false;
   let nightStarted = false;
   let splashContinue: (() => void) | null = null;
   let settleArmed = false;
@@ -131,9 +137,12 @@ export async function mountHotlineSession(
     hud.setCombo("");
     hud.setFeatureLine("");
     view?.scene.setPhoneGlow(null);
+    view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
     pendingOutcome = null;
     landed = [];
     beatElapsed = 0;
+    fsGapElapsed = 0;
+    lastSpinWasFree = false;
     nightStarted = false;
     splashContinue = null;
     overlay.hideSplash();
@@ -164,11 +173,22 @@ export async function mountHotlineSession(
 
   function runAfterFeatureStart(color: TokenColor): void {
     if (color === "green") {
+      view?.scene.setWinCycleMs(FS_WIN_CYCLE_MS);
       advanceNight();
       return;
     }
     present = "beat";
     beatElapsed = 0;
+  }
+
+  function afterFreeSpinOrNight(): void {
+    if (lastSpinWasFree) {
+      lastSpinWasFree = false;
+      present = "fs_gap";
+      fsGapElapsed = 0;
+      return;
+    }
+    beginNightOrIdle();
   }
 
   function advanceNight(): void {
@@ -202,6 +222,7 @@ export async function mountHotlineSession(
     if (step.kind === "fs_spin") {
       const result = game.spinFree();
       if (!result.ok) return;
+      lastSpinWasFree = true;
       startReels(false);
       return;
     }
@@ -213,7 +234,12 @@ export async function mountHotlineSession(
           total: formatCents(step.totalCents),
           note: step.nested ? "Back to free spins" : "Tap to continue",
         },
-        () => advanceNight(),
+        () => {
+          if (step.color === "green") {
+            view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
+          }
+          advanceNight();
+        },
       );
       return;
     }
@@ -254,7 +280,7 @@ export async function mountHotlineSession(
     landed = [];
     applyDisplayFills(progressiveDisplayFills(baseline, [], meterTarget));
     if (spawns.length === 0) {
-      beginNightOrIdle();
+      afterFreeSpinOrNight();
       return;
     }
     present = "flights";
@@ -333,8 +359,16 @@ export async function mountHotlineSession(
     if (present === "flights") {
       view.scene.tickCollectors(deltaMS);
       if (view.scene.collectorsDone()) {
-        beginNightOrIdle();
+        afterFreeSpinOrNight();
       }
+    }
+
+    if (present === "fs_gap") {
+      if (dt <= 0) return;
+      fsGapElapsed += dt;
+      if (fsGapElapsed < FS_GAP_MS) return;
+      fsGapElapsed = 0;
+      advanceNight();
     }
 
     if (present === "beat") {

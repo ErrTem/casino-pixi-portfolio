@@ -7,7 +7,10 @@ import type { HotlineTextures } from "./loadHotlineAssets.js";
 import { createPhonesLayer } from "./PhonesLayer.js";
 import { createReelWindow } from "./reels/createReelWindow.js";
 import { createTokenFlight } from "./TokenFlight.js";
-import { createWinLinesOverlay, type WinGeometry } from "./WinLinesOverlay.js";
+import {
+  createWinLinesOverlay,
+  type WinGeometry,
+} from "./WinLinesOverlay.js";
 
 export interface HotlineSceneHooks {
   /** fires as each reel lands, left to right */
@@ -29,6 +32,8 @@ export interface HotlineScene {
   collectorsDone: () => boolean;
   setPhoneMeters: (fills: readonly number[]) => void;
   setPhoneGlow: (color: TokenColor | null) => void;
+  /** pass through to the win lines overlay cycle interval */
+  setWinCycleMs: (ms: number) => void;
   destroy: () => void;
 }
 
@@ -256,6 +261,11 @@ export function createHotlineScene(
 
     setPhoneGlow(color: TokenColor | null): void {
       phones.setGlow(color);
+    },
+
+    setWinCycleMs(ms: number): void {
+      if (destroyed) return;
+      overlay.setIntervalMs(ms);
     },
 
     destroy(): void {
