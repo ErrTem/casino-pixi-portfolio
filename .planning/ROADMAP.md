@@ -167,7 +167,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
-| 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
+| 3. Diskette Collectors + Trigger Queue | 0/3 | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
 
