@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/session/collectPresentation.test.ts --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nnot ok 1 - session source locks busy through flights and stub without double booking\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected session source to match /setBusy\\\\s*\\\\(\\\\s*true\\\\s*\\\\)/\"\n  actual: \"mountHotlineSession without setBusy/startCollectors\"\n  expected: \"setBusy(true) and collector path wired\"\n  ...\n# tests 5\n# pass 4\n# fail 1\n",
+  "targetTest": "session source locks busy through flights and stub without double booking",
+  "targetFile": "src/games/hotline/session/collectPresentation.test.ts",
+  "expected": "setBusy(true) and collector path wired",
+  "actual": "mountHotlineSession without setBusy/startCollectors"
+}
