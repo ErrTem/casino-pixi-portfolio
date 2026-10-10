@@ -1,6 +1,7 @@
 import type { Ticker } from "pixi.js";
 import type { GameSession, ShellContext } from "../../../shell/types.js";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
+import { mountFeatureOverlay } from "../hud/FeatureOverlay.js";
 import { mountHotlineHud } from "../hud/HotlineHud.js";
 import type {
   CollectorOutcome,
@@ -14,6 +15,7 @@ import {
   createHotlineGame,
   type HotlineGame,
   type HotlineSnapshot,
+  type NightStep,
   type SpinResult,
 } from "../logic/index.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
@@ -25,9 +27,30 @@ import {
 } from "./collectPresentation.js";
 
 const LAST_WIN_TWEEN_MS = 900;
-const STUB_BEAT_MS = 700;
+const FEATURE_BEAT_MS = 700;
 
-type PresentPhase = "idle" | "reels" | "win_gate" | "flights" | "stub";
+type PresentPhase =
+  | "idle"
+  | "reels"
+  | "win_gate"
+  | "flights"
+  | "splash"
+  | "beat";
+
+const FEATURE_TITLE: Record<TokenColor, string> = {
+  green: "Free Spins",
+  red: "Hold Night",
+  purple: "Locker Pick",
+};
+
+function clampDelta(deltaMS: number): number {
+  if (!Number.isFinite(deltaMS) || deltaMS <= 0) return 0;
+  return Math.min(deltaMS, 100);
+}
+
+function formatCents(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
 
 export async function mountHotlineSession(
   ctx: ShellContext,
@@ -63,8 +86,20 @@ export async function mountHotlineSession(
   let baseline: MeterBaseline = { green: 0, red: 0, purple: 0 };
   let landed: CollectorSpawn[] = [];
   let pendingOutcome: CollectorOutcome | null = null;
-  let stubQueue: TokenColor[] = [];
-  let stubElapsed = 0;
+  let beatElapsed = 0;
+  let nightStarted = false;
+  let splashContinue: (() => void) | null = null;
+  let settleArmed = false;
+
+  const overlay = mountFeatureOverlay(screen, {
+    onContinue: () => {
+      if (present !== "splash") return;
+      const next = splashContinue;
+      splashContinue = null;
+      overlay.hideSplash();
+      next?.();
+    },
+  });
 
   function applyDisplayFills(fills: readonly number[]): void {
     view?.scene.setPhoneMeters(fills);
@@ -75,6 +110,15 @@ export async function mountHotlineSession(
     applyDisplayFills(TOKEN_COLOR_ORDER.map((c) => fills[c].display));
   }
 
+  function syncComboFromNight(): void {
+    const night = game.getSnapshot().night;
+    if (!night) {
+      hud.setCombo("");
+      return;
+    }
+    hud.setCombo(formatComboStrip(night.path.map((e) => e.color)));
+  }
+
   function enterIdle(): void {
     present = "idle";
     busy = false;
@@ -83,32 +127,119 @@ export async function mountHotlineSession(
     view?.scene.setPhoneGlow(null);
     pendingOutcome = null;
     landed = [];
-    stubQueue = [];
-    stubElapsed = 0;
+    beatElapsed = 0;
+    nightStarted = false;
+    splashContinue = null;
+    overlay.hideSplash();
   }
 
-  function showStubHead(): void {
-    if (stubQueue.length === 0) {
+  function showSplash(
+    splash: { title: string; total?: string; note?: string },
+    onContinue: () => void,
+  ): void {
+    present = "splash";
+    splashContinue = onContinue;
+    overlay.showSplash(splash);
+  }
+
+  function startReels(unlockAudio: boolean): void {
+    if (!view) return;
+    baseline = baselineFromMeterFills(game.getSnapshot().meterFills);
+    if (unlockAudio) ctx.audio.unlock();
+    ctx.audio.play("spin");
+    busy = true;
+    hud.setBusy(true);
+    present = "reels";
+    settleArmed = true;
+    pendingOutcome = null;
+    landed = [];
+    view.scene.startSpin(game.getSnapshot().grid);
+  }
+
+  function runAfterFeatureStart(color: TokenColor): void {
+    if (color === "green") {
+      advanceNight();
+      return;
+    }
+    present = "beat";
+    beatElapsed = 0;
+  }
+
+  function advanceNight(): void {
+    if (!game.isNightActive()) {
       syncMetersFromLogic();
       enterIdle();
       return;
     }
-    view?.scene.setPhoneGlow(stubQueue[0]);
-    hud.setCombo(formatComboStrip(stubQueue));
+
+    const step: NightStep = game.nextNightStep();
+    syncComboFromNight();
+
+    if (step.kind === "wait") return;
+
+    if (step.kind === "feature_start") {
+      ctx.audio.play("queue_step");
+      game.resetPhoneMeter(step.color);
+      syncMetersFromLogic();
+      view?.scene.setPhoneGlow(step.color);
+      showSplash(
+        {
+          title: FEATURE_TITLE[step.color],
+          note: step.nested ? "Nested feature" : "Tap to continue",
+        },
+        () => runAfterFeatureStart(step.color),
+      );
+      return;
+    }
+
+    if (step.kind === "fs_spin") {
+      const result = game.spinFree();
+      if (!result.ok) return;
+      startReels(false);
+      return;
+    }
+
+    if (step.kind === "feature_exit") {
+      showSplash(
+        {
+          title: `${FEATURE_TITLE[step.color]} Total`,
+          total: formatCents(step.totalCents),
+          note: step.nested ? "Back to free spins" : "Tap to continue",
+        },
+        () => advanceNight(),
+      );
+      return;
+    }
+
+    if (step.kind === "night_total") {
+      showSplash(
+        {
+          title: "Night Total",
+          total: formatCents(step.totalCents),
+          note: "Tap to continue",
+        },
+        () => advanceNight(),
+      );
+      return;
+    }
+
+    if (step.kind === "done") {
+      syncMetersFromLogic();
+      enterIdle();
+    }
   }
 
-  function beginStubOrIdle(): void {
-    const queue = pendingOutcome?.queue ?? [];
-    if (queue.length === 0) {
+  function beginNightOrIdle(): void {
+    if (!game.isNightActive()) {
       syncMetersFromLogic();
       enterIdle();
       return;
     }
-    present = "stub";
-    stubQueue = queue.slice();
-    stubElapsed = 0;
-    ctx.audio.play("phone_trigger");
-    showStubHead();
+    if (!nightStarted) {
+      nightStarted = true;
+      ctx.audio.play("phone_trigger");
+    }
+    advanceNight();
   }
 
   function beginFlights(): void {
@@ -116,7 +247,7 @@ export async function mountHotlineSession(
     landed = [];
     applyDisplayFills(progressiveDisplayFills(baseline, [], meterTarget));
     if (spawns.length === 0) {
-      beginStubOrIdle();
+      beginNightOrIdle();
       return;
     }
     present = "flights";
@@ -132,30 +263,18 @@ export async function mountHotlineSession(
 
   // the math settles in one call, the reels play it back afterwards
   const hudGame: HotlineGame = {
+    ...game,
     spin(): SpinResult {
       // ignore mid presentation, empty reason clears the status line
       if (busy || view?.scene.isSpinning()) return { ok: false, reason: "" };
-      baseline = baselineFromMeterFills(game.getSnapshot().meterFills);
       const result = game.spin();
       if (result.ok && view) {
-        ctx.audio.unlock();
-        ctx.audio.play("spin");
-        busy = true;
-        hud.setBusy(true);
-        present = "reels";
-        settleArmed = true;
-        pendingOutcome = null;
-        landed = [];
-        stubQueue = [];
-        stubElapsed = 0;
         view.scene.setPhoneGlow(null);
         hud.setCombo("");
-        view.scene.startSpin(game.getSnapshot().grid);
+        startReels(true);
       }
       return result;
     },
-    setBetStepIndex: (index) => game.setBetStepIndex(index),
-    resetPhoneMeter: (color) => game.resetPhoneMeter(color),
     getSnapshot: () => visibleSnapshot(game.getSnapshot()),
   };
 
@@ -177,8 +296,6 @@ export async function mountHotlineSession(
     lastWinTweenMs: LAST_WIN_TWEEN_MS,
   });
 
-  // armed by a spin, fires once when the reels come to rest
-  let settleArmed = false;
   function onReelsSettled(snap: HotlineSnapshot): void {
     settleArmed = false;
     const paid = snap.lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
@@ -193,6 +310,7 @@ export async function mountHotlineSession(
 
   function tickPresent(deltaMS: number): void {
     if (!view) return;
+    const dt = clampDelta(deltaMS);
 
     if (present === "reels" && settleArmed && !view.scene.isSpinning()) {
       onReelsSettled(game.getSnapshot());
@@ -205,22 +323,16 @@ export async function mountHotlineSession(
     if (present === "flights") {
       view.scene.tickCollectors(deltaMS);
       if (view.scene.collectorsDone()) {
-        beginStubOrIdle();
+        beginNightOrIdle();
       }
     }
 
-    if (present === "stub") {
-      if (!Number.isFinite(deltaMS) || deltaMS <= 0) return;
-      stubElapsed += deltaMS;
-      if (stubElapsed < STUB_BEAT_MS) return;
-      stubElapsed = 0;
-      const color = stubQueue.shift();
-      if (color) {
-        ctx.audio.play("queue_step");
-        game.resetPhoneMeter(color);
-        syncMetersFromLogic();
-      }
-      showStubHead();
+    if (present === "beat") {
+      if (dt <= 0) return;
+      beatElapsed += dt;
+      if (beatElapsed < FEATURE_BEAT_MS) return;
+      beatElapsed = 0;
+      advanceNight();
     }
   }
 
@@ -251,6 +363,7 @@ export async function mountHotlineSession(
       ctx.app.ticker.remove(onTick);
       onTick = null;
     }
+    overlay.dispose();
     hud.dispose();
     if (view) {
       view.scene.destroy();

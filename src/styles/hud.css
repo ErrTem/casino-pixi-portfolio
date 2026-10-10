@@ -941,6 +941,7 @@ input {
 
 /* portrait first column, wide screens letterbox instead of reflowing */
 .hotline-screen {
+  position: relative;
   width: 100%;
   max-width: 34rem;
   margin-inline: auto;
@@ -948,6 +949,73 @@ input {
 
 .hotline-screen .canvas-host {
   background: #0b0420;
+}
+
+.hotline-feature-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(8, 2, 18, 0.82);
+  pointer-events: auto;
+}
+
+.hotline-feature-overlay[hidden] {
+  display: none;
+}
+
+.hotline-feature-splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  width: min(100%, 18rem);
+  padding: 1.25rem 1rem;
+  border: 1px solid #ff4da6;
+  background: #12061f;
+  text-align: center;
+}
+
+.hotline-feature-splash__title,
+.hotline-feature-splash__total,
+.hotline-feature-splash__note,
+.hotline-feature-splash__continue {
+  font-family: "Retro Computer", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hotline-feature-splash__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ff4da6;
+}
+
+.hotline-feature-splash__total {
+  min-height: 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffe566;
+}
+
+.hotline-feature-splash__note {
+  min-height: 1rem;
+  font-size: 0.75rem;
+  color: #9be7ff;
+}
+
+.hotline-feature-splash__continue {
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid #9be7ff;
+  background: #1a0a2e;
+  color: #9be7ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .hotline-combo {

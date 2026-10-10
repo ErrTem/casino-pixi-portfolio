@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import { evaluatePaylines } from "./evaluatePaylines.js";
-import { createHotlineGame } from "./HotlineGame.js";
+import {
+  createHotlineGame,
+  type HotlineGame,
+  type SpinResult,
+} from "./HotlineGame.js";
 import { createWallet } from "./Wallet.js";
 
 const config = loadHotlineConfig();
@@ -194,13 +198,14 @@ describe("collector outcome on spin", () => {
   });
 
   it("keeps strip grids stable when only feature chances change", () => {
+    // trigger stays 0 so nights never open and both games keep spinning
     const aCfg = withOdds(
       { green: 0, red: 0, purple: 0 },
       { green: 0, red: 0, purple: 0 },
     );
     const bCfg = withOdds(
       { green: 1, red: 1, purple: 1 },
-      { green: 1, red: 1, purple: 1 },
+      { green: 0, red: 0, purple: 0 },
     );
     const a = createHotlineGame({ seed: "parity", config: aCfg });
     const b = createHotlineGame({ seed: "parity", config: bCfg });
@@ -308,7 +313,9 @@ describe("green free spins night (BONUS-01)", () => {
 
     expect(game.spinFree()).toEqual({ ok: false, reason: expect.any(String) });
     const exit = game.nextNightStep();
-    expect(exit).toMatchObject({ kind: "feature_exit", color: "green" });
+    expect(exit.kind).toBe("feature_exit");
+    if (exit.kind !== "feature_exit") throw new Error("expected feature_exit");
+    expect(exit.color).toBe("green");
     expect(exit.totalCents).toBe(fsWins);
     expect(game.nextNightStep()).toEqual({ kind: "done" });
     expect(game.isNightActive()).toBe(false);

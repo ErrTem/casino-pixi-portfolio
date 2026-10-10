@@ -27,3 +27,15 @@ export {
   orderComboQueue,
   type ComboQueue,
 } from "./collectors/ComboQueue.js";
+export {
+  boostedFreeSpinMath,
+  freeSpinTokenOdds,
+} from "./features/freeSpins.js";
+export {
+  createNight,
+  type CreateNightArgs,
+  type Night,
+  type NightPathEntry,
+  type NightSnapshot,
+  type NightStep,
+} from "./night/createNight.js";

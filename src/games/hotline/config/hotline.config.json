@@ -75,10 +75,26 @@
       "triggerChance": { "green": 0.12, "red": 0.10, "purple": 0.08 }
     },
     "bonusPrizes": [
-      { "bonusId": "pickEm", "prizeMultipliers": [2, 3, 5, 10, 25] },
-      { "bonusId": "holdAndWin", "prizeMultipliers": [1, 2, 5, 10, 20, 50] },
+      { "bonusId": "pickEm", "prizeMultipliers": [2, 3, 5, 10, 25], "prizeWeights": [40, 28, 18, 10, 4] },
+      { "bonusId": "holdAndWin", "prizeMultipliers": [1, 2, 5, 10, 20, 50], "prizeWeights": [40, 28, 16, 9, 5, 2] },
       { "bonusId": "freeSpins", "prizeMultipliers": [5, 8, 10, 15] }
     ],
-    "jackpotMultipliers": { "mini": 20, "minor": 50, "major": 200, "grand": 1000 }
+    "jackpotMultipliers": { "mini": 20, "minor": 50, "major": 200, "grand": 1000 },
+    "freeSpins": {
+      "spins": 24,
+      "wildWeights": [9, 9, 9, 9],
+      "retriggerChance": 0.04,
+      "retriggerSpins": 6,
+      "maxRetriggers": 3,
+      "nested": { "red": true, "purple": true }
+    },
+    "holdAndWin": {
+      "startCells": 5,
+      "respins": 3,
+      "landChance": 0.1,
+      "jackpotSymbolChance": 0.04,
+      "jackpotTierWeights": { "mini": 70, "minor": 25, "major": 5 }
+    },
+    "pickEm": { "lockers": 12, "picks": 5 }
   }
 }

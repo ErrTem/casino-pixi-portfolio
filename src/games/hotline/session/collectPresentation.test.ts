@@ -67,6 +67,9 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/progressiveDisplayFills/);
     expect(src).toMatch(/formatComboStrip/);
     expect(src).toMatch(/resetPhoneMeter/);
+    expect(src).toMatch(/nextNightStep/);
+    expect(src).toMatch(/spinFree/);
+    expect(src).toMatch(/mountFeatureOverlay/);
     expect(src).not.toMatch(/\.increment\s*\(/);
   });
 

@@ -9,6 +9,16 @@ import {
 } from "./collectors/resolveCollectors.js";
 import type { TokenColor } from "./collectors/TokenColors.js";
 import { evaluatePaylines, type LineWin } from "./evaluatePaylines.js";
+import {
+  boostedFreeSpinMath,
+  freeSpinTokenOdds,
+} from "./features/freeSpins.js";
+import {
+  createNight,
+  type Night,
+  type NightSnapshot,
+  type NightStep,
+} from "./night/createNight.js";
 import { createSpinEngine } from "./SpinEngine.js";
 import { createWallet } from "./Wallet.js";
 
@@ -27,14 +37,18 @@ export interface HotlineSnapshot {
   paylineCount: 40;
   collectorOutcome: CollectorOutcome;
   meterFills: MeterFills;
+  night: NightSnapshot | null;
 }
 
 export interface HotlineGame {
   spin(): SpinResult;
   setBetStepIndex(index: number): void;
   getSnapshot(): HotlineSnapshot;
-  /** clear one phone meter when its stub beat pops (d-07, d-12) */
+  /** clear one phone meter when its feature starts */
   resetPhoneMeter(color: TokenColor): void;
+  isNightActive(): boolean;
+  nextNightStep(): NightStep;
+  spinFree(): SpinResult;
 }
 
 export interface CreateHotlineGameOptions {
@@ -66,6 +80,11 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   const steps = math.betStepsCents;
   const engine = createSpinEngine(options.seed, math);
   const collectorsRng = createRng(`${options.seed}:collectors`);
+  const fsEngine = createSpinEngine(
+    `${options.seed}:fs`,
+    boostedFreeSpinMath(config),
+  );
+  const fsCollectorsRng = createRng(`${options.seed}:fs-collectors`);
   const wallet = createWallet(math.startingBalanceCents, steps);
   const meters: PhoneMeters = createPhoneMeters(config.features.tokenOdds.meterTarget);
   const comboQueue = createComboQueue();
@@ -76,9 +95,21 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   let lineWins: LineWin[] = [];
   let lastWinCents = 0;
   let collectorOutcome: CollectorOutcome = emptyOutcome();
+  let night: Night | null = null;
+  let featureBetCents = 0;
+  let fsSpinPending = false;
+
+  function startFeature(color: TokenColor): void {
+    if (!night) return;
+    if (color === "green") return;
+    // red and purple stub to zero until plans 04-03 and 04-04
+    night.settleFeature(0);
+  }
 
   return {
     spin(): SpinResult {
+      if (night) return { ok: false, reason: "" };
+
       const betCents = steps[betStepIndex];
       const placed = wallet.placeBet(betCents);
       if (!placed.ok) return placed;
@@ -106,6 +137,20 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       }
       comboQueue.set(collectorOutcome.queue);
 
+      if (collectorOutcome.queue.length > 0) {
+        featureBetCents = betCents;
+        night = createNight({
+          queue: collectorOutcome.queue,
+          freeSpins: {
+            spins: config.features.freeSpins.spins,
+            retriggerSpins: config.features.freeSpins.retriggerSpins,
+            maxRetriggers: config.features.freeSpins.maxRetriggers,
+          },
+          featureBetCents,
+        });
+        fsSpinPending = false;
+      }
+
       phase = "settled";
       return { ok: true };
     },
@@ -120,6 +165,66 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       meters.reset(color);
     },
 
+    isNightActive(): boolean {
+      return night !== null;
+    },
+
+    nextNightStep(): NightStep {
+      if (!night) return { kind: "done" };
+      const step = night.next();
+      if (step.kind === "feature_start") {
+        startFeature(step.color);
+      }
+      if (step.kind === "fs_spin") {
+        fsSpinPending = true;
+      }
+      if (step.kind === "feature_exit" && step.color !== "green") {
+        wallet.credit(step.totalCents);
+      }
+      if (step.kind === "done") {
+        night = null;
+        fsSpinPending = false;
+      }
+      return step;
+    },
+
+    spinFree(): SpinResult {
+      if (!night || !fsSpinPending) return { ok: false, reason: "" };
+
+      grid = fsEngine.spin();
+      lineWins = evaluatePaylines({
+        grid,
+        paylines: math.paylines,
+        paytable: config.paytable,
+        wildId: math.wildSymbolId,
+        betCents: featureBetCents,
+      });
+      lastWinCents = lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
+      wallet.credit(lastWinCents);
+
+      collectorOutcome = resolveCollectors({
+        rng: fsCollectorsRng,
+        tokenOdds: freeSpinTokenOdds(config),
+        reels: math.reels,
+        rows: math.rows,
+      });
+      for (const spawn of collectorOutcome.spawns) {
+        meters.increment(spawn.color);
+      }
+
+      const settled = night.onFsSpinSettled({
+        winCents: lastWinCents,
+        queue: collectorOutcome.queue,
+      });
+      fsSpinPending = false;
+      if (settled.retriggered) {
+        meters.reset("green");
+      }
+
+      phase = "settled";
+      return { ok: true };
+    },
+
     getSnapshot(): HotlineSnapshot {
       return {
         phase,
@@ -132,6 +237,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
         paylineCount: 40,
         collectorOutcome,
         meterFills: meters.snapshot(),
+        night: night ? night.snapshot() : null,
       };
     },
   };

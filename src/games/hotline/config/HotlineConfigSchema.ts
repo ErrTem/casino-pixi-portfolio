@@ -57,10 +57,16 @@ const tokenOddsSchema = z.object({
 });
 
 // prize ladders per bonus, as multipliers of the total bet
-const bonusPrizeSchema = z.object({
-  bonusId: z.string().min(1),
-  prizeMultipliers: z.array(z.number().positive()).min(1),
-});
+const bonusPrizeSchema = z
+  .object({
+    bonusId: z.string().min(1),
+    prizeMultipliers: z.array(z.number().positive()).min(1),
+    prizeWeights: z.array(positiveInt).optional(),
+  })
+  .refine(
+    (b) => !b.prizeWeights || b.prizeWeights.length === b.prizeMultipliers.length,
+    { message: "prizeWeights must match prizeMultipliers length" },
+  );
 
 const jackpotMultipliersSchema = z.object({
   mini: z.number().positive(),
@@ -69,11 +75,41 @@ const jackpotMultipliersSchema = z.object({
   grand: z.number().positive(),
 });
 
-// features are validated now and only read by the runtime in later phases
+const freeSpinsSchema = z.object({
+  spins: positiveInt,
+  // replacement wild weight for reels 2..5, reel 1 keeps the base weights
+  wildWeights: z.array(positiveInt).length(4),
+  retriggerChance: chance01,
+  retriggerSpins: positiveInt,
+  maxRetriggers: z.number().int().min(0),
+  nested: z.object({ red: z.boolean(), purple: z.boolean() }),
+});
+
+const holdAndWinSchema = z.object({
+  startCells: z.number().int().min(1).max(19),
+  respins: positiveInt,
+  landChance: chance01,
+  jackpotSymbolChance: chance01,
+  jackpotTierWeights: z.object({
+    mini: positiveInt,
+    minor: positiveInt,
+    major: positiveInt,
+  }),
+});
+
+const pickEmSchema = z.object({
+  lockers: z.literal(12),
+  picks: z.literal(5),
+});
+
+// runtime reads freeSpins holdAndWin and pickEm knobs at feature play
 const featuresSchema = z.object({
   tokenOdds: tokenOddsSchema,
   bonusPrizes: z.array(bonusPrizeSchema).min(1),
   jackpotMultipliers: jackpotMultipliersSchema,
+  freeSpins: freeSpinsSchema,
+  holdAndWin: holdAndWinSchema,
+  pickEm: pickEmSchema,
 });
 
 export const HotlineConfigSchema = z
@@ -95,6 +131,37 @@ export const HotlineConfigSchema = z
         });
       }
     }
+
+    const ids = cfg.features.bonusPrizes.map((b) => b.bonusId);
+    const unique = new Set(ids);
+    if (unique.size !== ids.length) {
+      ctx.addIssue({
+        code: "custom",
+        message: "bonusPrizes ids must be unique",
+        path: ["features", "bonusPrizes"],
+      });
+    }
+    for (const required of ["pickEm", "holdAndWin"] as const) {
+      if (!unique.has(required)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `bonusPrizes must include ${required}`,
+          path: ["features", "bonusPrizes"],
+        });
+      }
+    }
+
+    const wild = cfg.math.wildSymbolId;
+    cfg.features.freeSpins.wildWeights.forEach((w, i) => {
+      const base = cfg.math.symbolWeights[i + 1]?.[wild];
+      if (typeof base !== "number" || !(w > base)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `freeSpins.wildWeights[${i}] must be strictly greater than base wild weight`,
+          path: ["features", "freeSpins", "wildWeights", i],
+        });
+      }
+    });
   });
 
 export type HotlineConfig = z.infer<typeof HotlineConfigSchema>;
