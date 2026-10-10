@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 04
 current_phase_name: Three Bonuses + Combo Nights
 status: executing
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-10-10T22:49:03.306Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-10-10T22:54:32.428Z"
 last_activity: 2026-10-11
 last_activity_desc: Phase 04 execution started
-state_head: b4d4febe827111de9f2ca9b526fb38cbafeb0b76
+state_head: 0454662830ee416801cc78db2a548e4cfb611da1
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 21
-  completed_plans: 18
+  completed_plans: 19
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 04 (Three Bonuses + Combo Nights) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-10-11 — Phase 04 execution started
 
@@ -79,6 +79,7 @@ Progress: [██████░░░░] 60%
 | Phase 03 P05 | 15min | 2 tasks | 5 files |
 | Phase 04 P01 | 15min | 2 tasks | 15 files |
 | Phase 04 P02 | 8min | 2 tasks | 9 files |
+| Phase 04 P03 | 12min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Red and purple stub settle at zero cents until 04-03 and 04-04
 - [Phase 04]: FS_WIN_CYCLE_MS=480 and FS_GAP_MS=220 per RESEARCH Open Question 4 suggestion
 - [Phase 04]: Feature line copy pins FREE SPINS N LEFT  WIN x.xx from night.fs only
+- [Phase 04]: All 12 locker multipliers pre-assigned at createPickEm from weighted pickEm ladder
+- [Phase 04]: Wallet credit stays on feature_exit; settleFeature once when pickEm.isDone
+- [Phase 04]: Locker grid is procedural CSS neon buttons; no new PNG assets
 
 ### Pending Todos
 
@@ -139,6 +143,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-10T22:49:03.234Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-10-10T22:54:32.353Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
