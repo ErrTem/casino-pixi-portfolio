@@ -1,0 +1,190 @@
+﻿TAP version 13
+1..6
+not ok 1 - src/games/hotline/config/HotlineConfigSchema.test.ts # time=35.60ms {
+    1..2
+    not ok 1 - HotlineConfigSchema # time=33.16ms {
+        1..10
+        ok 1 - parses the bundled envelope # time=11.68ms
+        ok 2 - exposes the feature tables # time=2.05ms
+        not ok 3 - uses green red purple perSpinChance and triggerChance keys # time=10.30ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [ 'cyan', 'pink', 'yellow' ] to deeply equal [ 'green', 'purple', 'red' ]"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/config/HotlineConfigSchema.test.ts:31:70"
+            actual: "Array [
+  \"cyan\",
+  \"pink\",
+  \"yellow\",
+]"
+            expected: "Array [
+  \"green\",
+  \"purple\",
+  \"red\",
+]"
+            ...
+        not ok 4 - throws ZodError when triggerChance is missing # time=0.94ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected function to throw an error, but it didn't"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/config/HotlineConfigSchema.test.ts:52:50"
+            ...
+        not ok 5 - throws ZodError when a chance is outside 0..1 # time=1.22ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected function to throw an error, but it didn't"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/config/HotlineConfigSchema.test.ts:58:50"
+            ...
+        ok 6 - throws ZodError when math is missing # time=1.31ms
+        ok 7 - throws ZodError on a wrong grid size # time=0.99ms
+        ok 8 - throws ZodError when a payline row is out of range # time=1.10ms
+        ok 9 - throws ZodError when the wild symbol has no weight # time=1.18ms
+        ok 10 - throws ZodError when a feature table is missing # time=1.32ms
+    }
+    ok 2 - loadHotlineConfig # time=1.74ms {
+        1..1
+        ok 1 - returns the parsed bundled config # time=1.69ms
+    }
+}
+ok 2 - src/games/hotline/logic/evaluatePaylines.test.ts # time=7.62ms {
+    1..1
+    ok 1 - evaluatePaylines # time=6.89ms {
+        1..13
+        ok 1 - pays three matching symbols from reel 0 as multiplier times bet # time=3.19ms
+        ok 2 - pays longer runs from the match length row # time=0.29ms
+        ok 3 - lets wild substitute for a paying symbol # time=0.34ms
+        ok 4 - lets wild sit in the middle of a run # time=0.23ms
+        ok 5 - takes the substituted run when it beats wild only # time=0.37ms
+        ok 6 - takes the wild only run when it beats the substituted run # time=0.41ms
+        ok 7 - pays five wilds from the wild row # time=0.19ms
+        ok 8 - does not pay a run that starts after reel 0 # time=0.17ms
+        ok 9 - stops at the first break and ignores symbols after the gap # time=0.27ms
+        ok 10 - does not pay a two symbol run # time=0.22ms
+        ok 11 - follows row indices of each payline # time=0.26ms
+        ok 12 - sums independent line wins and keeps line indexes # time=0.14ms
+        ok 13 - floors fractional multipliers to whole cents # time=0.08ms
+    }
+}
+not ok 3 - src/games/hotline/logic/HotlineGame.test.ts # time=28.38ms {
+    1..3
+    ok 1 - createHotlineGame # time=19.29ms {
+        1..7
+        ok 1 - starts idle with config balance and a 5x4 grid # time=3.82ms
+        ok 2 - spin deducts the bet and fills a 5x4 grid of known symbols # time=1.83ms
+        ok 3 - settles every spin through evaluatePaylines on the shown grid # time=10.94ms
+        ok 4 - replays the same grid sequence for the same seed and bet step # time=0.81ms
+        ok 5 - diverges for a different seed # time=0.61ms
+        ok 6 - rejects a spin the balance cannot cover and leaves the grid alone # time=0.32ms
+        ok 7 - clamps the bet step index to the config steps # time=0.22ms
+    }
+    ok 2 - bet steps # time=2.03ms {
+        1..5
+        ok 1 - floors fractional indexes onto a real step # time=0.26ms
+        ok 2 - ignores a non finite index and keeps the current step # time=0.26ms
+        ok 3 - deducts exactly the selected step on every step # time=0.92ms
+        ok 4 - wallet refuses stakes that are not config steps # time=0.33ms
+        ok 5 - wallet refuses a step above the balance # time=0.15ms
+    }
+    not ok 3 - collector outcome on spin # time=6.40ms {
+        1..2
+        not ok 1 - attaches collectorOutcome and books meter fills at settle # time=5.47ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected { phase: 'settled', ΓÇª(7) } to have property \"collectorOutcome\""
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/HotlineGame.test.ts:188:18"
+            ...
+        ok 2 - keeps strip grids stable when only feature chances change # time=0.87ms
+    }
+}
+not ok 4 - src/games/hotline/logic/collectors/ComboQueue.test.ts # time=13.30ms {
+    1..2
+    not ok 1 - orderComboQueue # time=11.41ms {
+        1..1
+        not ok 1 - orders fired colors green then red then purple # time=10.77ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to deeply equal [ 'green', 'red', 'purple' ]"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/ComboQueue.test.ts:6:57"
+            actual: "Array []"
+            expected: "Array [
+  \"green\",
+  \"red\",
+  \"purple\",
+]"
+            ...
+    }
+    not ok 2 - createComboQueue # time=1.16ms {
+        1..1
+        not ok 1 - pop drain preserves green red purple order # time=1.11ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to deeply equal [ 'green', 'purple' ]"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/ComboQueue.test.ts:18:22"
+            actual: "Array []"
+            expected: "Array [
+  \"green\",
+  \"purple\",
+]"
+            ...
+    }
+}
+not ok 5 - src/games/hotline/logic/collectors/PhoneMeters.test.ts # time=11.05ms {
+    1..1
+    not ok 1 - createPhoneMeters # time=10.24ms {
+        1..2
+        not ok 1 - soft caps display at meterTarget while counts may exceed # time=9.01ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected +0 to be 4 // Object.is equality"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/PhoneMeters.test.ts:11:38"
+            actual: "0"
+            expected: "4"
+            ...
+        not ok 2 - reset clears one phone only # time=0.57ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected +0 to be 1 // Object.is equality"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/PhoneMeters.test.ts:21:38"
+            actual: "0"
+            expected: "1"
+            ...
+    }
+}
+not ok 6 - src/games/hotline/logic/collectors/resolveCollectors.test.ts # time=13.29ms {
+    1..1
+    not ok 1 - resolveCollectors # time=12.65ms {
+        1..3
+        not ok 1 - spawns three colors on distinct cells when all chances are 1 # time=9.66ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to have a length of 3 but got +0"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/resolveCollectors.test.ts:25:24"
+            actual: "0"
+            expected: "3"
+            ...
+        not ok 2 - yields an empty queue when triggerChance is 0 # time=1.16ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected [] to have a length of 3 but got +0"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/resolveCollectors.test.ts:46:24"
+            actual: "0"
+            expected: "3"
+            ...
+        not ok 3 - never lists purple before green when both fire # time=1.28ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected -1 to be greater than or equal to 0"
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/collectors/resolveCollectors.test.ts:60:16"
+            ...
+    }
+}

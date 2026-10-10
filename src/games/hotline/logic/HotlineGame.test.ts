@@ -1,7 +1,6 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
+import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import { evaluatePaylines } from "./evaluatePaylines.js";
 import { createHotlineGame } from "./HotlineGame.js";
 import { createWallet } from "./Wallet.js";
@@ -160,39 +159,58 @@ describe("bet steps", () => {
   });
 });
 
-describe("feature tables stay out of base settlement", () => {
-  const dir = import.meta.dirname;
-  const files = ["HotlineGame.ts", "evaluatePaylines.ts", "SpinEngine.ts", "Wallet.ts"];
-
-  function strip(src: string): string {
-    return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
-  }
-
-  it("no logic source touches config.features or its tables", () => {
-    for (const name of files) {
-      const code = strip(readFileSync(join(dir, name), "utf8"));
-      expect(code, name).not.toMatch(/\bfeatures\b/);
-      expect(code, name).not.toMatch(/\b(tokenOdds|bonusPrizes|jackpotMultipliers)\b/);
-    }
-  });
-
-  it("spin outcome does not change when feature tables change", () => {
-    const altered = {
+describe("collector outcome on spin", () => {
+  function withOdds(
+    perSpin: { green: number; red: number; purple: number },
+    trigger: { green: number; red: number; purple: number },
+  ): HotlineConfig {
+    return {
       ...config,
       features: {
         ...config.features,
         tokenOdds: {
-          meterTarget: 1,
-          perSpinChance: { pink: 1, cyan: 1, yellow: 1 },
+          meterTarget: config.features.tokenOdds.meterTarget,
+          perSpinChance: perSpin,
+          triggerChance: trigger,
         },
       },
-    };
-    const a = createHotlineGame({ seed: "ft", config });
-    const b = createHotlineGame({ seed: "ft", config: altered });
+    } as HotlineConfig;
+  }
+
+  it("attaches collectorOutcome and books meter fills at settle", () => {
+    const forced = withOdds(
+      { green: 1, red: 1, purple: 1 },
+      { green: 1, red: 1, purple: 1 },
+    );
+    const game = createHotlineGame({ seed: "collect", config: forced });
+    expect(game.spin()).toEqual({ ok: true });
+    const snap = game.getSnapshot();
+    expect(snap).toHaveProperty("collectorOutcome");
+    expect(snap).toHaveProperty("meterFills");
+    expect(snap.collectorOutcome?.spawns).toHaveLength(3);
+    expect(snap.collectorOutcome?.queue).toEqual(["green", "red", "purple"]);
+    expect(snap.meterFills?.green.count).toBe(1);
+    expect(snap.meterFills?.red.count).toBe(1);
+    expect(snap.meterFills?.purple.count).toBe(1);
+    expect(snap.meterFills?.green.display).toBe(1);
+  });
+
+  it("keeps strip grids stable when only feature chances change", () => {
+    const aCfg = withOdds(
+      { green: 0, red: 0, purple: 0 },
+      { green: 0, red: 0, purple: 0 },
+    );
+    const bCfg = withOdds(
+      { green: 1, red: 1, purple: 1 },
+      { green: 1, red: 1, purple: 1 },
+    );
+    const a = createHotlineGame({ seed: "parity", config: aCfg });
+    const b = createHotlineGame({ seed: "parity", config: bCfg });
     for (let i = 0; i < 10; i++) {
       a.spin();
       b.spin();
-      expect(b.getSnapshot()).toEqual(a.getSnapshot());
+      expect(b.getSnapshot().grid).toEqual(a.getSnapshot().grid);
     }
   });
 });
+

@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/config src/games/hotline/logic --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nnot ok 3 - uses green red purple perSpinChance and triggerChance keys\nerror: expected [ 'cyan', 'pink', 'yellow' ] to deeply equal [ 'green', 'purple', 'red' ]\nnot ok - attaches collectorOutcome and books meter fills at settle\nnot ok - soft caps display at meterTarget while counts may exceed\nnot ok - spawns three colors on distinct cells when all chances are 1\nnot ok - orders fired colors green then red then purple\n# tests 35\n# fail 12\n",
+  "targetTest": "uses green red purple perSpinChance and triggerChance keys",
+  "targetFile": "src/games/hotline/config/HotlineConfigSchema.test.ts",
+  "expected": "[\"green\", \"purple\", \"red\"]",
+  "actual": "[\"cyan\", \"pink\", \"yellow\"]"
+}

@@ -26,6 +26,40 @@ describe("HotlineConfigSchema", () => {
     expect(cfg.features).toHaveProperty("jackpotMultipliers");
   });
 
+  it("uses green red purple perSpinChance and triggerChance keys", () => {
+    const cfg = HotlineConfigSchema.parse(fixture());
+    expect(Object.keys(cfg.features.tokenOdds.perSpinChance).sort()).toEqual([
+      "green",
+      "purple",
+      "red",
+    ]);
+    expect(Object.keys(cfg.features.tokenOdds.triggerChance).sort()).toEqual([
+      "green",
+      "purple",
+      "red",
+    ]);
+    for (const key of ["green", "red", "purple"] as const) {
+      expect(cfg.features.tokenOdds.perSpinChance[key]).toBeGreaterThanOrEqual(0);
+      expect(cfg.features.tokenOdds.perSpinChance[key]).toBeLessThanOrEqual(1);
+      expect(cfg.features.tokenOdds.triggerChance[key]).toBeGreaterThanOrEqual(0);
+      expect(cfg.features.tokenOdds.triggerChance[key]).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("throws ZodError when triggerChance is missing", () => {
+    const bad = fixture();
+    delete bad.features.tokenOdds.triggerChance;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("throws ZodError when a chance is outside 0..1", () => {
+    const bad = fixture();
+    bad.features.tokenOdds.triggerChance = { green: 1.5, red: 0.1, purple: 0.1 };
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+    bad.features.tokenOdds.triggerChance = { green: -0.1, red: 0.1, purple: 0.1 };
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
   it("throws ZodError when math is missing", () => {
     const bad = fixture();
     delete bad.math;
