@@ -1,6 +1,7 @@
 import type { Ticker } from "pixi.js";
 import type { GameSession, ShellContext } from "../../../shell/types.js";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
+import { buildComboStripCells } from "../hud/comboStripModel.js";
 import { mountFeatureOverlay } from "../hud/FeatureOverlay.js";
 import { mountHotlineHud } from "../hud/HotlineHud.js";
 import type {
@@ -125,13 +126,18 @@ export async function mountHotlineSession(
     applyDisplayFills(TOKEN_COLOR_ORDER.map((c) => fills[c].display));
   }
 
-  function syncComboFromNight(): void {
+  function syncComboFromSnapshot(): void {
     const night = game.getSnapshot().night;
     if (!night) {
-      hud.setCombo("");
+      hud.setComboPath([]);
+      hud.setCombo(formatComboStrip([]));
       return;
     }
-    hud.setCombo(formatComboStrip(night.path.map((e) => e.color)));
+    const activeIndex =
+      night.activeIndex >= 0
+        ? night.activeIndex
+        : night.path.findIndex((e) => e.state === "active");
+    hud.setComboPath(buildComboStripCells(night.path, activeIndex));
   }
 
   function syncFeatureLine(): void {
@@ -142,6 +148,7 @@ export async function mountHotlineSession(
     present = "idle";
     busy = false;
     hud.setBusy(false);
+    hud.setComboPath([]);
     hud.setCombo("");
     hud.setFeatureLine("");
     view?.scene.setPhoneGlow(null);
@@ -233,7 +240,7 @@ export async function mountHotlineSession(
     }
 
     const step: NightStep = game.nextNightStep();
-    syncComboFromNight();
+    syncComboFromSnapshot();
     syncFeatureLine();
 
     if (step.kind === "wait") return;
@@ -347,7 +354,8 @@ export async function mountHotlineSession(
       const result = game.spin();
       if (result.ok && view) {
         view.scene.setPhoneGlow(null);
-        hud.setCombo("");
+        hud.setComboPath([]);
+        hud.setCombo(formatComboStrip([]));
         startReels(true);
       }
       return result;

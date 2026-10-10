@@ -1,6 +1,7 @@
 import type { AudioPort } from "../../../shared/audio/AudioPort.js";
 import { saveMutePref } from "../../../shared/audio/mutePref.js";
 import type { HotlineGame, HotlineSnapshot } from "../logic/index.js";
+import type { ComboStripCell } from "./comboStripModel.js";
 import { formatMoney } from "./format.js";
 import { createLastWinTween } from "./lastWinTween.js";
 
@@ -10,6 +11,8 @@ export interface HotlineHud {
   setBusy(busy: boolean): void;
   /** combo strip copy via textContent only */
   setCombo(text: string): void;
+  /** highlighted night path cells via createElement spans */
+  setComboPath(cells: readonly ComboStripCell[]): void;
   /** free spins remaining line via textContent only */
   setFeatureLine(text: string): void;
   /** removes listeners */
@@ -166,7 +169,36 @@ export function mountHotlineHud(
     },
     setCombo(text: string): void {
       if (disposed) return;
+      comboEl.replaceChildren();
       comboEl.textContent = text;
+    },
+    setComboPath(cells: readonly ComboStripCell[]): void {
+      if (disposed) return;
+      comboEl.replaceChildren();
+      if (cells.length === 0) {
+        comboEl.textContent = "";
+        return;
+      }
+      const nodes: HTMLElement[] = [];
+      cells.forEach((cell, index) => {
+        if (index > 0) {
+          const joiner = document.createElement("span");
+          joiner.className = "hotline-combo-joiner";
+          joiner.textContent = " → ";
+          nodes.push(joiner);
+        }
+        const span = document.createElement("span");
+        const mods =
+          cell.state === "active"
+            ? " hotline-combo-step active"
+            : cell.state === "done"
+              ? " hotline-combo-step done"
+              : " hotline-combo-step";
+        span.className = mods.trim();
+        span.textContent = cell.label;
+        nodes.push(span);
+      });
+      comboEl.replaceChildren(...nodes);
     },
     setFeatureLine(text: string): void {
       if (disposed) return;

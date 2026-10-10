@@ -196,15 +196,17 @@ describe("HotlineHud busy lock and combo strip (D-10, D-14)", () => {
         { label: "Red", state: "active" },
         { label: "Purple", state: "pending" },
       ]);
-      expect(combo.children).toHaveLength(3);
-      expect(combo.children[0].textContent).toBe("Green");
-      expect(combo.children[0].className).toMatch(/hotline-combo-step/);
-      expect(combo.children[0].className).toMatch(/\bdone\b/);
-      expect(combo.children[1].textContent).toBe("Red");
-      expect(combo.children[1].className).toMatch(/\bactive\b/);
-      expect(combo.children[2].textContent).toBe("Purple");
-      expect(combo.children[2].className).not.toMatch(/\bactive\b/);
-      expect(combo.children[2].className).not.toMatch(/\bdone\b/);
+      const steps = combo.children.filter((c) =>
+        c.className.includes("hotline-combo-step"),
+      );
+      expect(steps).toHaveLength(3);
+      expect(steps[0].textContent).toBe("Green");
+      expect(steps[0].className).toMatch(/\bdone\b/);
+      expect(steps[1].textContent).toBe("Red");
+      expect(steps[1].className).toMatch(/\bactive\b/);
+      expect(steps[2].textContent).toBe("Purple");
+      expect(steps[2].className).not.toMatch(/\bactive\b/);
+      expect(steps[2].className).not.toMatch(/\bdone\b/);
       hud.setComboPath([]);
       expect(combo.children).toHaveLength(0);
     } finally {
