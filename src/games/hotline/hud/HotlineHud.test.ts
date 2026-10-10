@@ -34,6 +34,7 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-field=lines]",
     "[data-field=status]",
     "[data-field=combo]",
+    "[data-field=feature]",
     "[data-action=spin]",
     "[data-action=bet-dec]",
     "[data-action=bet-inc]",
@@ -168,6 +169,57 @@ describe("HotlineHud busy lock and combo strip (D-10, D-14)", () => {
     expect(els["[data-field=combo]"].textContent).toBe("COMBO: Green → Red");
     hud.setCombo("");
     expect(els["[data-field=combo]"].textContent).toBe("");
+  });
+});
+
+describe("HotlineHud free spins feature line (D-02)", () => {
+  it("setFeatureLine writes [data-field=feature] via textContent", () => {
+    const { els, hud } = setup();
+    expect(typeof hud.setFeatureLine).toBe("function");
+    expect(els["[data-field=feature]"].textContent).toBe("");
+    hud.setFeatureLine("FREE SPINS 12 LEFT  WIN 18.40");
+    expect(els["[data-field=feature]"].textContent).toBe(
+      "FREE SPINS 12 LEFT  WIN 18.40",
+    );
+    hud.setFeatureLine("");
+    expect(els["[data-field=feature]"].textContent).toBe("");
+  });
+
+  it("setFeatureLine ignores calls after dispose", () => {
+    const { els, hud } = setup();
+    expect(typeof hud.setFeatureLine).toBe("function");
+    hud.setFeatureLine("FREE SPINS 1 LEFT  WIN 0.00");
+    hud.dispose();
+    hud.setFeatureLine("FREE SPINS 0 LEFT  WIN 1.00");
+    expect(els["[data-field=feature]"].textContent).toBe(
+      "FREE SPINS 1 LEFT  WIN 0.00",
+    );
+  });
+
+  it("throws when [data-field=feature] is missing", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-feature", config });
+    const names = [
+      "[data-field=balance]",
+      "[data-field=last-win]",
+      "[data-field=bet]",
+      "[data-field=lines]",
+      "[data-field=status]",
+      "[data-field=combo]",
+      "[data-action=spin]",
+      "[data-action=bet-dec]",
+      "[data-action=bet-inc]",
+    ];
+    const els: Record<string, FakeEl> = {};
+    for (const n of names) els[n] = new FakeEl();
+    const root = {
+      querySelector: (sel: string) => els[sel] ?? null,
+    } as unknown as Element;
+    expect(() =>
+      mountHotlineHud(root, game, {
+        betStepCount: config.math.betStepsCents.length,
+      }),
+    ).toThrow("hotline hud: [data-field=feature] missing");
   });
 });
 

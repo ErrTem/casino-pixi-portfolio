@@ -2,11 +2,32 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { CollectorSpawn } from "../logic/collectors/resolveCollectors.js";
+import type { NightSnapshot } from "../logic/index.js";
+import * as collectPresentation from "./collectPresentation.js";
 import {
   baselineFromMeterFills,
   formatComboStrip,
   progressiveDisplayFills,
 } from "./collectPresentation.js";
+
+function nightWithFs(
+  spinsLeft: number,
+  totalCents: number,
+): NightSnapshot {
+  return {
+    path: [{ color: "green", nested: false, state: "active" }],
+    activeIndex: 0,
+    fs: {
+      spinsLeft,
+      spinsDone: 0,
+      totalSpins: 24,
+      retriggers: 0,
+      totalCents,
+    },
+    totalCents: 0,
+    featureBetCents: 100,
+  };
+}
 
 function spawn(color: CollectorSpawn["color"]): CollectorSpawn {
   return { color, cell: { reel: 0, row: 0 }, triggers: false };
@@ -44,6 +65,36 @@ describe("formatComboStrip (D-10, D-11)", () => {
   });
 });
 
+describe("formatFeatureLine (D-02)", () => {
+  it("returns empty when night or fs frame is absent", () => {
+    expect(typeof collectPresentation.formatFeatureLine).toBe("function");
+    expect(collectPresentation.formatFeatureLine(null)).toBe("");
+    expect(
+      collectPresentation.formatFeatureLine({
+        path: [{ color: "green", nested: false, state: "active" }],
+        activeIndex: 0,
+        fs: null,
+        totalCents: 0,
+        featureBetCents: 100,
+      }),
+    ).toBe("");
+  });
+
+  it("formats remaining spins and running free spin win", () => {
+    expect(typeof collectPresentation.formatFeatureLine).toBe("function");
+    expect(collectPresentation.formatFeatureLine(nightWithFs(12, 1840))).toBe(
+      "FREE SPINS 12 LEFT  WIN 18.40",
+    );
+  });
+
+  it("formats zero spins left with the running total", () => {
+    expect(typeof collectPresentation.formatFeatureLine).toBe("function");
+    expect(collectPresentation.formatFeatureLine(nightWithFs(0, 250))).toBe(
+      "FREE SPINS 0 LEFT  WIN 2.50",
+    );
+  });
+});
+
 describe("baselineFromMeterFills", () => {
   it("uses raw counts so this spin is not already booked", () => {
     expect(
@@ -70,6 +121,8 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/nextNightStep/);
     expect(src).toMatch(/spinFree/);
     expect(src).toMatch(/mountFeatureOverlay/);
+    expect(src).toMatch(/setFeatureLine/);
+    expect(src).toMatch(/formatFeatureLine/);
     expect(src).not.toMatch(/\.increment\s*\(/);
   });
 
