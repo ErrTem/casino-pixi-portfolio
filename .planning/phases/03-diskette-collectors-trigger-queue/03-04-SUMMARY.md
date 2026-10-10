@@ -125,7 +125,7 @@ status: complete
 3. **Task 2 RED: collect presentation contracts** - `fa6e262` (test)
 4. **Task 2 GREEN: session busy FSM end-to-end** - `a28f478` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `8598358` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/games/hotline/hud/HotlineHud.ts` - setBusy / setCombo binders
