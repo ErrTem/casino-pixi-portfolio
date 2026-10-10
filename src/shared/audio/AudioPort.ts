@@ -10,7 +10,13 @@ export type SfxEvent =
   | "token_spawn"
   | "token_land"
   | "phone_trigger"
-  | "queue_step";
+  | "queue_step"
+  | "feature_start"
+  | "feature_end"
+  | "hold_land"
+  | "hold_respin"
+  | "pick_reveal"
+  | "jackpot";
 
 export interface AudioPort {
   play(event: SfxEvent): void;

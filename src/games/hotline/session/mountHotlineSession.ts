@@ -203,8 +203,7 @@ export async function mountHotlineSession(
           const revealed = game.pickLocker(index);
           if (revealed === null) return;
           overlay.revealLocker(index, `x${revealed}`);
-          // pick_reveal beep lands in 04-05; queue_step keeps the edge audible
-          ctx.audio.play("queue_step");
+          ctx.audio.play("pick_reveal");
           advanceNight();
         },
       });
@@ -246,7 +245,7 @@ export async function mountHotlineSession(
     if (step.kind === "wait") return;
 
     if (step.kind === "feature_start") {
-      ctx.audio.play("queue_step");
+      ctx.audio.play("feature_start");
       game.resetPhoneMeter(step.color);
       syncMetersFromLogic();
       view?.scene.setPhoneGlow(step.color);
@@ -277,6 +276,7 @@ export async function mountHotlineSession(
         const jackpot = hold?.jackpotWon;
         if (jackpot && JACKPOT_NOTE[jackpot]) {
           note = JACKPOT_NOTE[jackpot];
+          ctx.audio.play("jackpot");
         }
       }
       showSplash(
@@ -286,6 +286,7 @@ export async function mountHotlineSession(
           note,
         },
         () => {
+          ctx.audio.play("feature_end");
           if (step.color === "green") {
             view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
           }
@@ -429,9 +430,14 @@ export async function mountHotlineSession(
       holdRespinElapsed += dt;
       if (holdRespinElapsed < HOLD_RESPIN_MS) return;
       holdRespinElapsed = 0;
+      const beforeCells = game.holdSnapshot()?.cells.length ?? 0;
+      ctx.audio.play("hold_respin");
       const { done } = game.stepHoldRespin();
       const snap = game.holdSnapshot();
       if (snap) view.scene.syncHold(snap);
+      if ((snap?.cells.length ?? 0) > beforeCells) {
+        ctx.audio.play("hold_land");
+      }
       if (!done) return;
       view.scene.setHoldMode(false);
       advanceNight();

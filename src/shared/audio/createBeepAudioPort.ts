@@ -47,6 +47,12 @@ const PITCH_HZ: Record<SfxEvent, number> = {
   token_land: 840,
   phone_trigger: 560,
   queue_step: 480,
+  feature_start: 610,
+  feature_end: 390,
+  hold_land: 760,
+  hold_respin: 420,
+  pick_reveal: 910,
+  jackpot: 1200,
 };
 
 export function createBeepAudioPort(

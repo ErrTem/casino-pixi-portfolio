@@ -151,7 +151,19 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/play\s*\(\s*["']token_spawn["']\s*\)/);
     expect(src).toMatch(/play\s*\(\s*["']token_land["']\s*\)/);
     expect(src).toMatch(/play\s*\(\s*["']phone_trigger["']\s*\)/);
-    expect(src).toMatch(/play\s*\(\s*["']queue_step["']\s*\)/);
     expect(src).toMatch(/unlock\s*\(\s*\)/);
+  });
+
+  it("session source plays feature beep events on bonus edges (04-05)", () => {
+    const src = readFileSync(
+      join(import.meta.dirname, "mountHotlineSession.ts"),
+      "utf8",
+    );
+    expect(src).toMatch(/play\s*\(\s*["']feature_start["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']feature_end["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']hold_land["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']hold_respin["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']pick_reveal["']\s*\)/);
+    expect(src).toMatch(/play\s*\(\s*["']jackpot["']\s*\)/);
   });
 });

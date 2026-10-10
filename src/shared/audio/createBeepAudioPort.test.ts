@@ -15,6 +15,15 @@ const COLLECTOR_EVENTS: SfxEvent[] = [
   "queue_step",
 ];
 
+const FEATURE_EVENTS: SfxEvent[] = [
+  "feature_start",
+  "feature_end",
+  "hold_land",
+  "hold_respin",
+  "pick_reveal",
+  "jackpot",
+];
+
 const ALL_EVENTS: SfxEvent[] = [
   "bet_lock",
   "takeoff",
@@ -24,6 +33,7 @@ const ALL_EVENTS: SfxEvent[] = [
   "reel_stop",
   "win",
   ...COLLECTOR_EVENTS,
+  ...FEATURE_EVENTS,
 ];
 
 function makeContext(): { ctx: BeepAudioContext; pitches: number[] } {
@@ -99,6 +109,16 @@ describe("createBeepAudioPort", () => {
     }
     expect(pitches).toHaveLength(COLLECTOR_EVENTS.length);
     expect(new Set(pitches).size).toBe(COLLECTOR_EVENTS.length);
+  });
+
+  it("keeps feature events distinct from each other", () => {
+    const { ctx, pitches } = makeContext();
+    const port = createBeepAudioPort({ audioContext: ctx });
+    for (const event of FEATURE_EVENTS) {
+      port.play(event);
+    }
+    expect(pitches).toHaveLength(FEATURE_EVENTS.length);
+    expect(new Set(pitches).size).toBe(FEATURE_EVENTS.length);
   });
 
   it("stays silent while muted and after dispose", () => {
