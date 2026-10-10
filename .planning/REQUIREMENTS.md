@@ -27,7 +27,7 @@
 
 ### Bonuses
 
-- [ ] **BONUS-01**: Green phone grants 24 free spins with elevated Wild mask density on reels 2-5
+- [x] **BONUS-01**: Green phone grants 24 free spins with elevated Wild mask density on reels 2-5
 - [ ] **BONUS-02**: Red phone starts Hold & Win on a 5x4 sticky cash grid with 3 respins that reset on new cash symbols
 - [ ] **BONUS-03**: Purple phone opens a locker Pick'em where the user reveals cash prizes until the round ends
 - [ ] **BONUS-04**: When multiple phones trigger, bonuses run in a clear ordered combo queue (including nesting during free spins where config allows)
@@ -89,7 +89,7 @@ Deferred — not in current roadmap phases.
 | COLL-01 | Phase 3 | Complete |
 | COLL-02 | Phase 3 | Complete |
 | COLL-03 | Phase 3 | Complete |
-| BONUS-01 | Phase 4 | Pending |
+| BONUS-01 | Phase 4 | Complete |
 | BONUS-02 | Phase 4 | Pending |
 | BONUS-03 | Phase 4 | Pending |
 | BONUS-04 | Phase 4 | Pending |
