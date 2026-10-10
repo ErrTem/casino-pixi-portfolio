@@ -490,22 +490,20 @@ respin(): { landed: number[]; lives: number; done: boolean; full: boolean } {
 | A7 | Hold / Pick'em credit at exit splash; FS credits per spin | Pitfall 6 | Balance timing feel; low risk |
 | A8 | DOM overlay for splash and lockers satisfies "full-screen" and D-12 | Pattern 7 | If the user wants lockers drawn in Pixi, CSS and hit testing must change |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **What exactly nests during Free Spins?**
+1. **What exactly nests during Free Spins?** — **RESOLVED**
    - What we know: D-16 fixes queue order for phones that fired on a spin; D-17 says nested Red / Purple pause FS and resume it; REQUIREMENTS says "where config allows".
-   - What's unclear: whether Red / Purple already queued on the same base spin as Green should run inside the FS frame or after it.
-   - Recommendation: sequential after FS for same-spin queue entries, nesting only for triggers rolled inside FS spins, gated by `freeSpins.nested`. Confirm in the plan checkpoint.
-2. **Does `bonusPrizes.freeSpins` do anything?**
+   - Resolution (RESEARCH A3, adopted in 04-01 flagged_assumptions): Red / Purple already queued on the same base spin as Green run **after** the Green FS exit splash, in fixed Green → Red → Purple order. Only Red / Purple triggers rolled **inside** FS spins nest (pause FS, run nested queue, resume remaining FS), gated by `freeSpins.nested`. Nested features never nest again.
+2. **Does `bonusPrizes.freeSpins` do anything?** — **RESOLVED**
    - What we know: FS pays line wins at the trigger bet in the reference game.
-   - What's unclear: intent of `[5, 8, 10, 15]`.
-   - Recommendation: keep validated, unused by runtime.
-3. **When is Hold / Pick'em money credited?**
-   - Recommendation: at the exit splash (single credit call returning the total), FS per spin.
-4. **FS compact win cycle:** how much of the line-win cycle to show per FS spin (all lines, best N, shorter interval).
-   - Recommendation: add `intervalMs` to the win overlay and shorten it during FS; leave exact values to execution tuning.
-5. **Art:** user may later supply locker / cash / splash art.
-   - Recommendation: ship procedural now; add an optional art request list at the walkthrough checkpoint, with the asset test updated in the same plan if files are added.
+   - Resolution (RESEARCH A4, adopted in 04-01): keep the ladder in config and Zod validation; **no runtime use** in free spins math or payouts.
+3. **When is Hold / Pick'em money credited?** — **RESOLVED**
+   - Resolution (RESEARCH A7, adopted in 04-01 / 04-03 / 04-04): free spin line wins credit **per spin** at reels settle via `spinFree`; Hold and Pick'em credit **once** at `feature_exit` via `settleFeature` when the exit splash total is shown.
+4. **FS compact win cycle:** how much of the line-win cycle to show per FS spin (all lines, best N, shorter interval). — **RESOLVED**
+   - Resolution (04-02 flagged_assumptions): parameterize the existing win overlay with a shorter per-line interval during FS (do not drop lines or copy the overlay); tune `FS_WIN_CYCLE_MS` and `FS_GAP_MS` during execution (suggested 480 and 220).
+5. **Art:** user may later supply locker / cash / splash art. — **RESOLVED**
+   - Resolution (Phase 4 scope): ship **procedural** DOM lockers, Graphics/Text Hold cells, and splash chrome; **no new PNGs** in this phase (`HOTLINE_ASSET_URLS` stays at 17). Optional user art remains a later checkpoint with asset test updated in the same change.
 
 ## Environment Availability
 
@@ -572,7 +570,7 @@ No `.cursor/rules/` directory exists. Directives come from `AGENTS.md` and are t
 
 **Confidence breakdown:**
 - Standard stack: HIGH, no new packages and all pins read from `package.json`
-- Architecture: HIGH for integration seams (all touched files read), MEDIUM for exact nesting semantics (Open Question 1)
+- Architecture: HIGH for integration seams and nesting semantics (Open Questions resolved per A3 in plans)
 - Pitfalls: HIGH, each cites a file or test read this session
 - Reference game numerics: LOW to MEDIUM, sources disagree; irrelevant to correctness since config is illustrative
 
