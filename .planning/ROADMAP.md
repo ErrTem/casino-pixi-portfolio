@@ -11,7 +11,7 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
 ## Phases
 
 - [x] **Phase 1: Portfolio Shell + Crash Session** - Menu launches Crash or returns home; shared mute/seed/demo chrome; one long-lived Pixi Application (completed 2026-10-09)
-- [ ] **Phase 2: HOTLINE Base Playable** - Zod JSON config, 5×4 / 40-line math, spin/bet HUD, motel CRT presentation
+- [x] **Phase 2: HOTLINE Base Playable** - Zod JSON config, 5×4 / 40-line math, spin/bet HUD, motel CRT presentation (completed 2026-10-10)
 - [ ] **Phase 3: Diskette Collectors + Trigger Queue** - Colored tokens fly into three phones; meters grow; random triggers enqueue combo nights
 - [ ] **Phase 4: Three Bonuses + Combo Nights** - Green free spins, Red Hold & Win, Purple locker Pick'em, ordered combo queue
 - [ ] **Phase 5: Gamble + Paytable + Polish** - VHS SURVIVE/DIE, rules overlay, responsive layout
@@ -64,7 +64,7 @@ Plans:
   4. HOTLINE loads bet steps, symbol weights, and related tables from validated backend-shaped JSON at boot (bad config fails loud)
   5. HOTLINE shows motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font
 
-**Plans:** 7/7 plans executed
+**Plans:** 7/7 plans complete
 
 Plans:
 **Wave 1**
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
-| 2. HOTLINE Base Playable | 7/7 | In Progress|  |
+| 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 0/TBD | Not started | - |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
