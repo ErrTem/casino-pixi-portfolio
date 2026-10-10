@@ -19,7 +19,7 @@ affects:
 actuals:
   tokens: 1584
   tasks: 2
-  commits: 2
+  commits: 3
 
 plan_head_before: b81e047138725f3ad4233692904abcf0ce7f11ac
 
@@ -115,7 +115,7 @@ Each task was committed atomically:
    - `3a56f9b` feat(03-05): widen beep AudioPort for collector events
 2. **Task 2: Walkthrough diskette collectors and combo stub** — human-verify approved (no code commit)
 
-**Plan metadata:** (docs commit after this SUMMARY)
+**Plan metadata:** `b44fe46` (docs: complete collector beep SFX walkthrough plan)
 
 _Note: TDD tasks may have multiple commits (test → feat → refactor)_
 
