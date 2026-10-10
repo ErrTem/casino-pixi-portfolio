@@ -222,11 +222,12 @@ export function createNight(args: CreateNightArgs): Night {
       const nestedColors: TokenColor[] = [];
       for (const color of input.queue) {
         if (color === "green") {
-          // red phase: leave maxRetriggers unenforced so the lock test fails first
-          fs.retriggers += 1;
-          fs.spinsLeft += retriggerSpins;
-          fs.totalSpins += retriggerSpins;
-          retriggered = true;
+          if (fs.retriggers < maxRetriggers) {
+            fs.retriggers += 1;
+            fs.spinsLeft += retriggerSpins;
+            fs.totalSpins += retriggerSpins;
+            retriggered = true;
+          }
           continue;
         }
         nestedColors.push(color);
