@@ -10,6 +10,8 @@ export interface HotlineHud {
   setBusy(busy: boolean): void;
   /** combo strip copy via textContent only */
   setCombo(text: string): void;
+  /** free spins remaining line via textContent only */
+  setFeatureLine(text: string): void;
   /** removes listeners */
   dispose(): void;
 }
@@ -50,6 +52,7 @@ export function mountHotlineHud(
   const linesEl = need(root, "[data-field=lines]");
   const statusEl = need(root, "[data-field=status]");
   const comboEl = need(root, "[data-field=combo]");
+  const featureEl = need(root, "[data-field=feature]");
   const spinBtn = need<HTMLButtonElement>(root, "[data-action=spin]");
   const decBtn = need<HTMLButtonElement>(root, "[data-action=bet-dec]");
   const incBtn = need<HTMLButtonElement>(root, "[data-action=bet-inc]");
@@ -164,6 +167,10 @@ export function mountHotlineHud(
     setCombo(text: string): void {
       if (disposed) return;
       comboEl.textContent = text;
+    },
+    setFeatureLine(text: string): void {
+      if (disposed) return;
+      featureEl.textContent = text;
     },
     dispose(): void {
       if (disposed) return;

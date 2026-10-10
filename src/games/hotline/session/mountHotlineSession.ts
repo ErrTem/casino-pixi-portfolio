@@ -22,6 +22,7 @@ import { mountHotlineView } from "../view/mountHotlineView.js";
 import {
   baselineFromMeterFills,
   formatComboStrip,
+  formatFeatureLine,
   progressiveDisplayFills,
   type MeterBaseline,
 } from "./collectPresentation.js";
@@ -119,11 +120,16 @@ export async function mountHotlineSession(
     hud.setCombo(formatComboStrip(night.path.map((e) => e.color)));
   }
 
+  function syncFeatureLine(): void {
+    hud.setFeatureLine(formatFeatureLine(game.getSnapshot().night));
+  }
+
   function enterIdle(): void {
     present = "idle";
     busy = false;
     hud.setBusy(false);
     hud.setCombo("");
+    hud.setFeatureLine("");
     view?.scene.setPhoneGlow(null);
     pendingOutcome = null;
     landed = [];
@@ -174,6 +180,7 @@ export async function mountHotlineSession(
 
     const step: NightStep = game.nextNightStep();
     syncComboFromNight();
+    syncFeatureLine();
 
     if (step.kind === "wait") return;
 
@@ -301,6 +308,9 @@ export async function mountHotlineSession(
     const paid = snap.lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
     if (paid > 0) ctx.audio.play("win");
     pendingOutcome = snap.collectorOutcome;
+    if (game.isNightActive()) {
+      syncFeatureLine();
+    }
     if (snap.lineWins.length === 0) {
       beginFlights();
       return;

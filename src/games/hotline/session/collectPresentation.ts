@@ -1,5 +1,7 @@
 import { TOKEN_COLOR_ORDER, type TokenColor } from "../logic/collectors/TokenColors.js";
 import type { CollectorSpawn } from "../logic/collectors/resolveCollectors.js";
+import type { NightSnapshot } from "../logic/index.js";
+import { formatMoney } from "../hud/format.js";
 
 export type MeterBaseline = Record<TokenColor, number>;
 
@@ -31,6 +33,13 @@ export function progressiveDisplayFills(
 export function formatComboStrip(queue: readonly TokenColor[]): string {
   if (queue.length === 0) return "";
   return `COMBO: ${queue.map((c) => COLOR_LABEL[c]).join(" → ")}`;
+}
+
+// free spins strip copy from the night fs frame only
+export function formatFeatureLine(night: NightSnapshot | null): string {
+  if (!night?.fs) return "";
+  const win = formatMoney(night.fs.totalCents / 100);
+  return `FREE SPINS ${night.fs.spinsLeft} LEFT  WIN ${win}`;
 }
 
 export function baselineFromMeterFills(
