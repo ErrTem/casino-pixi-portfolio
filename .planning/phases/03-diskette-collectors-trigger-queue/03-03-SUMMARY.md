@@ -128,7 +128,7 @@ Task 2 was view/Pixi presentation (not `tdd="true"`); verified via assets tests 
 2. **Task 1 GREEN: Finite winCycle + overlay clear** - `f6128d1` (feat)
 3. **Task 2: TokenFlight arcs and phone signal bars** - `aafb6f0` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `b80eb91` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/games/hotline/view/winCycle.ts` - one-pass `isDone` gate
