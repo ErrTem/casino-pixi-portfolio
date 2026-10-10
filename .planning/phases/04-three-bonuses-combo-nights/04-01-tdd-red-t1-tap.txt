@@ -1,0 +1,39 @@
+﻿TAP version 13
+1..1
+not ok 1 - src/games/hotline/logic/HotlineGame.test.ts # time=27.00ms {
+    1..4
+    ok 1 - createHotlineGame # time=16.87ms {
+        1..7
+        ok 1 - starts idle with config balance and a 5x4 grid # time=4.09ms
+        ok 2 - spin deducts the bet and fills a 5x4 grid of known symbols # time=1.86ms
+        ok 3 - settles every spin through evaluatePaylines on the shown grid # time=9.05ms
+        ok 4 - replays the same grid sequence for the same seed and bet step # time=0.56ms
+        ok 5 - diverges for a different seed # time=0.41ms
+        ok 6 - rejects a spin the balance cannot cover and leaves the grid alone # time=0.29ms
+        ok 7 - clamps the bet step index to the config steps # time=0.14ms
+    }
+    ok 2 - bet steps # time=1.27ms {
+        1..5
+        ok 1 - floors fractional indexes onto a real step # time=0.13ms
+        ok 2 - ignores a non finite index and keeps the current step # time=0.15ms
+        ok 3 - deducts exactly the selected step on every step # time=0.62ms
+        ok 4 - wallet refuses stakes that are not config steps # time=0.20ms
+        ok 5 - wallet refuses a step above the balance # time=0.10ms
+    }
+    ok 3 - collector outcome on spin # time=1.95ms {
+        1..3
+        ok 1 - attaches collectorOutcome and books meter fills at settle # time=0.30ms
+        ok 2 - keeps strip grids stable when only feature chances change # time=1.20ms
+        ok 3 - accumulates booked fills across spins with soft cap display # time=0.37ms
+    }
+    not ok 4 - green free spins night (BONUS-01) # time=6.47ms {
+        1..1
+        not ok 1 - forced green night runs 24 free spins then exits to done # time=6.43ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected { tokenOdds: { ΓÇª(3) }, ΓÇª(2) } to have property \"freeSpins\""
+            at: "D:/pixi/casino-pixi-portfolio/src/games/hotline/logic/HotlineGame.test.ts:279:30"
+            ...
+    }
+}
