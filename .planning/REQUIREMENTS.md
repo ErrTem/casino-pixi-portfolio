@@ -21,9 +21,9 @@
 
 ### Collectors
 
-- [ ] **COLL-01**: Colored diskette tokens can appear on reel symbols and fly into the matching rotary phone meter
-- [ ] **COLL-02**: Phone meters visibly grow (signal bars / neon intensity) as tokens accumulate
-- [ ] **COLL-03**: Landing a token can randomly trigger that phone's bonus; multiple phones can queue as combo nights
+- [x] **COLL-01**: Colored diskette tokens can appear on reel symbols and fly into the matching rotary phone meter
+- [x] **COLL-02**: Phone meters visibly grow (signal bars / neon intensity) as tokens accumulate
+- [x] **COLL-03**: Landing a token can randomly trigger that phone's bonus; multiple phones can queue as combo nights
 
 ### Bonuses
 
@@ -86,9 +86,9 @@ Deferred — not in current roadmap phases.
 | BASE-02 | Phase 2 | Complete |
 | BASE-03 | Phase 2 | Complete |
 | PRES-01 | Phase 2 | Complete |
-| COLL-01 | Phase 3 | Pending |
-| COLL-02 | Phase 3 | Pending |
-| COLL-03 | Phase 3 | Pending |
+| COLL-01 | Phase 3 | Complete |
+| COLL-02 | Phase 3 | Complete |
+| COLL-03 | Phase 3 | Complete |
 | BONUS-01 | Phase 4 | Pending |
 | BONUS-02 | Phase 4 | Pending |
 | BONUS-03 | Phase 4 | Pending |
