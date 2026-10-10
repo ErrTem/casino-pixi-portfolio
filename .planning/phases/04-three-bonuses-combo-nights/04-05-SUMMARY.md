@@ -143,7 +143,7 @@ Each task was committed atomically:
 4. **Task 3 RED: Combo night polish gates** - `3aaca45` (test)
 5. **Task 3 GREEN: COMBO NIGHT splash** - `3de27b1` (feat)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `b074fa6` (docs: complete plan)
 
 _Note: TDD tasks may have multiple commits (test → feat → refactor)_
 
