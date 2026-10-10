@@ -14,6 +14,12 @@ export const PHONE_URLS = {
   purple: `${BASE}/phone-purple.png`,
 } as const;
 
+export const DISKETTE_URLS = {
+  green: `${BASE}/diskette-green.png`,
+  red: `${BASE}/diskette-red.png`,
+  purple: `${BASE}/diskette-purple.png`,
+} as const;
+
 /** symbol id from hotline.config.json to its png */
 export const SYMBOL_URLS: Readonly<Record<string, string>> = {
   mask: `${BASE}/sym-wild-mask.png`,
@@ -34,6 +40,9 @@ export const HOTLINE_ASSET_URLS: readonly string[] = [
   PHONE_URLS.green,
   PHONE_URLS.red,
   PHONE_URLS.purple,
+  DISKETTE_URLS.green,
+  DISKETTE_URLS.red,
+  DISKETTE_URLS.purple,
   ...Object.values(SYMBOL_URLS),
 ];
 
@@ -41,6 +50,7 @@ export interface HotlineTextures {
   backdrop: Texture;
   frame: Texture;
   phones: { green: Texture; red: Texture; purple: Texture };
+  diskettes: { green: Texture; red: Texture; purple: Texture };
   /** keyed by config symbol id */
   symbols: Record<string, Texture>;
   /** family registered for Pixi Text, ready to use */
@@ -95,6 +105,11 @@ export async function loadHotlineAssets(): Promise<HotlineTextures> {
       green: required(loaded, PHONE_URLS.green),
       red: required(loaded, PHONE_URLS.red),
       purple: required(loaded, PHONE_URLS.purple),
+    },
+    diskettes: {
+      green: required(loaded, DISKETTE_URLS.green),
+      red: required(loaded, DISKETTE_URLS.red),
+      purple: required(loaded, DISKETTE_URLS.purple),
     },
     symbols,
     fontFamily: HOTLINE_FONT_FAMILY,

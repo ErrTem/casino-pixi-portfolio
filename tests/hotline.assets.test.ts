@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  DISKETTE_URLS,
   HOTLINE_ASSET_URLS,
   SYMBOL_URLS,
 } from "../src/games/hotline/view/loadHotlineAssets.js";
@@ -17,6 +18,9 @@ const ASSET_LIST_FILES = [
   "phone-green.png",
   "phone-red.png",
   "phone-purple.png",
+  "diskette-green.png",
+  "diskette-red.png",
+  "diskette-purple.png",
   "sym-wild-mask.png",
   "sym-hi-pistol.png",
   "sym-hi-cassette.png",
@@ -56,4 +60,14 @@ describe("hotline asset pack", () => {
       expect(SYMBOL_URLS[id], id).toBeTruthy();
     }
   });
+
+  it("diskette urls cover green red purple", () => {
+    expect(DISKETTE_URLS.green).toContain("diskette-green.png");
+    expect(DISKETTE_URLS.red).toContain("diskette-red.png");
+    expect(DISKETTE_URLS.purple).toContain("diskette-purple.png");
+    for (const url of Object.values(DISKETTE_URLS)) {
+      expect(HOTLINE_ASSET_URLS).toContain(url);
+    }
+  });
 });
+

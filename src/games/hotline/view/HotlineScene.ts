@@ -1,14 +1,19 @@
 import { Container, Graphics, Sprite, Text, type Application } from "pixi.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
+import type { CollectorSpawn } from "../logic/collectors/resolveCollectors.js";
+import type { TokenColor } from "../logic/collectors/TokenColors.js";
 import type { HotlineSnapshot } from "../logic/index.js";
 import type { HotlineTextures } from "./loadHotlineAssets.js";
 import { createPhonesLayer } from "./PhonesLayer.js";
 import { createReelWindow } from "./reels/createReelWindow.js";
+import { createTokenFlight } from "./TokenFlight.js";
 import { createWinLinesOverlay, type WinGeometry } from "./WinLinesOverlay.js";
 
 export interface HotlineSceneHooks {
   /** fires as each reel lands, left to right */
   onReelStop?: (reelIndex: number) => void;
+  /** fires when a diskette arc lands on its phone */
+  onCollectorLand?: (spawn: CollectorSpawn) => void;
 }
 
 export interface HotlineScene {
@@ -16,6 +21,12 @@ export interface HotlineScene {
   /** spin the reels and land them on `grid` */
   startSpin: (grid: string[][]) => void;
   isSpinning: () => boolean;
+  /** start parallel diskette flights after the win gate */
+  startCollectors: (spawns: readonly CollectorSpawn[]) => void;
+  tickCollectors: (deltaMS: number) => void;
+  collectorsDone: () => boolean;
+  setPhoneMeters: (fills: readonly number[]) => void;
+  setPhoneGlow: (color: TokenColor | null) => void;
   destroy: () => void;
 }
 
@@ -64,7 +75,10 @@ export function createHotlineScene(
     },
   });
   title.anchor.set(0.5);
-  const phones = createPhonesLayer(textures);
+  const phones = createPhonesLayer(
+    textures,
+    config.features.tokenOdds.meterTarget,
+  );
   const screen = new Graphics();
   const frame = new Sprite(textures.frame);
   const reelWindow = createReelWindow({
@@ -76,6 +90,9 @@ export function createHotlineScene(
   });
   // win lines and cell frames sit above the masked reels and the crt bezel
   const overlay = createWinLinesOverlay();
+  // flights sit above reels and overlay so neon arcs read over the crt
+  const flight = createTokenFlight(textures);
+  if (hooks.onCollectorLand) flight.onLand(hooks.onCollectorLand);
   root.addChild(
     backdrop,
     title,
@@ -84,6 +101,7 @@ export function createHotlineScene(
     reelWindow.container,
     frame,
     overlay.container,
+    flight.container,
   );
   app.stage.addChild(root);
 
@@ -204,15 +222,40 @@ export function createHotlineScene(
       if (destroyed) return;
       reelWindow.start(grid);
       overlay.clear();
+      flight.start([], [], [], cellSize);
     },
 
     isSpinning(): boolean {
       return reelWindow.isSpinning();
     },
 
+    startCollectors(spawns: readonly CollectorSpawn[]): void {
+      if (destroyed) return;
+      const geo = geometry();
+      flight.start(spawns, geo.centers, phones.phoneCenters(), geo.cellSize);
+    },
+
+    tickCollectors(deltaMS: number): void {
+      if (destroyed) return;
+      flight.tick(deltaMS);
+    },
+
+    collectorsDone(): boolean {
+      return flight.isDone();
+    },
+
+    setPhoneMeters(fills: readonly number[]): void {
+      phones.setMeters(fills);
+    },
+
+    setPhoneGlow(color: TokenColor | null): void {
+      phones.setGlow(color);
+    },
+
     destroy(): void {
       if (destroyed) return;
       destroyed = true;
+      flight.destroy();
       overlay.destroy();
       reelWindow.destroy();
       phones.destroy();
