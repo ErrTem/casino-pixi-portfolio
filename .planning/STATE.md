@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 03
 current_phase_name: Diskette Collectors + Trigger Queue
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-10-10T20:37:48.550Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-10-10T20:43:41.031Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 03 execution started
-state_head: aafb6f01b2bed05ad4c6bedcf4b5ba9c9980d420
+state_head: a28f47858c195e3540b9b596dbd5bd9c91462960
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 03 (Diskette Collectors + Trigger Queue) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 03 execution started
 
@@ -74,6 +74,7 @@ Progress: [████░░░░░░] 40%
 | Phase 03 P01 | 30 min | 2 tasks | 4 files |
 | Phase 03 P02 | 8min | 2 tasks | 13 files |
 | Phase 03 P03 | 5min | 2 tasks | 8 files |
+| Phase 03 P04 | 7min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,7 @@ Recent decisions affecting current work:
 - [Phase 03]: One full CYCLE_MS pass per line then isDone; no wrap (Q1 RESOLVED)
 - [Phase 03]: TokenFlight onLand passes CollectorSpawn for 03-04 progressive setMeters
 - [Phase 03]: PhonesLayer meters stay procedural Graphics; DISKETTE_URLS required beside phones
+- [Phase 03]: 03-04: progressive meter fills from pre-spin raw counts; stub 700ms beats; bet steppers locked while busy
 
 ### Pending Todos
 
@@ -125,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-10T20:37:48.488Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-10-10T20:43:40.975Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
