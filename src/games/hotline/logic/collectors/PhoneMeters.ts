@@ -1,4 +1,4 @@
-import type { TokenColor } from "./TokenColors.js";
+import { TOKEN_COLOR_ORDER, type TokenColor } from "./TokenColors.js";
 
 export interface PhoneMeters {
   increment(color: TokenColor): void;
@@ -8,23 +8,36 @@ export interface PhoneMeters {
   snapshot(): Record<TokenColor, { count: number; display: number }>;
 }
 
-export function createPhoneMeters(_meterTarget: number): PhoneMeters {
-  // stub for red phase
+// soft cap display at meterTarget, raw counts may grow past it
+export function createPhoneMeters(meterTarget: number): PhoneMeters {
+  const counts: Record<TokenColor, number> = {
+    green: 0,
+    red: 0,
+    purple: 0,
+  };
+
   return {
-    increment() {},
-    getCount() {
-      return 0;
+    increment(color) {
+      counts[color] += 1;
     },
-    getDisplay() {
-      return 0;
+    getCount(color) {
+      return counts[color];
     },
-    reset() {},
+    getDisplay(color) {
+      return Math.min(counts[color], meterTarget);
+    },
+    reset(color) {
+      counts[color] = 0;
+    },
     snapshot() {
-      return {
-        green: { count: 0, display: 0 },
-        red: { count: 0, display: 0 },
-        purple: { count: 0, display: 0 },
-      };
+      const out = {} as Record<TokenColor, { count: number; display: number }>;
+      for (const color of TOKEN_COLOR_ORDER) {
+        out[color] = {
+          count: counts[color],
+          display: Math.min(counts[color], meterTarget),
+        };
+      }
+      return out;
     },
   };
 }

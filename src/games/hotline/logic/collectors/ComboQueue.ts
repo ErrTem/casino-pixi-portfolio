@@ -1,9 +1,9 @@
 import { TOKEN_COLOR_ORDER, type TokenColor } from "./TokenColors.js";
 
+// fixed green to red to purple filter of fired colors
 export function orderComboQueue(fired: Iterable<TokenColor>): TokenColor[] {
-  // stub for red phase, always empty so order tests fail
-  void fired;
-  return [];
+  const set = new Set(fired);
+  return TOKEN_COLOR_ORDER.filter((c) => set.has(c));
 }
 
 export interface ComboQueue {
@@ -30,5 +30,3 @@ export function createComboQueue(initial: Iterable<TokenColor> = []): ComboQueue
     },
   };
 }
-
-void TOKEN_COLOR_ORDER;

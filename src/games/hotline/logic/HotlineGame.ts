@@ -1,10 +1,20 @@
 import { centsToDisplay } from "../../../shared/money/cents.js";
+import { createRng } from "../../../shared/rng/createRng.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
+import { createComboQueue } from "./collectors/ComboQueue.js";
+import { createPhoneMeters, type PhoneMeters } from "./collectors/PhoneMeters.js";
+import {
+  resolveCollectors,
+  type CollectorOutcome,
+} from "./collectors/resolveCollectors.js";
+import type { TokenColor } from "./collectors/TokenColors.js";
 import { evaluatePaylines, type LineWin } from "./evaluatePaylines.js";
 import { createSpinEngine } from "./SpinEngine.js";
 import { createWallet } from "./Wallet.js";
 
 export type SpinResult = { ok: true } | { ok: false; reason: string };
+
+export type MeterFills = Record<TokenColor, { count: number; display: number }>;
 
 export interface HotlineSnapshot {
   phase: "idle" | "settled";
@@ -15,6 +25,8 @@ export interface HotlineSnapshot {
   grid: string[][];
   lineWins: LineWin[];
   paylineCount: 40;
+  collectorOutcome: CollectorOutcome;
+  meterFills: MeterFills;
 }
 
 export interface HotlineGame {
@@ -32,6 +44,10 @@ function money(cents: number): string {
   return centsToDisplay(cents).toFixed(2);
 }
 
+function emptyOutcome(): CollectorOutcome {
+  return { spawns: [], queue: [] };
+}
+
 // static pre-spin window, plain symbols only so nothing looks like a win
 function idleGrid(config: HotlineConfig): string[][] {
   const { reels, rows, wildSymbolId, symbolWeights } = config.math;
@@ -41,19 +57,23 @@ function idleGrid(config: HotlineConfig): string[][] {
   );
 }
 
-// spin settlement reads math and paytable only, feature tables belong to phase 3
+// spin settles paylines then books collectors on a separate rng stream
 export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGame {
   const { config } = options;
   const { math } = config;
   const steps = math.betStepsCents;
   const engine = createSpinEngine(options.seed, math);
+  const collectorsRng = createRng(`${options.seed}:collectors`);
   const wallet = createWallet(math.startingBalanceCents, steps);
+  const meters: PhoneMeters = createPhoneMeters(config.features.tokenOdds.meterTarget);
+  const comboQueue = createComboQueue();
 
   let betStepIndex = 0;
   let phase: HotlineSnapshot["phase"] = "idle";
   let grid = idleGrid(config);
   let lineWins: LineWin[] = [];
   let lastWinCents = 0;
+  let collectorOutcome: CollectorOutcome = emptyOutcome();
 
   return {
     spin(): SpinResult {
@@ -71,6 +91,19 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       });
       lastWinCents = lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
       wallet.credit(lastWinCents);
+
+      collectorOutcome = resolveCollectors({
+        rng: collectorsRng,
+        tokenOdds: config.features.tokenOdds,
+        reels: math.reels,
+        rows: math.rows,
+      });
+      // book every spawn once at settle, presentation fills are later
+      for (const spawn of collectorOutcome.spawns) {
+        meters.increment(spawn.color);
+      }
+      comboQueue.set(collectorOutcome.queue);
+
       phase = "settled";
       return { ok: true };
     },
@@ -91,6 +124,8 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
         grid,
         lineWins,
         paylineCount: 40,
+        collectorOutcome,
+        meterFills: meters.snapshot(),
       };
     },
   };

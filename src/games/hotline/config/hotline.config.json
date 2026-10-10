@@ -71,7 +71,8 @@
   "features": {
     "tokenOdds": {
       "meterTarget": 6,
-      "perSpinChance": { "pink": 0.06, "cyan": 0.05, "yellow": 0.04 }
+      "perSpinChance": { "green": 0.06, "red": 0.05, "purple": 0.04 },
+      "triggerChance": { "green": 0.12, "red": 0.10, "purple": 0.08 }
     },
     "bonusPrizes": [
       { "bonusId": "pickEm", "prizeMultipliers": [2, 3, 5, 10, 25] },

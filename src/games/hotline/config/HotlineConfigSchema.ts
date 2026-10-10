@@ -42,14 +42,18 @@ const mathSchema = z
     });
   });
 
-// token meters, one chance per spin for each colored diskette
+// token meters and land trigger odds, one chance per phone color
+const chance01 = z.number().min(0).max(1);
+const colorChances = z.object({
+  green: chance01,
+  red: chance01,
+  purple: chance01,
+});
+
 const tokenOddsSchema = z.object({
   meterTarget: positiveInt,
-  perSpinChance: z.object({
-    pink: z.number().min(0).max(1),
-    cyan: z.number().min(0).max(1),
-    yellow: z.number().min(0).max(1),
-  }),
+  perSpinChance: colorChances,
+  triggerChance: colorChances,
 });
 
 // prize ladders per bonus, as multipliers of the total bet
