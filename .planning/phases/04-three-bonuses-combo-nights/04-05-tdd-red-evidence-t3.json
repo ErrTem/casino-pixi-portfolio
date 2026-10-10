@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/session/collectPresentation.test.ts src/games/hotline/logic/HotlineGame.test.ts --reporter=tap",
+  "exitCode": 1,
+  "targetTest": "session source locks busy through flights and stub without double booking",
+  "targetFile": "src/games/hotline/session/collectPresentation.test.ts",
+  "expected": "session source matches /COMBO NIGHT/ for night_total splash polish",
+  "actual": "AssertionError expected source to match /COMBO NIGHT/",
+  "output": "TAP version 13\nok 1 - forced multi-phone night keeps Green Red Purple order and night_total sum\nnot ok 2 - session source locks busy through flights and stub without double booking\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected 'import type { Ticker } from \\\"pixi.js\\\"…' to match /COMBO NIGHT/\"\n  expected: \"/COMBO NIGHT/\"\n  ...\n# tests 32\n# pass 31\n# fail 1\n"
+}

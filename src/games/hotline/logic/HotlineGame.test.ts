@@ -535,3 +535,88 @@ describe("green free spins night (BONUS-01)", () => {
   });
 });
 
+describe("combo night green red purple (BONUS-04, D-16, D-19)", () => {
+  type NightApi = HotlineGame & {
+    isNightActive: () => boolean;
+    nextNightStep: () => { kind: string; totalCents?: number; color?: string };
+    spinFree: () => SpinResult;
+    pickLocker: (index: number) => number | null;
+    stepHoldRespin: () => { done: boolean };
+  };
+
+  // seed combo-grp-night: shortened fs, nesting off, all three phones fire
+  it("forced multi-phone night keeps Green Red Purple order and night_total sum", () => {
+    const cfg = {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          meterTarget: config.features.tokenOdds.meterTarget,
+          perSpinChance: { green: 1, red: 1, purple: 1 },
+          triggerChance: { green: 1, red: 1, purple: 1 },
+        },
+        freeSpins: {
+          ...config.features.freeSpins,
+          spins: 3,
+          retriggerChance: 0,
+          nested: { red: false, purple: false },
+        },
+      },
+    } as HotlineConfig;
+    const game = createHotlineGame({
+      seed: "combo-grp-night",
+      config: cfg,
+    }) as NightApi;
+
+    expect(game.spin()).toEqual({ ok: true });
+    expect(game.getSnapshot().collectorOutcome.queue).toEqual([
+      "green",
+      "red",
+      "purple",
+    ]);
+    expect(game.isNightActive()).toBe(true);
+
+    const order: string[] = [];
+    let greenTotal = 0;
+    let redTotal = 0;
+    let purpleTotal = 0;
+    let nightTotal = -1;
+    let guard = 0;
+    while (game.isNightActive() && guard < 200) {
+      guard += 1;
+      const step = game.nextNightStep();
+      if (step.kind === "feature_start" && step.color) {
+        order.push(step.color);
+      }
+      if (step.kind === "fs_spin") {
+        expect(game.spinFree().ok).toBe(true);
+      }
+      if (step.kind === "wait" && order[order.length - 1] === "red") {
+        let h = 0;
+        while (!game.stepHoldRespin().done && h < 80) h += 1;
+        expect(h).toBeLessThan(80);
+      }
+      if (step.kind === "wait" && order[order.length - 1] === "purple") {
+        for (const idx of [0, 1, 2, 3, 4]) {
+          expect(game.pickLocker(idx)).not.toBeNull();
+        }
+      }
+      if (step.kind === "feature_exit") {
+        if (step.color === "green") greenTotal = step.totalCents ?? 0;
+        if (step.color === "red") redTotal = step.totalCents ?? 0;
+        if (step.color === "purple") purpleTotal = step.totalCents ?? 0;
+      }
+      if (step.kind === "night_total") {
+        nightTotal = step.totalCents ?? 0;
+      }
+      if (step.kind === "done") break;
+    }
+
+    expect(order).toEqual(["green", "red", "purple"]);
+    expect(redTotal).toBeGreaterThan(0);
+    expect(purpleTotal).toBeGreaterThan(0);
+    expect(nightTotal).toBe(greenTotal + redTotal + purpleTotal);
+    expect(game.isNightActive()).toBe(false);
+  });
+});
+

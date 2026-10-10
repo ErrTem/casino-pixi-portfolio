@@ -133,6 +133,10 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/stepHoldRespin/);
     expect(src).toMatch(/hold_respin/);
     expect(src).toMatch(/HoldLayer|syncHold/);
+    expect(src).toMatch(/setComboPath/);
+    expect(src).toMatch(/buildComboStripCells/);
+    expect(src).toMatch(/night_total/);
+    expect(src).toMatch(/COMBO NIGHT/);
     expect(src).not.toMatch(/FEATURE_BEAT_MS/);
     expect(src).not.toMatch(/\.increment\s*\(/);
     const overlaySrc = readFileSync(
