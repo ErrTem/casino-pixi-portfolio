@@ -126,6 +126,10 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/setWinCycleMs/);
     expect(src).toMatch(/FS_WIN_CYCLE_MS/);
     expect(src).toMatch(/FS_GAP_MS/);
+    expect(src).toMatch(/pickLocker/);
+    expect(src).toMatch(/showLockerGrid/);
+    expect(src).toMatch(/hideLockers/);
+    expect(src).toMatch(/locker-pick/);
     expect(src).not.toMatch(/\.increment\s*\(/);
   });
 

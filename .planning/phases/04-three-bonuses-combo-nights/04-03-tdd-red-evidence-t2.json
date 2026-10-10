@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/session/collectPresentation.test.ts --reporter=tap",
+  "exitCode": 1,
+  "targetTest": "session source locks busy through flights and stub without double booking",
+  "targetFile": "src/games/hotline/session/collectPresentation.test.ts",
+  "expected": "pickLocker, showLockerGrid, hideLockers, locker-pick in session source",
+  "actual": "session source missing pickLocker (AssertionError expected to match /pickLocker/)",
+  "output": "TAP version 13\nok 1 - grows one land at a time from a pre-spin baseline\nok 2 - soft caps each color at meterTarget\nok 3 - formats green to red to purple labels\nok 4 - returns empty when night or fs frame is absent\nok 5 - formats remaining spins and running free spin win\nok 6 - formats zero spins left with the running total\nok 7 - uses raw counts so this spin is not already booked\nnot ok 8 - session source locks busy through flights and stub without double booking\n  ---\n  error:\n    name: \"AssertionError\"\n    message: \"expected session source to match /pickLocker/\"\n  actual: \"mountHotlineSession without pickLocker/showLockerGrid\"\n  expected: \"pickLocker showLockerGrid hideLockers locker-pick\"\n  ...\nok 9 - session source plays collector beep events on presentation edges (D-16)\n# tests 9\n# pass 8\n# fail 1\n"
+}
