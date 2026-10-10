@@ -109,7 +109,7 @@ Plans:
   2. Phone meters visibly grow (signal bars / neon intensity) as tokens accumulate
   3. Landing a token can randomly trigger that phone's bonus; multiple phones can enqueue as combo nights (queue stub ready for Phase 4 features)
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans executed
 
 Plans:
 **Wave 1**
@@ -127,7 +127,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3)*
 
-- [ ] 03-05-PLAN.md — Collector beep SFX (D-16) + visitor walkthrough sign-off
+- [x] 03-05-PLAN.md — Collector beep SFX (D-16) + visitor walkthrough sign-off
 
 **UI hint**: yes
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
-| 3. Diskette Collectors + Trigger Queue | 4/5 | In Progress|  |
+| 3. Diskette Collectors + Trigger Queue | 5/5 | In Progress|  |
 | 4. Three Bonuses + Combo Nights | 0/TBD | Not started | - |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
 
