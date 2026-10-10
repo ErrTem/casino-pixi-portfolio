@@ -29,9 +29,9 @@ import {
 } from "./collectPresentation.js";
 
 const LAST_WIN_TWEEN_MS = 900;
-const FEATURE_BEAT_MS = 700;
 const FS_WIN_CYCLE_MS = 480;
 const FS_GAP_MS = 220;
+const HOLD_RESPIN_MS = 320;
 
 type PresentPhase =
   | "idle"
@@ -40,13 +40,20 @@ type PresentPhase =
   | "flights"
   | "fs_gap"
   | "splash"
-  | "beat"
+  | "hold_respin"
   | "pick";
 
 const FEATURE_TITLE: Record<TokenColor, string> = {
   green: "Free Spins",
   red: "Hold Night",
   purple: "Locker Pick",
+};
+
+const JACKPOT_NOTE: Record<string, string> = {
+  mini: "MIN jackpot",
+  minor: "MID jackpot",
+  major: "MAX jackpot",
+  grand: "ULTRA jackpot",
 };
 
 function clampDelta(deltaMS: number): number {
@@ -92,7 +99,7 @@ export async function mountHotlineSession(
   let baseline: MeterBaseline = { green: 0, red: 0, purple: 0 };
   let landed: CollectorSpawn[] = [];
   let pendingOutcome: CollectorOutcome | null = null;
-  let beatElapsed = 0;
+  let holdRespinElapsed = 0;
   let fsGapElapsed = 0;
   let lastSpinWasFree = false;
   let nightStarted = false;
@@ -138,10 +145,11 @@ export async function mountHotlineSession(
     hud.setCombo("");
     hud.setFeatureLine("");
     view?.scene.setPhoneGlow(null);
+    view?.scene.setHoldMode(false);
     view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
     pendingOutcome = null;
     landed = [];
-    beatElapsed = 0;
+    holdRespinElapsed = 0;
     fsGapElapsed = 0;
     lastSpinWasFree = false;
     nightStarted = false;
@@ -195,9 +203,16 @@ export async function mountHotlineSession(
       });
       return;
     }
-    // red stub beat until 04-04
-    present = "beat";
-    beatElapsed = 0;
+    if (color === "red") {
+      busy = true;
+      hud.setBusy(true);
+      present = "hold_respin";
+      holdRespinElapsed = 0;
+      const snap = game.holdSnapshot();
+      view?.scene.setHoldMode(true);
+      if (snap) view?.scene.syncHold(snap);
+      return;
+    }
   }
 
   function afterFreeSpinOrNight(): void {
@@ -248,11 +263,20 @@ export async function mountHotlineSession(
 
     if (step.kind === "feature_exit") {
       overlay.hideLockers();
+      view?.scene.setHoldMode(false);
+      let note = step.nested ? "Back to free spins" : "Tap to continue";
+      if (step.color === "red") {
+        const hold = game.holdSnapshot();
+        const jackpot = hold?.jackpotWon;
+        if (jackpot && JACKPOT_NOTE[jackpot]) {
+          note = JACKPOT_NOTE[jackpot];
+        }
+      }
       showSplash(
         {
           title: `${FEATURE_TITLE[step.color]} Total`,
           total: formatCents(step.totalCents),
-          note: step.nested ? "Back to free spins" : "Tap to continue",
+          note,
         },
         () => {
           if (step.color === "green") {
@@ -391,11 +415,17 @@ export async function mountHotlineSession(
       advanceNight();
     }
 
-    if (present === "beat") {
+    if (present === "hold_respin") {
       if (dt <= 0) return;
-      beatElapsed += dt;
-      if (beatElapsed < FEATURE_BEAT_MS) return;
-      beatElapsed = 0;
+      view.scene.tickHold(dt);
+      holdRespinElapsed += dt;
+      if (holdRespinElapsed < HOLD_RESPIN_MS) return;
+      holdRespinElapsed = 0;
+      const { done } = game.stepHoldRespin();
+      const snap = game.holdSnapshot();
+      if (snap) view.scene.syncHold(snap);
+      if (!done) return;
+      view.scene.setHoldMode(false);
       advanceNight();
     }
   }
@@ -427,6 +457,7 @@ export async function mountHotlineSession(
       ctx.app.ticker.remove(onTick);
       onTick = null;
     }
+    view?.scene.setHoldMode(false);
     overlay.dispose();
     hud.dispose();
     if (view) {

@@ -2,7 +2,9 @@ import { Container, Graphics, Sprite, Text, type Application } from "pixi.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import type { CollectorSpawn } from "../logic/collectors/resolveCollectors.js";
 import type { TokenColor } from "../logic/collectors/TokenColors.js";
-import type { HotlineSnapshot } from "../logic/index.js";
+import type { HoldSnapshot, HotlineSnapshot, JackpotTier } from "../logic/index.js";
+import { createHoldLayer } from "./HoldLayer.js";
+import { createJackpotStrip } from "./JackpotStrip.js";
 import type { HotlineTextures } from "./loadHotlineAssets.js";
 import { createPhonesLayer } from "./PhonesLayer.js";
 import { createReelWindow } from "./reels/createReelWindow.js";
@@ -34,6 +36,11 @@ export interface HotlineScene {
   setPhoneGlow: (color: TokenColor | null) => void;
   /** pass through to the win lines overlay cycle interval */
   setWinCycleMs: (ms: number) => void;
+  /** swap crt reels for sticky hold board and phones for jackpot strip */
+  setHoldMode: (on: boolean) => void;
+  syncHold: (snapshot: HoldSnapshot) => void;
+  setJackpotHighlight: (tier: JackpotTier | null) => void;
+  tickHold: (deltaMS: number) => void;
   destroy: () => void;
 }
 
@@ -86,6 +93,7 @@ export function createHotlineScene(
     textures,
     config.features.tokenOdds.meterTarget,
   );
+  const jackpot = createJackpotStrip(textures.fontFamily);
   const screen = new Graphics();
   const frame = new Sprite(textures.frame);
   const reelWindow = createReelWindow({
@@ -97,6 +105,7 @@ export function createHotlineScene(
   });
   // win lines and cell frames sit above the masked reels and the crt bezel
   const overlay = createWinLinesOverlay();
+  const hold = createHoldLayer(textures.fontFamily);
   // flights sit above reels and overlay so neon arcs read over the crt
   const flight = createTokenFlight(textures);
   if (hooks.onCollectorLand) flight.onLand(hooks.onCollectorLand);
@@ -104,15 +113,18 @@ export function createHotlineScene(
     backdrop,
     title,
     phones.container,
+    jackpot.container,
     screen,
     reelWindow.container,
     frame,
     overlay.container,
+    hold.container,
     flight.container,
   );
   app.stage.addChild(root);
 
   let destroyed = false;
+  let holdMode = false;
   let lastKey = "";
   let lastW = 0;
   let lastH = 0;
@@ -148,6 +160,7 @@ export function createHotlineScene(
     title.style.fontSize = titleSize;
     title.position.set(w / 2, top + titleH / 2);
     phones.layout(frameLeft, top + titleH, frameW, phoneH);
+    jackpot.layout(frameLeft, top + titleH, frameW, phoneH);
     frame.position.set(frameLeft, frameTop);
     frame.width = frameW;
     frame.height = frameH;
@@ -190,11 +203,29 @@ export function createHotlineScene(
 
   // wins show only once every reel is at rest, one payline at a time
   function showWins(snap: HotlineSnapshot, spinning: boolean): void {
+    if (holdMode) {
+      overlay.clear();
+      return;
+    }
     if (spinning || snap.lineWins.length === 0) {
       overlay.clear();
       return;
     }
     overlay.showCycle(snap.lineWins, geometry());
+  }
+
+  function applyHoldMode(on: boolean): void {
+    holdMode = on;
+    reelWindow.container.visible = !on;
+    overlay.container.visible = !on;
+    hold.container.visible = on;
+    phones.container.visible = !on;
+    jackpot.container.visible = on;
+    hold.setFlicker(on);
+    if (!on) {
+      jackpot.setActiveTier(null);
+      hold.setFlicker(false);
+    }
   }
 
   return {
@@ -207,6 +238,11 @@ export function createHotlineScene(
         lastW = w;
         lastH = h;
         layout(w, h);
+      }
+
+      if (holdMode) {
+        hold.tick(deltaMS);
+        return;
       }
 
       reelWindow.update(deltaMS);
@@ -268,10 +304,34 @@ export function createHotlineScene(
       overlay.setIntervalMs(ms);
     },
 
+    setHoldMode(on: boolean): void {
+      if (destroyed) return;
+      applyHoldMode(!!on);
+    },
+
+    syncHold(snapshot: HoldSnapshot): void {
+      if (destroyed) return;
+      hold.sync(snapshot, geometry());
+      jackpot.setActiveTier(snapshot.jackpotWon);
+    },
+
+    setJackpotHighlight(tier: JackpotTier | null): void {
+      if (destroyed) return;
+      jackpot.setActiveTier(tier);
+    },
+
+    tickHold(deltaMS: number): void {
+      if (destroyed || !holdMode) return;
+      hold.tick(deltaMS);
+    },
+
     destroy(): void {
       if (destroyed) return;
       destroyed = true;
+      applyHoldMode(false);
       flight.destroy();
+      hold.destroy();
+      jackpot.destroy();
       overlay.destroy();
       reelWindow.destroy();
       phones.destroy();

@@ -129,6 +129,11 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/pickLocker/);
     expect(src).toMatch(/showLockerGrid/);
     expect(src).toMatch(/hideLockers/);
+    expect(src).toMatch(/setHoldMode/);
+    expect(src).toMatch(/stepHoldRespin/);
+    expect(src).toMatch(/hold_respin/);
+    expect(src).toMatch(/HoldLayer|syncHold/);
+    expect(src).not.toMatch(/FEATURE_BEAT_MS/);
     expect(src).not.toMatch(/\.increment\s*\(/);
     const overlaySrc = readFileSync(
       join(import.meta.dirname, "../hud/FeatureOverlay.ts"),
