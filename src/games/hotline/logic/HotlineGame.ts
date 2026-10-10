@@ -13,6 +13,7 @@ import {
   boostedFreeSpinMath,
   freeSpinTokenOdds,
 } from "./features/freeSpins.js";
+import { createPickEm, type PickEm } from "./features/pickEm.js";
 import {
   createNight,
   type Night,
@@ -49,6 +50,7 @@ export interface HotlineGame {
   isNightActive(): boolean;
   nextNightStep(): NightStep;
   spinFree(): SpinResult;
+  pickLocker(index: number): number | null;
 }
 
 export interface CreateHotlineGameOptions {
@@ -85,6 +87,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
     boostedFreeSpinMath(config),
   );
   const fsCollectorsRng = createRng(`${options.seed}:fs-collectors`);
+  const pickRng = createRng(`${options.seed}:pick`);
   const wallet = createWallet(math.startingBalanceCents, steps);
   const meters: PhoneMeters = createPhoneMeters(config.features.tokenOdds.meterTarget);
   const comboQueue = createComboQueue();
@@ -98,11 +101,26 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   let night: Night | null = null;
   let featureBetCents = 0;
   let fsSpinPending = false;
+  let pickEm: PickEm | null = null;
+
+  function finishPickEm(): void {
+    if (!night || !pickEm) return;
+    night.settleFeature(pickEm.totalCents());
+    pickEm = null;
+  }
 
   function startFeature(color: TokenColor): void {
     if (!night) return;
     if (color === "green") return;
-    // red and purple stub to zero until plans 04-03 and 04-04
+    if (color === "purple") {
+      pickEm = createPickEm({
+        rng: pickRng,
+        config,
+        betCents: featureBetCents,
+      });
+      return;
+    }
+    // red stub to zero until plan 04-04
     night.settleFeature(0);
   }
 
@@ -184,6 +202,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       if (step.kind === "done") {
         night = null;
         fsSpinPending = false;
+        pickEm = null;
       }
       return step;
     },
@@ -223,6 +242,15 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
 
       phase = "settled";
       return { ok: true };
+    },
+
+    pickLocker(index: number): number | null {
+      if (!pickEm) return null;
+      const revealed = pickEm.pick(index);
+      if (revealed !== null && pickEm.isDone()) {
+        finishPickEm();
+      }
+      return revealed;
     },
 
     getSnapshot(): HotlineSnapshot {

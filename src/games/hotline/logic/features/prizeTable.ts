@@ -6,22 +6,44 @@ export type PrizeTable = {
   prizeWeights?: number[];
 };
 
-// stub for red: real weighted ladder lands in green
 export function getPrizeTable(
-  _config: HotlineConfig,
-  _bonusId: string,
+  config: HotlineConfig,
+  bonusId: string,
 ): PrizeTable {
-  return { prizeMultipliers: [] };
+  const row = config.features.bonusPrizes.find((b) => b.bonusId === bonusId);
+  if (!row) {
+    throw new Error(`prize table missing bonusId ${bonusId}`);
+  }
+  return {
+    prizeMultipliers: row.prizeMultipliers.slice(),
+    prizeWeights: row.prizeWeights ? row.prizeWeights.slice() : undefined,
+  };
 }
 
+// weighted roll mirroring SpinEngine.pick with float fallback to last entry
 export function weightedPick(
-  _rng: Rng,
+  rng: Rng,
   values: number[],
-  _weights: number[],
+  weights: number[],
 ): number {
-  return values[0] ?? 0;
+  if (values.length === 0) return 0;
+  const w =
+    weights.length === values.length
+      ? weights
+      : values.map(() => 1);
+  const total = w.reduce((s, n) => s + n, 0);
+  let roll = rng.next() * total;
+  for (let i = 0; i < values.length; i++) {
+    roll -= w[i];
+    if (roll < 0) return values[i];
+  }
+  return values[values.length - 1];
 }
 
-export function drawPrizeMultiplier(_rng: Rng, table: PrizeTable): number {
-  return table.prizeMultipliers[0] ?? 0;
+export function drawPrizeMultiplier(rng: Rng, table: PrizeTable): number {
+  const weights =
+    table.prizeWeights && table.prizeWeights.length === table.prizeMultipliers.length
+      ? table.prizeWeights
+      : table.prizeMultipliers.map(() => 1);
+  return weightedPick(rng, table.prizeMultipliers, weights);
 }

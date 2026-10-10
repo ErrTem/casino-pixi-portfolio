@@ -32,6 +32,17 @@ export {
   freeSpinTokenOdds,
 } from "./features/freeSpins.js";
 export {
+  createPickEm,
+  type PickEm,
+  type PickEmSnapshot,
+} from "./features/pickEm.js";
+export {
+  drawPrizeMultiplier,
+  getPrizeTable,
+  weightedPick,
+  type PrizeTable,
+} from "./features/prizeTable.js";
+export {
   createNight,
   type CreateNightArgs,
   type Night,
