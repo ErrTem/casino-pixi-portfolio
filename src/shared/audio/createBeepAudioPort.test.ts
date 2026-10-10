@@ -8,12 +8,12 @@ import {
   type BeepOscillatorNode,
 } from "./createBeepAudioPort.js";
 
-const COLLECTOR_EVENTS = [
+const COLLECTOR_EVENTS: SfxEvent[] = [
   "token_spawn",
   "token_land",
   "phone_trigger",
   "queue_step",
-] as const;
+];
 
 const ALL_EVENTS: SfxEvent[] = [
   "bet_lock",
@@ -23,8 +23,7 @@ const ALL_EVENTS: SfxEvent[] = [
   "spin",
   "reel_stop",
   "win",
-  // red: cast until SfxEvent + PITCH_HZ widen (D-16)
-  ...(COLLECTOR_EVENTS as unknown as SfxEvent[]),
+  ...COLLECTOR_EVENTS,
 ];
 
 function makeContext(): { ctx: BeepAudioContext; pitches: number[] } {
@@ -96,7 +95,7 @@ describe("createBeepAudioPort", () => {
     const { ctx, pitches } = makeContext();
     const port = createBeepAudioPort({ audioContext: ctx });
     for (const event of COLLECTOR_EVENTS) {
-      port.play(event as SfxEvent);
+      port.play(event);
     }
     expect(pitches).toHaveLength(COLLECTOR_EVENTS.length);
     expect(new Set(pitches).size).toBe(COLLECTOR_EVENTS.length);

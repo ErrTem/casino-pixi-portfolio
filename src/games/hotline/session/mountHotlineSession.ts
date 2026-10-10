@@ -107,6 +107,7 @@ export async function mountHotlineSession(
     present = "stub";
     stubQueue = queue.slice();
     stubElapsed = 0;
+    ctx.audio.play("phone_trigger");
     showStubHead();
   }
 
@@ -119,11 +120,13 @@ export async function mountHotlineSession(
       return;
     }
     present = "flights";
+    ctx.audio.play("token_spawn");
     view!.scene.startCollectors(spawns);
   }
 
   function onCollectorLand(spawn: CollectorSpawn): void {
     landed = [...landed, spawn];
+    ctx.audio.play("token_land");
     applyDisplayFills(progressiveDisplayFills(baseline, landed, meterTarget));
   }
 
@@ -213,6 +216,7 @@ export async function mountHotlineSession(
       stubElapsed = 0;
       const color = stubQueue.shift();
       if (color) {
+        ctx.audio.play("queue_step");
         game.resetPhoneMeter(color);
         syncMetersFromLogic();
       }

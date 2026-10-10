@@ -6,7 +6,11 @@ export type SfxEvent =
   | "crash"
   | "spin"
   | "reel_stop"
-  | "win";
+  | "win"
+  | "token_spawn"
+  | "token_land"
+  | "phone_trigger"
+  | "queue_step";
 
 export interface AudioPort {
   play(event: SfxEvent): void;
