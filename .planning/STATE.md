@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 03
 current_phase_name: Diskette Collectors + Trigger Queue
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-10-10T20:33:18.087Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-10-10T20:37:48.550Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 03 execution started
-state_head: f4575409c0f22279ac919c8c440f91dfec26b744
+state_head: aafb6f01b2bed05ad4c6bedcf4b5ba9c9980d420
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 16
-  completed_plans: 13
+  completed_plans: 14
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 03 (Diskette Collectors + Trigger Queue) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 03 execution started
 
@@ -73,6 +73,7 @@ Progress: [████░░░░░░] 40%
 | Phase 02 P07 | 12min | 2 tasks | 8 files |
 | Phase 03 P01 | 30 min | 2 tasks | 4 files |
 | Phase 03 P02 | 8min | 2 tasks | 13 files |
+| Phase 03 P03 | 5min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 03]: User places final diskette art; agent only lists and verifies PNG signatures (D-15)
 - [Phase 03]: Collectors RNG uses seed:collectors suffix so strip grids stay stable under feature chance edits
 - [Phase 03]: Meter increments book only at HotlineGame.spin settle; progressive display owned by 03-04
+- [Phase 03]: One full CYCLE_MS pass per line then isDone; no wrap (Q1 RESOLVED)
+- [Phase 03]: TokenFlight onLand passes CollectorSpawn for 03-04 progressive setMeters
+- [Phase 03]: PhonesLayer meters stay procedural Graphics; DISKETTE_URLS required beside phones
 
 ### Pending Todos
 
@@ -121,6 +125,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-10T20:33:18.032Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-10-10T20:37:48.488Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
