@@ -130,7 +130,7 @@ Each task was committed atomically:
 3. **Task 2 RED:** `91ed5a6` (test) — session greps for pickLocker / locker overlay
 4. **Task 2 GREEN:** `0454662` (feat) — FeatureOverlay grid, CSS, purple session runner
 
-**Plan metadata:** (docs commit after this file)
+**Plan metadata:** `2a40988` (docs: complete plan)
 
 ## Files Created/Modified
 
