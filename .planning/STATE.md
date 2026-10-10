@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 02
 current_phase_name: HOTLINE Base Playable
 status: executing
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-10-09T20:08:46.729Z"
+stopped_at: Completed 02-06-PLAN.md
+last_updated: "2026-10-10T11:36:13.910Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 02 execution started
-state_head: bb52ad7313b136c6cd286ccd452b96ed0d430300
+state_head: 1d76308bd172f3ad6cd1cf8e3c4a5f619221306a
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 02 (HOTLINE Base Playable) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 02 execution started
 
@@ -68,6 +68,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 02 P03 | 10min | 2 tasks | 14 files |
 | Phase 02 P04 | 20min | 2 tasks | 11 files |
 | Phase 02 P05 | 10min | 2 tasks | 10 files |
+| Phase 02 P06 | n/a | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,7 @@ Recent decisions affecting current work:
 - [Phase 02]: 02-02: line pays max of wild-only and substituted run, ties to substituted
 - [Phase 02]: 02-04: reels animate a pre-settled spin, hud last win held until the last reel lands
 - [Phase 02]: 02-05: win neon is hotline pink; hud last win count up is opt in; session holds win part of balance until reels land
+- [Phase 02]: 02-06: hotline png pack is user supplied loose files, no atlas
 
 ### Pending Todos
 
@@ -111,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-09T20:08:46.679Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-10-10T11:36:13.868Z
+Stopped at: Completed 02-06-PLAN.md
 Resume file: None
