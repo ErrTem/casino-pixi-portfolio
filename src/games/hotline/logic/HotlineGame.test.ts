@@ -518,7 +518,9 @@ describe("green free spins night (BONUS-01)", () => {
       guard += 1;
     }
     expect(guard).toBeLessThan(80);
-    expect(game.holdSnapshot().done).toBe(true);
+    const holdSnap = game.holdSnapshot();
+    expect(holdSnap).not.toBeNull();
+    expect(holdSnap?.done).toBe(true);
 
     const exit = game.nextNightStep();
     expect(exit.kind).toBe("feature_exit");

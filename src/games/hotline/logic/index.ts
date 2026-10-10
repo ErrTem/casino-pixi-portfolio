@@ -37,6 +37,13 @@ export {
   type PickEmSnapshot,
 } from "./features/pickEm.js";
 export {
+  createHoldAndWin,
+  type HoldAndWin,
+  type HoldCell,
+  type HoldSnapshot,
+  type JackpotTier,
+} from "./features/holdAndWin.js";
+export {
   drawPrizeMultiplier,
   getPrizeTable,
   weightedPick,

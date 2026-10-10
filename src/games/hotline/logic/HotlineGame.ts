@@ -13,6 +13,11 @@ import {
   boostedFreeSpinMath,
   freeSpinTokenOdds,
 } from "./features/freeSpins.js";
+import {
+  createHoldAndWin,
+  type HoldAndWin,
+  type HoldSnapshot,
+} from "./features/holdAndWin.js";
 import { createPickEm, type PickEm } from "./features/pickEm.js";
 import {
   createNight,
@@ -51,6 +56,8 @@ export interface HotlineGame {
   nextNightStep(): NightStep;
   spinFree(): SpinResult;
   pickLocker(index: number): number | null;
+  stepHoldRespin(): { done: boolean };
+  holdSnapshot(): HoldSnapshot | null;
 }
 
 export interface CreateHotlineGameOptions {
@@ -88,6 +95,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   );
   const fsCollectorsRng = createRng(`${options.seed}:fs-collectors`);
   const pickRng = createRng(`${options.seed}:pick`);
+  const holdRng = createRng(`${options.seed}:hold`);
   const wallet = createWallet(math.startingBalanceCents, steps);
   const meters: PhoneMeters = createPhoneMeters(config.features.tokenOdds.meterTarget);
   const comboQueue = createComboQueue();
@@ -102,11 +110,17 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   let featureBetCents = 0;
   let fsSpinPending = false;
   let pickEm: PickEm | null = null;
+  let hold: HoldAndWin | null = null;
 
   function finishPickEm(): void {
     if (!night || !pickEm) return;
     night.settleFeature(pickEm.totalCents());
     pickEm = null;
+  }
+
+  function finishHold(): void {
+    if (!night || !hold) return;
+    night.settleFeature(hold.totalCents());
   }
 
   function startFeature(color: TokenColor): void {
@@ -120,8 +134,15 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       });
       return;
     }
-    // red stub to zero until plan 04-04
-    night.settleFeature(0);
+    if (color === "red") {
+      hold = createHoldAndWin({
+        rng: holdRng,
+        config,
+        betCents: featureBetCents,
+      });
+      hold.start();
+      return;
+    }
   }
 
   return {
@@ -203,6 +224,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
         night = null;
         fsSpinPending = false;
         pickEm = null;
+        hold = null;
       }
       return step;
     },
@@ -251,6 +273,22 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
         finishPickEm();
       }
       return revealed;
+    },
+
+    stepHoldRespin(): { done: boolean } {
+      if (!hold) return { done: true };
+      if (!hold.snapshot().done) {
+        hold.respin();
+      }
+      const snap = hold.snapshot();
+      if (snap.done) {
+        finishHold();
+      }
+      return { done: snap.done };
+    },
+
+    holdSnapshot(): HoldSnapshot | null {
+      return hold ? hold.snapshot() : null;
     },
 
     getSnapshot(): HotlineSnapshot {
