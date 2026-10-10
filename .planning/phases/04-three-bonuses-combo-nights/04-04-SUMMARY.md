@@ -136,7 +136,7 @@ Each task was committed atomically:
 2. **Task 1 GREEN: implement seeded hold and win math** - `5692330` (feat)
 3. **Task 2: HoldLayer, jackpot strip, scene mode, session respin loop** - `d1e5242` (feat)
 
-**Plan metadata:** _(pending docs commit)_
+**Plan metadata:** `b2817f9` (docs: complete plan)
 
 ## Files Created/Modified
 
