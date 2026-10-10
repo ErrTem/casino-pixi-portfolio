@@ -2,6 +2,14 @@ import type { Ticker } from "pixi.js";
 import type { GameSession, ShellContext } from "../../../shell/types.js";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
 import { mountHotlineHud } from "../hud/HotlineHud.js";
+import type {
+  CollectorOutcome,
+  CollectorSpawn,
+} from "../logic/collectors/resolveCollectors.js";
+import {
+  TOKEN_COLOR_ORDER,
+  type TokenColor,
+} from "../logic/collectors/TokenColors.js";
 import {
   createHotlineGame,
   type HotlineGame,
@@ -9,14 +17,24 @@ import {
   type SpinResult,
 } from "../logic/index.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
+import {
+  baselineFromMeterFills,
+  formatComboStrip,
+  progressiveDisplayFills,
+  type MeterBaseline,
+} from "./collectPresentation.js";
 
 const LAST_WIN_TWEEN_MS = 900;
+const STUB_BEAT_MS = 700;
+
+type PresentPhase = "idle" | "reels" | "win_gate" | "flights" | "stub";
 
 export async function mountHotlineSession(
   ctx: ShellContext,
 ): Promise<GameSession> {
   // a bad config throws here, before any dom or app state is touched
   const config = loadHotlineConfig();
+  const meterTarget = config.features.tokenOdds.meterTarget;
   const game = createHotlineGame({ seed: ctx.seed, config });
 
   const tpl = document.querySelector(
@@ -40,21 +58,101 @@ export async function mountHotlineSession(
 
   let view: Awaited<ReturnType<typeof mountHotlineView>> | null = null;
 
+  let busy = false;
+  let present: PresentPhase = "idle";
+  let baseline: MeterBaseline = { green: 0, red: 0, purple: 0 };
+  let landed: CollectorSpawn[] = [];
+  let pendingOutcome: CollectorOutcome | null = null;
+  let stubQueue: TokenColor[] = [];
+  let stubElapsed = 0;
+
+  function applyDisplayFills(fills: readonly number[]): void {
+    view?.scene.setPhoneMeters(fills);
+  }
+
+  function syncMetersFromLogic(): void {
+    const fills = game.getSnapshot().meterFills;
+    applyDisplayFills(TOKEN_COLOR_ORDER.map((c) => fills[c].display));
+  }
+
+  function enterIdle(): void {
+    present = "idle";
+    busy = false;
+    hud.setBusy(false);
+    hud.setCombo("");
+    view?.scene.setPhoneGlow(null);
+    pendingOutcome = null;
+    landed = [];
+    stubQueue = [];
+    stubElapsed = 0;
+  }
+
+  function showStubHead(): void {
+    if (stubQueue.length === 0) {
+      syncMetersFromLogic();
+      enterIdle();
+      return;
+    }
+    view?.scene.setPhoneGlow(stubQueue[0]);
+    hud.setCombo(formatComboStrip(stubQueue));
+  }
+
+  function beginStubOrIdle(): void {
+    const queue = pendingOutcome?.queue ?? [];
+    if (queue.length === 0) {
+      syncMetersFromLogic();
+      enterIdle();
+      return;
+    }
+    present = "stub";
+    stubQueue = queue.slice();
+    stubElapsed = 0;
+    showStubHead();
+  }
+
+  function beginFlights(): void {
+    const spawns = pendingOutcome?.spawns ?? [];
+    landed = [];
+    applyDisplayFills(progressiveDisplayFills(baseline, [], meterTarget));
+    if (spawns.length === 0) {
+      beginStubOrIdle();
+      return;
+    }
+    present = "flights";
+    view!.scene.startCollectors(spawns);
+  }
+
+  function onCollectorLand(spawn: CollectorSpawn): void {
+    landed = [...landed, spawn];
+    applyDisplayFills(progressiveDisplayFills(baseline, landed, meterTarget));
+  }
+
   // the math settles in one call, the reels play it back afterwards
   const hudGame: HotlineGame = {
     spin(): SpinResult {
-      // a spin mid motion is ignored quietly, the empty reason clears the status line
-      if (view?.scene.isSpinning()) return { ok: false, reason: "" };
+      // ignore mid presentation, empty reason clears the status line
+      if (busy || view?.scene.isSpinning()) return { ok: false, reason: "" };
+      baseline = baselineFromMeterFills(game.getSnapshot().meterFills);
       const result = game.spin();
       if (result.ok && view) {
         ctx.audio.unlock();
         ctx.audio.play("spin");
+        busy = true;
+        hud.setBusy(true);
+        present = "reels";
         settleArmed = true;
+        pendingOutcome = null;
+        landed = [];
+        stubQueue = [];
+        stubElapsed = 0;
+        view.scene.setPhoneGlow(null);
+        hud.setCombo("");
         view.scene.startSpin(game.getSnapshot().grid);
       }
       return result;
     },
     setBetStepIndex: (index) => game.setBetStepIndex(index),
+    resetPhoneMeter: (color) => game.resetPhoneMeter(color),
     getSnapshot: () => visibleSnapshot(game.getSnapshot()),
   };
 
@@ -78,10 +176,48 @@ export async function mountHotlineSession(
 
   // armed by a spin, fires once when the reels come to rest
   let settleArmed = false;
-  function onSettled(snap: HotlineSnapshot): void {
+  function onReelsSettled(snap: HotlineSnapshot): void {
     settleArmed = false;
     const paid = snap.lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
     if (paid > 0) ctx.audio.play("win");
+    pendingOutcome = snap.collectorOutcome;
+    if (snap.lineWins.length === 0) {
+      beginFlights();
+      return;
+    }
+    present = "win_gate";
+  }
+
+  function tickPresent(deltaMS: number): void {
+    if (!view) return;
+
+    if (present === "reels" && settleArmed && !view.scene.isSpinning()) {
+      onReelsSettled(game.getSnapshot());
+    }
+
+    if (present === "win_gate" && view.scene.winsDone()) {
+      beginFlights();
+    }
+
+    if (present === "flights") {
+      view.scene.tickCollectors(deltaMS);
+      if (view.scene.collectorsDone()) {
+        beginStubOrIdle();
+      }
+    }
+
+    if (present === "stub") {
+      if (!Number.isFinite(deltaMS) || deltaMS <= 0) return;
+      stubElapsed += deltaMS;
+      if (stubElapsed < STUB_BEAT_MS) return;
+      stubElapsed = 0;
+      const color = stubQueue.shift();
+      if (color) {
+        game.resetPhoneMeter(color);
+        syncMetersFromLogic();
+      }
+      showStubHead();
+    }
   }
 
   const menuEl = screen.querySelector("[data-action=menu]");
@@ -125,6 +261,7 @@ export async function mountHotlineSession(
 
   view = await mountHotlineView(ctx.app, config, {
     onReelStop: () => ctx.audio.play("reel_stop"),
+    onCollectorLand,
   });
   if (disposed) {
     view.scene.destroy();
@@ -133,12 +270,13 @@ export async function mountHotlineSession(
     return { dispose };
   }
 
+  syncMetersFromLogic();
   hud.render(hudGame.getSnapshot());
 
   onTick = (ticker: Ticker): void => {
     // scene first so the hud reads the motion state after this frame
     view!.scene.sync(game.getSnapshot(), ticker.deltaMS);
-    if (settleArmed && !view!.scene.isSpinning()) onSettled(game.getSnapshot());
+    tickPresent(ticker.deltaMS);
     hud.render(hudGame.getSnapshot());
   };
   ctx.app.ticker.add(onTick);

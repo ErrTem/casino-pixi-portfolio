@@ -21,6 +21,8 @@ export interface HotlineScene {
   /** spin the reels and land them on `grid` */
   startSpin: (grid: string[][]) => void;
   isSpinning: () => boolean;
+  /** true after the finite win cycle one pass, or when there are no wins */
+  winsDone: () => boolean;
   /** start parallel diskette flights after the win gate */
   startCollectors: (spawns: readonly CollectorSpawn[]) => void;
   tickCollectors: (deltaMS: number) => void;
@@ -227,6 +229,10 @@ export function createHotlineScene(
 
     isSpinning(): boolean {
       return reelWindow.isSpinning();
+    },
+
+    winsDone(): boolean {
+      return overlay.isDone();
     },
 
     startCollectors(spawns: readonly CollectorSpawn[]): void {

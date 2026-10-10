@@ -33,6 +33,8 @@ export interface HotlineGame {
   spin(): SpinResult;
   setBetStepIndex(index: number): void;
   getSnapshot(): HotlineSnapshot;
+  /** clear one phone meter when its stub beat pops (d-07, d-12) */
+  resetPhoneMeter(color: TokenColor): void;
 }
 
 export interface CreateHotlineGameOptions {
@@ -112,6 +114,10 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       // bad input keeps the current step, anything else lands on a real step
       if (!Number.isFinite(index)) return;
       betStepIndex = Math.max(0, Math.min(steps.length - 1, Math.floor(index)));
+    },
+
+    resetPhoneMeter(color: TokenColor): void {
+      meters.reset(color);
     },
 
     getSnapshot(): HotlineSnapshot {
