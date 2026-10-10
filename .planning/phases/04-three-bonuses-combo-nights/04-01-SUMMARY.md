@@ -137,7 +137,7 @@ Each task was committed atomically:
 3. **Task 2 RED:** `57c1c8f` (test) — night/order/schema lock tests with retrigger cap open
 4. **Task 2 GREEN:** `9cc8820` (feat) — enforce `maxRetriggers` again
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `03bbf18` (docs: complete plan)
 
 ## TDD Gate Compliance
 
