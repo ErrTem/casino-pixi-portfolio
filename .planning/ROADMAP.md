@@ -99,7 +99,7 @@ Plans:
 
 ### Phase 3: Diskette Collectors + Trigger Queue
 
-**Goal:** Base spins collect colored diskettes into three rotary phones; meters grow visibly; token land can trigger bonuses into a clear combo queue
+**Goal:** As a portfolio visitor playing HOTLINE, I want to collect colored diskettes into three phone meters and see combo nights enqueue when tokens land, so that the Witch Pots collector loop is readable before real bonuses arrive in Phase 4.
 **Mode:** mvp
 **Depends on:** Phase 2
 **Requirements:** COLL-01, COLL-02, COLL-03
@@ -109,7 +109,21 @@ Plans:
   2. Phone meters visibly grow (signal bars / neon intensity) as tokens accumulate
   3. Landing a token can randomly trigger that phone's bonus; multiple phones can enqueue as combo nights (queue stub ready for Phase 4 features)
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Diskette ASSET-LIST + user PNG handoff (D-15)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Tracer: config/logic/win-gate/TokenFlight/meters/combo stub + Spin busy
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — Collector beep SFX (D-16) + visitor walkthrough sign-off
+
 **UI hint**: yes
 
 ### Phase 4: Three Bonuses + Combo Nights
