@@ -61,4 +61,19 @@ describe("resolveCollectors", () => {
     expect(pi).toBeGreaterThanOrEqual(0);
     expect(gi).toBeLessThan(pi);
   });
+
+  it("keeps green before purple when red does not spawn", () => {
+    const out = resolveCollectors({
+      rng: createRng("collectors-gap-red"),
+      tokenOdds: {
+        meterTarget: 6,
+        perSpinChance: { green: 1, red: 0, purple: 1 },
+        triggerChance: { green: 1, red: 1, purple: 1 },
+      },
+      reels: 5,
+      rows: 4,
+    });
+    expect(out.spawns.map((s) => s.color)).toEqual(["green", "purple"]);
+    expect(out.queue).toEqual(["green", "purple"]);
+  });
 });

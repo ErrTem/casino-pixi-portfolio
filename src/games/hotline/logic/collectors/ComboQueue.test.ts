@@ -9,6 +9,8 @@ describe("orderComboQueue", () => {
       "purple",
     ]);
     expect(orderComboQueue(new Set(["purple", "red"]))).toEqual(["red", "purple"]);
+    expect(orderComboQueue(["purple", "green"])).toEqual(["green", "purple"]);
+    expect(orderComboQueue([])).toEqual([]);
   });
 });
 
@@ -20,5 +22,11 @@ describe("createComboQueue", () => {
     expect(q.pop()).toBe("green");
     expect(q.pop()).toBe("purple");
     expect(q.pop()).toBeUndefined();
+  });
+
+  it("set reorders to green red purple before drain", () => {
+    const q = createComboQueue();
+    q.set(["purple", "red", "green"]);
+    expect([q.pop(), q.pop(), q.pop()]).toEqual(["green", "red", "purple"]);
   });
 });

@@ -185,14 +185,12 @@ describe("collector outcome on spin", () => {
     const game = createHotlineGame({ seed: "collect", config: forced });
     expect(game.spin()).toEqual({ ok: true });
     const snap = game.getSnapshot();
-    expect(snap).toHaveProperty("collectorOutcome");
-    expect(snap).toHaveProperty("meterFills");
-    expect(snap.collectorOutcome?.spawns).toHaveLength(3);
-    expect(snap.collectorOutcome?.queue).toEqual(["green", "red", "purple"]);
-    expect(snap.meterFills?.green.count).toBe(1);
-    expect(snap.meterFills?.red.count).toBe(1);
-    expect(snap.meterFills?.purple.count).toBe(1);
-    expect(snap.meterFills?.green.display).toBe(1);
+    expect(snap.collectorOutcome.spawns).toHaveLength(3);
+    expect(snap.collectorOutcome.queue).toEqual(["green", "red", "purple"]);
+    expect(snap.meterFills.green.count).toBe(1);
+    expect(snap.meterFills.red.count).toBe(1);
+    expect(snap.meterFills.purple.count).toBe(1);
+    expect(snap.meterFills.green.display).toBe(1);
   });
 
   it("keeps strip grids stable when only feature chances change", () => {
@@ -206,11 +204,39 @@ describe("collector outcome on spin", () => {
     );
     const a = createHotlineGame({ seed: "parity", config: aCfg });
     const b = createHotlineGame({ seed: "parity", config: bCfg });
+    let sawMeterGap = false;
     for (let i = 0; i < 10; i++) {
       a.spin();
       b.spin();
-      expect(b.getSnapshot().grid).toEqual(a.getSnapshot().grid);
+      const sa = a.getSnapshot();
+      const sb = b.getSnapshot();
+      expect(sb.grid).toEqual(sa.grid);
+      if (JSON.stringify(sb.meterFills) !== JSON.stringify(sa.meterFills)) {
+        sawMeterGap = true;
+      }
     }
+    expect(sawMeterGap).toBe(true);
+  });
+
+  it("accumulates booked fills across spins with soft cap display", () => {
+    const cfg = {
+      ...withOdds(
+        { green: 1, red: 0, purple: 0 },
+        { green: 0, red: 0, purple: 0 },
+      ),
+    };
+    cfg.features = {
+      ...cfg.features,
+      tokenOdds: { ...cfg.features.tokenOdds, meterTarget: 2 },
+    };
+    const game = createHotlineGame({ seed: "acc", config: cfg });
+    game.spin();
+    game.spin();
+    game.spin();
+    const fills = game.getSnapshot().meterFills;
+    expect(fills.green.count).toBe(3);
+    expect(fills.green.display).toBe(2);
+    expect(fills.red.count).toBe(0);
   });
 });
 
