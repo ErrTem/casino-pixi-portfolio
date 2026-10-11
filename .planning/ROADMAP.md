@@ -182,20 +182,28 @@ Plans:
   3. User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
   4. Layout remains playable on desktop and mobile viewport sizes
 
-**Plans:** 3 plans
+**Plans:** 5 plans
 
 Plans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Tracer: VHS SURVIVE/DIE pot, offer gate, DOM overlay (GAMBLE-01, GAMBLE-02)
+- [ ] 05-01-PLAN.md — Tracer: Zod gamble config, createGamble pot, Wallet debit, HotlineGame stake (GAMBLE-01, GAMBLE-02)
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 05-02-PLAN.md — Info paytable sheet with live Zod payouts (BASE-04)
+- [ ] 05-02-PLAN.md — Session offer gate, HUD Gamble, DOM VHS SURVIVE/DIE overlay (GAMBLE-01, GAMBLE-02)
 
 **Wave 3** *(blocked on Waves 1–2)*
 
-- [ ] 05-03-PLAN.md — Mobile spin hub, VHS asset list, gamble beeps, viewport walkthrough (PRES-02)
+- [ ] 05-03-PLAN.md — Info paytable sheet with live Zod payouts; Info anytime over paused VHS (BASE-04, D-12)
+
+**Wave 4** *(blocked on Waves 2–3)*
+
+- [ ] 05-04-PLAN.md — Desktop icon strip and mobile spin-centric hub (PRES-02)
+
+**Wave 5** *(blocked on Waves 2 and 4)*
+
+- [ ] 05-05-PLAN.md — VHS asset list, gamble beeps, viewport walkthrough (PRES-02, D-08)
 
 **UI hint**: yes
 
@@ -210,7 +218,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
 | 4. Three Bonuses + Combo Nights | 5/5 | Complete    | 2026-10-11 |
-| 5. Gamble + Paytable + Polish | 0/3 | Not started | - |
+| 5. Gamble + Paytable + Polish | 0/5 | Not started | - |
 
 ## Coverage Map
 

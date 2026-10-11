@@ -465,22 +465,19 @@ Recommend adding (discretion names): `"gamble_open" | "gamble_survive" | "gamble
 
 **If this table is empty:** N/A — five assumptions listed for discuss/planner confirmation.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Gamble after base win that also starts a night**
+1. **Gamble after base win that also starts a night** — RESOLVED
    - What we know: D-01 says after win cycle + collectors/night settle; GAMBLE-02 excludes bonus totals.
-   - What's unclear: Whether players expect no gamble when a phone triggered (some live games skip risk after feature).
-   - Recommendation: **Still offer** on the captured base line win after night returns to idle (matches literal D-01 + GAMBLE-02).
+   - Resolution: **Still offer** on the captured base line win after night returns to idle (matches literal D-01 + GAMBLE-02). Adopted in 05-01 / 05-02 flagged_assumptions (RESEARCH Q1 / A4).
 
-2. **Info during gamble overlay**
+2. **Info during gamble overlay** — RESOLVED
    - What we know: Info may open anytime and pauses play (D-12).
-   - What's unclear: Stacking Info above an open VHS round.
-   - Recommendation: Allow Info to open; keep gamble overlay underneath paused (no SURVIVE/DIE until Info closes), or disable Info while `present === "gamble"` — pick one in plan; prefer **disable Info during open VHS** for simpler FSM.
+   - Resolution: **Allow Info over paused VHS** — Info may open while `present === "gamble"`; keep the gamble overlay underneath with SURVIVE/DIE inert until Info closes. Honors locked D-12; adopted in 05-03 flagged_assumptions (RESEARCH Q2). Do not disable Info solely because VHS is open.
 
-3. **Exact VHS PNG filenames / count**
+3. **Exact VHS PNG filenames / count** — RESOLVED
    - What we know: D-08 wants a small pack; CSS fallback OK.
-   - What's unclear: Frame vs button vs noise layers.
-   - Recommendation: Planner drafts `05-ASSET-LIST.md` with 3 files: `vhs-gamble-panel.png`, `vhs-btn-survive.png`, `vhs-btn-die.png`.
+   - Resolution: Planner drafts `05-ASSET-LIST.md` with 3 files: `vhs-gamble-panel.png`, `vhs-btn-survive.png`, `vhs-btn-die.png`. Adopted in 05-05 flagged_assumptions (RESEARCH Q3 / A3).
 
 ## Environment Availability
 
