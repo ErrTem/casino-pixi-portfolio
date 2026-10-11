@@ -13,7 +13,7 @@ Brownfield portfolio grows from Crash-only boot into a multi-game shell, then sh
 - [x] **Phase 1: Portfolio Shell + Crash Session** - Menu launches Crash or returns home; shared mute/seed/demo chrome; one long-lived Pixi Application (completed 2026-10-09)
 - [x] **Phase 2: HOTLINE Base Playable** - Zod JSON config, 5×4 / 40-line math, spin/bet HUD, motel CRT presentation (completed 2026-10-10)
 - [x] **Phase 3: Diskette Collectors + Trigger Queue** - Colored tokens fly into three phones; meters grow; random triggers enqueue combo nights (completed 2026-10-11)
-- [ ] **Phase 4: Three Bonuses + Combo Nights** - Green free spins, Red Hold & Win, Purple locker Pick'em, ordered combo queue
+- [x] **Phase 4: Three Bonuses + Combo Nights** - Green free spins, Red Hold & Win, Purple locker Pick'em, ordered combo queue (completed 2026-10-11)
 - [ ] **Phase 5: Gamble + Paytable + Polish** - VHS SURVIVE/DIE, rules overlay, responsive layout
 
 ## Phase Details
@@ -144,7 +144,7 @@ Plans:
   3. Purple phone opens a locker Pick'em where the user reveals cash prizes until the round ends
   4. When multiple phones trigger, bonuses run in a clear ordered combo queue (including nesting during free spins where config allows)
 
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -195,7 +195,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Portfolio Shell + Crash Session | 4/4 | Complete    | 2026-10-09 |
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
-| 4. Three Bonuses + Combo Nights | 5/5 | In Progress|  |
+| 4. Three Bonuses + Combo Nights | 5/5 | Complete    | 2026-10-11 |
 | 5. Gamble + Paytable + Polish | 0/TBD | Not started | - |
 
 ## Coverage Map

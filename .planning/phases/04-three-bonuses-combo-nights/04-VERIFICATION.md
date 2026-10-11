@@ -1,9 +1,10 @@
 ---
 phase: 04-three-bonuses-combo-nights
-verified: 2026-10-10T23:15:24Z
-status: human_needed
+verified: 2026-10-11T14:52:13Z
+status: passed
 score: 4/4 must-haves verified
 covered_files:
+
   - .planning/REQUIREMENTS.md
   - .planning/ROADMAP.md
   - .planning/phases/04-three-bonuses-combo-nights/04-01-PLAN.md
@@ -54,7 +55,8 @@ covered_files:
   - src/shared/audio/createBeepAudioPort.ts
   - src/shared/audio/createBeepAudioPort.test.ts
   - tests/hotline.assets.test.ts
-covered_digest: "v1:sha256:0a0cc73bd18e750388fee004e9ab90ce16c83b9fb4ee1c076ae65df2945e76d5"
+
+covered_digest: "v1:sha256:5cb0e6e007110aca30b79bc79cb63e9f66e76410695417ac8c84421b4cbb2287"
 behavior_unverified: 0
 overrides_applied: 0
 decision_coverage:
@@ -62,6 +64,7 @@ decision_coverage:
   total: 20
   not_honored: []
 human_verification:
+
   - test: "Green free spins walkthrough (BONUS-01)"
     expected: "Trigger green phone; splash → continue → 24 auto free spins with denser mask wilds on reels 2–5; DOM feature line shows remaining spins + win; exit total splash; Spin locked the whole night"
     why_human: "Logic and config are unit-tested; auto-run pacing, splash chrome, and wild density feel need a browser session"
