@@ -182,7 +182,7 @@ Plans:
   3. User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
   4. Layout remains playable on desktop and mobile viewport sizes
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 **Wave 1**
@@ -195,7 +195,7 @@ Plans:
 
 **Wave 3** *(blocked on Waves 1–2)*
 
-- [ ] 05-03-PLAN.md — Info paytable sheet with live Zod payouts; Info anytime over paused VHS (BASE-04, D-12)
+- [x] 05-03-PLAN.md — Info paytable sheet with live Zod payouts; Info anytime over paused VHS (BASE-04, D-12)
 
 **Wave 4** *(blocked on Waves 2–3)*
 
@@ -218,7 +218,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
 | 4. Three Bonuses + Combo Nights | 5/5 | Complete    | 2026-10-11 |
-| 5. Gamble + Paytable + Polish | 2/5 | In Progress|  |
+| 5. Gamble + Paytable + Polish | 3/5 | In Progress|  |
 
 ## Coverage Map
 

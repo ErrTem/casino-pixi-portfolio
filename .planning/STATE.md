@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 05
 current_phase_name: Gamble + Paytable + Polish
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-10-12T09:20:19.394Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-10-12T09:26:27.667Z"
 last_activity: 2026-10-12
 last_activity_desc: Phase 05 execution resumed (wave continue)
-state_head: f9e2cb7f87a81d19f3a02c02e8b11a0af53ddf9a
+state_head: 7d3ed2e42a64972c1254193e0fd2287d3703fceb
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 26
-  completed_plans: 23
+  completed_plans: 24
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 05 (Gamble + Paytable + Polish) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-10-12 — Phase 05 execution resumed (wave continue)
 
@@ -85,6 +85,7 @@ Progress: [████████░░] 80%
 | Phase 04 P05 | 6min | 3 tasks | 11 files |
 | Phase 05 P01 | 7 min | 2 tasks | 10 files |
 | Phase 05 P02 | 6 min | 2 tasks | 7 files |
+| Phase 05 P03 | 9min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Feature SFX ids replace queue_step on bonus edges; collector beeps unchanged
 - [Phase 05]: 05-01: gamble pot is already in the wallet, survive credits it once more and die debits it; stake is baseLineWinCents from base spin only
 - [Phase 05]: 05-02: SURVIVE and DIE share one seeded resolve path, 750 ms result beat, enterIdle re-offers for chaining
+- [Phase 05]: 05-03: Info opens over paused VHS by raising hotline top chrome above overlays, play pauses by infoOpen gating tickPresent and busy
 
 ### Pending Todos
 
@@ -155,6 +157,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-12T09:20:19.307Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-10-12T09:26:27.584Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None

@@ -17,7 +17,7 @@
 - [x] **BASE-01**: User plays HOTLINE on a 5x4 grid with 40 fixed paylines, wins left-to-right from reel 1
 - [x] **BASE-02**: User can spin, change bet within config steps, and see balance and last win
 - [x] **BASE-03**: Matching symbols on a payline pay according to the paytable; Wild (animal mask) substitutes for paying symbols
-- [ ] **BASE-04**: User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
+- [x] **BASE-04**: User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
 
 ### Collectors
 
@@ -95,7 +95,7 @@ Deferred — not in current roadmap phases.
 | BONUS-04 | Phase 4 | Complete |
 | GAMBLE-01 | Phase 5 | Complete |
 | GAMBLE-02 | Phase 5 | Complete |
-| BASE-04 | Phase 5 | Pending |
+| BASE-04 | Phase 5 | Complete |
 | PRES-02 | Phase 5 | Pending |
 
 **Coverage:**
