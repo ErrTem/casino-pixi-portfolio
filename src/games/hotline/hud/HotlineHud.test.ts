@@ -49,6 +49,7 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-action=bet-dec]",
     "[data-action=bet-inc]",
     "[data-action=gamble]",
+    "[data-action=info]",
   ];
   const els: Record<string, FakeEl> = {};
   for (const n of names) els[n] = new FakeEl();
@@ -317,5 +318,55 @@ describe("HotlineHud gamble control (GAMBLE-01, D-01)", () => {
     expect(calls).toBe(1);
     hud.dispose();
     expect(els["[data-action=gamble]"].count()).toBe(0);
+  });
+});
+describe("HotlineHud info control (BASE-04, D-09, D-12)", () => {
+  it("info click calls onInfo and ignores clicks after dispose", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-info", config });
+    const { root, els } = makeRoot();
+    let calls = 0;
+    const hud = mountHotlineHud(root, game, {
+      betStepCount: config.math.betStepsCents.length,
+      onInfo: () => {
+        calls += 1;
+      },
+    });
+    hud.render(game.getSnapshot());
+    els["[data-action=info]"].click();
+    expect(calls).toBe(1);
+    hud.dispose();
+    expect(els["[data-action=info]"].count()).toBe(0);
+    els["[data-action=info]"].click();
+    expect(calls).toBe(1);
+  });
+
+  it("busy locks spin gamble and bet but leaves info enabled", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-info-busy", config });
+    const { root, els } = makeRoot();
+    let calls = 0;
+    const hud = mountHotlineHud(root, game, {
+      betStepCount: config.math.betStepsCents.length,
+      onInfo: () => {
+        calls += 1;
+      },
+    });
+    hud.render(game.getSnapshot());
+    hud.setGambleEnabled(true);
+    hud.setBusy(true);
+    expect(els["[data-action=spin]"].disabled).toBe(true);
+    expect(els["[data-action=gamble]"].disabled).toBe(true);
+    expect(els["[data-action=bet-dec]"].disabled).toBe(true);
+    expect(els["[data-action=bet-inc]"].disabled).toBe(true);
+    expect(els["[data-action=info]"].disabled).toBe(false);
+    els["[data-action=info]"].click();
+    expect(calls).toBe(1);
+  });
+
+  it("hud source never disables info", () => {
+    const src = readFileSync(join(import.meta.dirname, "HotlineHud.ts"), "utf8");
+    expect(src).toMatch(/data-action=info/);
+    expect(src).not.toMatch(/infoBtn\.disabled\s*=/);
   });
 });

@@ -286,3 +286,50 @@ describe("gamble session edges (D-02, D-03, D-04, GAMBLE-02)", () => {
     if (!res!.survived) expect(game.getGambleSnapshot().offered).toBe(false);
   });
 });
+describe("info sheet session and markup (BASE-04, D-09, D-12)", () => {
+  const read = (p: string): string =>
+    readFileSync(join(import.meta.dirname, p), "utf8");
+
+  it("html has the paytable overlay and info control outside the canvas host", () => {
+    const html = readFileSync(join(import.meta.dirname, "../../../../index.html"), "utf8");
+    const tpl = html.slice(html.indexOf('id="hotline-screen-template"'));
+    expect(tpl).toMatch(/data-field="paytable-overlay"/);
+    expect(tpl).toMatch(/data-field="paytable-body"/);
+    expect(tpl).toMatch(/data-action="info"/);
+    expect(tpl).toMatch(/data-action="paytable-close"/);
+    const hostOpen = tpl.indexOf('id="game-canvas-host"');
+    const hostClose = tpl.indexOf("</div>", hostOpen);
+    const inside = tpl.slice(hostOpen, hostClose);
+    expect(inside).not.toMatch(/paytable|info/);
+  });
+
+  it("overlay binder builds rows with createElement textContent and replaceChildren only", () => {
+    const src = read("../hud/PaytableOverlay.ts");
+    expect(src).toMatch(/mountPaytableOverlay/);
+    expect(src).toMatch(/createElement/);
+    expect(src).toMatch(/textContent/);
+    expect(src).toMatch(/replaceChildren/);
+    expect(src).not.toMatch(/innerHTML|insertAdjacentHTML/);
+  });
+
+  it("session opens the sheet from the live model and pauses play until dismiss", () => {
+    const src = read("mountHotlineSession.ts");
+    expect(src).toMatch(/mountPaytableOverlay/);
+    expect(src).toMatch(/paytableSheetModel\(\s*config\s*\)/);
+    expect(src).toMatch(/onInfo/);
+    const openAt = src.indexOf("function openInfo");
+    const closeAt = src.indexOf("function closeInfo");
+    expect(openAt).toBeGreaterThan(0);
+    expect(closeAt).toBeGreaterThan(openAt);
+    expect(src.slice(openAt, closeAt)).toMatch(/hud\.setBusy\(\s*true\s*\)/);
+    expect(src.slice(closeAt, closeAt + 900)).toMatch(/hud\.setBusy\(\s*busy\s*\)/);
+    expect(src).toMatch(/infoOpen/);
+  });
+
+  it("spin gamble round and feature taps are inert while the sheet is open", () => {
+    const src = read("mountHotlineSession.ts");
+    expect(src).toMatch(/if \(busy \|\| infoOpen/);
+    expect(src).toMatch(/if \(infoOpen\) return/);
+    expect(src).toMatch(/if \(present !== "gamble" \|\| gambleShowingResult \|\| infoOpen\)/);
+  });
+});
