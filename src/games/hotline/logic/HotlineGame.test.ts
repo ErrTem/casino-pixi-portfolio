@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createRng } from "../../../shared/rng/createRng.js";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import { evaluatePaylines } from "./evaluatePaylines.js";
@@ -720,6 +721,99 @@ describe("gamble stake capture (GAMBLE-01, GAMBLE-02)", () => {
     const snap = game.getGambleSnapshot();
     expect(snap.roundsDone).toBe(0);
     expect(snap.stakeCents).toBe(baseWin(game));
+  });
+
+  it("die takes the credited win back and closes the offer", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    const bet = config.math.betStepsCents[0];
+    game.spin();
+    const res = game.resolveGamble(rngOf(0.9));
+    expect(res).toEqual({ survived: false, stakeCents: 0, roundsDone: 0, offered: false });
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(START - bet);
+    expect(game.getGambleSnapshot().offered).toBe(false);
+    expect(game.resolveGamble(rngOf(0.1))).toBeNull();
+  });
+
+  it("die after a survive debits the doubled pot", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    const bet = config.math.betStepsCents[0];
+    game.spin();
+    game.resolveGamble(rngOf(0.1));
+    game.resolveGamble(rngOf(0.9));
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(START - bet);
+  });
+
+  it("stops after maxRounds survives and leaves the pot in the wallet", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    const bet = config.math.betStepsCents[0];
+    game.spin();
+    const win = baseWin(game);
+    const max = config.features.gamble.maxRounds;
+    expect(max).toBe(10);
+    for (let i = 1; i <= max; i++) {
+      const res = game.resolveGamble(rngOf(0.1));
+      expect(res?.survived).toBe(true);
+      expect(res?.offered).toBe(i < max);
+    }
+    expect(game.resolveGamble(rngOf(0.1))).toBeNull();
+    expect(game.getGambleSnapshot()).toEqual({
+      stakeCents: win * 2 ** max,
+      roundsDone: max,
+      offered: false,
+    });
+    // every survive credits the pot at that moment, so the sum is win times 2^max
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(START - bet + win * 2 ** max);
+  });
+
+  it("clearGambleOffer keeps the credited win and drops the pot", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    game.spin();
+    const before = cents(game.getSnapshot().balanceDisplay);
+    game.clearGambleOffer();
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(before);
+    expect(game.getGambleSnapshot()).toEqual({ stakeCents: 0, roundsDone: 0, offered: false });
+    expect(game.resolveGamble(rngOf(0.1))).toBeNull();
+  });
+
+  it("replays the same survive and die run for the same gamble seed", () => {
+    const run = () => {
+      const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+      game.spin();
+      const rng = createRng("gseed:gamble");
+      const out: boolean[] = [];
+      for (let i = 0; i < 10; i++) {
+        const res = game.resolveGamble(rng);
+        if (!res) break;
+        out.push(res.survived);
+      }
+      return { out, balance: game.getSnapshot().balanceDisplay };
+    };
+    expect(run()).toEqual(run());
+  });
+
+  it("keeps the base pot as the stake after a night, never the night total", () => {
+    const game = createHotlineGame({ seed: winSeed(greenNight), config: greenNight });
+    game.spin();
+    const win = baseWin(game);
+    expect(game.isNightActive()).toBe(true);
+    let nightTotal = 0;
+    let guard = 0;
+    while (game.isNightActive() && guard < 100) {
+      guard += 1;
+      const step = game.nextNightStep();
+      if (step.kind === "fs_spin") game.spinFree();
+      if (step.kind === "night_total") nightTotal = step.totalCents;
+    }
+    expect(game.isNightActive()).toBe(false);
+    expect(nightTotal).toBeGreaterThanOrEqual(0);
+    expect(game.getGambleSnapshot()).toEqual({
+      stakeCents: win,
+      roundsDone: 0,
+      offered: true,
+    });
+    const before = cents(game.getSnapshot().balanceDisplay);
+    game.resolveGamble(rngOf(0.1));
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(before + win);
   });
 
   it("free spin wins never replace the base pot", () => {

@@ -65,6 +65,26 @@ describe("createGamble", () => {
     expect(g.snapshot()).toEqual({ stakeCents: 40, roundsDone: 0, offered: true });
   });
 
+  it("same seed on the gamble stream gives the same survive die run", () => {
+    const run = (seed: string) => {
+      const g = createGamble(opts);
+      const rng = createRng(`${seed}:gamble`);
+      const out: boolean[] = [];
+      for (let i = 0; i < 6; i++) {
+        g.offer(100);
+        for (;;) {
+          const res = g.resolve(rng);
+          if (!res) break;
+          out.push(res.survived);
+        }
+      }
+      return out;
+    };
+    expect(run("replay")).toEqual(run("replay"));
+    expect(run("replay").length).toBeGreaterThan(5);
+    expect(run("replay")).not.toEqual(run("other"));
+  });
+
   it("stops offering after maxRounds survives", () => {
     const g = createGamble({ maxRounds: 3, surviveChance: 0.5 });
     g.offer(100);
