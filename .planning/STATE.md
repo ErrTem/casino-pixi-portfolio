@@ -5,16 +5,16 @@ milestone_name: HOTLINE + multi-game menu
 current_phase: 05
 current_phase_name: Gamble + Paytable + Polish
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-10-11T21:08:13.554Z"
-last_activity: 2026-10-11
-last_activity_desc: Phase 04 complete, transitioned to Phase 5
-state_head: cdc866548c05dbce7294c3598e72794ce3957d3a
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-10-12T09:13:46.533Z"
+last_activity: 2026-10-12
+last_activity_desc: Phase 05 execution resumed (wave continue)
+state_head: ffea9c894113766b3f9c7b80ad6258cd13bef6de
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 26
-  completed_plans: 21
+  completed_plans: 22
 ---
 
 # Project State
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** Portfolio visitor opens the menu, launches HOTLINE, and plays the full Witch Pots-style loop in Hotline Miami dress with backend-shaped JSON configs.
-**Current focus:** Phase 04 — Three Bonuses + Combo Nights
+**Current focus:** Phase 05 — Gamble + Paytable + Polish
 
 ## Current Position
 
-Phase: 05 (Gamble + Paytable + Polish) — READY TO EXECUTE
-Plan: Not started
+Phase: 05 (Gamble + Paytable + Polish) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-10-11 — Phase 04 complete, transitioned to Phase 5
+Last activity: 2026-10-12 — Phase 05 execution resumed (wave continue)
 
 Progress: [████████░░] 80%
 
@@ -83,6 +83,7 @@ Progress: [████████░░] 80%
 | Phase 04 P03 | 12min | 2 tasks | 12 files |
 | Phase 04 P04 | 8min | 2 tasks | 10 files |
 | Phase 04 P05 | 6min | 3 tasks | 11 files |
+| Phase 05 P01 | 7 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,7 @@ Recent decisions affecting current work:
 - [Phase 04]: setHoldMode(false) on enterIdle dispose destroy and hold exit paths
 - [Phase 04]: Nested combo cells use nested suffix; joiners are separate DOM spans
 - [Phase 04]: Feature SFX ids replace queue_step on bonus edges; collector beeps unchanged
+- [Phase 05]: 05-01: gamble pot is already in the wallet, survive credits it once more and die debits it; stake is baseLineWinCents from base spin only
 
 ### Pending Todos
 
@@ -151,6 +153,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-11T20:43:10.541Z
-Stopped at: Phase 5 context gathered
-Resume file: D:\pixi\casino-pixi-portfolio\.planning\phases\05-gamble-paytable-polish/05-CONTEXT.md
+Last session: 2026-10-12T09:13:46.453Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None

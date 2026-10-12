@@ -182,12 +182,12 @@ Plans:
   3. User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
   4. Layout remains playable on desktop and mobile viewport sizes
 
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Tracer: Zod gamble config, createGamble pot, Wallet debit, HotlineGame stake (GAMBLE-01, GAMBLE-02)
+- [x] 05-01-PLAN.md — Tracer: Zod gamble config, createGamble pot, Wallet debit, HotlineGame stake (GAMBLE-01, GAMBLE-02)
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -218,7 +218,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
 | 4. Three Bonuses + Combo Nights | 5/5 | Complete    | 2026-10-11 |
-| 5. Gamble + Paytable + Polish | 0/5 | Not started | - |
+| 5. Gamble + Paytable + Polish | 1/5 | In Progress|  |
 
 ## Coverage Map
 
