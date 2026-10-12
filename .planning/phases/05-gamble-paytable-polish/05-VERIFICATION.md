@@ -23,7 +23,7 @@ covered_files:
   - .planning/phases/05-gamble-paytable-polish/05-04-SUMMARY.md
   - .planning/phases/05-gamble-paytable-polish/05-05-PLAN.md
   - .planning/phases/05-gamble-paytable-polish/05-05-SUMMARY.md
-covered_digest: "v1:sha256:9b86ac4302784a6afc3e155bc2a8050704ef5b999faeb6c82059d5b4d0859cf3"
+covered_digest: "v1:sha256:a2e1cfa1ebba3e68460f4cf604199ae223e3b18fe0a888d014df296b492783cb"
 behavior_unverified: 0
 overrides_applied: 0
 behavior_unverified_items: []
