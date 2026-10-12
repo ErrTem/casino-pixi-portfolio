@@ -58,7 +58,6 @@ export function mountHotlineHud(
   const balanceEl = need(root, "[data-field=balance]");
   const lastWinEl = need(root, "[data-field=last-win]");
   const betEl = need(root, "[data-field=bet]");
-  const linesEl = need(root, "[data-field=lines]");
   const statusEl = need(root, "[data-field=status]");
   const comboEl = need(root, "[data-field=combo]");
   const featureEl = need(root, "[data-field=feature]");
@@ -132,7 +131,6 @@ export function mountHotlineHud(
     lastSnap = snap;
     balanceEl.textContent = snap.balanceDisplay;
     betEl.textContent = snap.betDisplay;
-    linesEl.textContent = `${snap.paylineCount} lines`;
     lastWinEl.textContent = lastWinText(snap);
     syncControls(snap);
     syncMuteLabel();

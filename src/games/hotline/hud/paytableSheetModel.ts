@@ -3,6 +3,8 @@ import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 export type PaytableRow = {
   label: string;
   detail: string;
+  /** config paytable key, only set on symbol rows so the view can pick art */
+  symbolId?: string;
 };
 
 export type PaytableSection = {
@@ -16,6 +18,7 @@ export function paytableSheetModel(config: HotlineConfig): PaytableSection[] {
   const symbolRows: PaytableRow[] = Object.entries(config.paytable).map(
     ([id, pay]) => ({
       label: id.toUpperCase(),
+      symbolId: id,
       detail: `3 x${pay["3"]}  4 x${pay["4"]}  5 x${pay["5"]}`,
     }),
   );

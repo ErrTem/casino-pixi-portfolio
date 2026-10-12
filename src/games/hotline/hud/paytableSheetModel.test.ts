@@ -40,6 +40,20 @@ describe("paytableSheetModel (BASE-04, D-10, D-11)", () => {
     });
   });
 
+  it("symbol rows carry their config id in config order", () => {
+    const symbols = sections.find((s) => s.id === "symbols");
+    expect(symbols!.rows.map((r) => r.symbolId)).toEqual(
+      Object.keys(config.paytable),
+    );
+  });
+
+  it("phone and gamble rows carry no symbol id", () => {
+    for (const id of ["phones", "gamble"] as const) {
+      const section = sections.find((s) => s.id === id);
+      for (const row of section!.rows) expect(row.symbolId).toBeUndefined();
+    }
+  });
+
   it("follows a changed paytable instead of fixed numbers", () => {
     const edited = structuredClone(config);
     edited.paytable.pistol = { "3": 7.5, "4": 33, "5": 777 };

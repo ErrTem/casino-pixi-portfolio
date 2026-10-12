@@ -11,6 +11,8 @@ export interface PaytableOverlay {
 export interface MountPaytableOverlayOptions {
   /** fired when the player dismisses the sheet, the session restores play */
   onClose: () => void;
+  /** symbol id to image url, a missing url just skips the icon */
+  iconFor?: (symbolId: string) => string | undefined;
 }
 
 function need<T extends Element>(root: Element, selector: string): T {
@@ -57,7 +59,31 @@ export function mountPaytableOverlay(
       const detail = document.createElement("span");
       detail.className = "hotline-paytable__detail";
       detail.textContent = row.detail;
-      line.replaceChildren(label, detail);
+      if (row.symbolId === undefined) {
+        line.replaceChildren(label, detail);
+        return line;
+      }
+      line.className = "hotline-paytable__row hotline-paytable__row--symbol";
+      const name = document.createElement("span");
+      name.className = "hotline-paytable__name";
+      const url = options.iconFor?.(row.symbolId);
+      if (url) {
+        const icon = document.createElement("img");
+        icon.className = "hotline-paytable__icon";
+        icon.src = url;
+        icon.alt = "";
+        icon.setAttribute("aria-hidden", "true");
+        icon.decoding = "async";
+        icon.width = 36;
+        icon.height = 36;
+        // a missing file only drops the icon
+        icon.addEventListener("error", () => (icon.hidden = true), {
+          once: true,
+        });
+        name.appendChild(icon);
+      }
+      name.appendChild(label);
+      line.replaceChildren(name, detail);
       return line;
     });
     list.replaceChildren(...rows);

@@ -41,7 +41,6 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-field=balance]",
     "[data-field=last-win]",
     "[data-field=bet]",
-    "[data-field=lines]",
     "[data-field=status]",
     "[data-field=combo]",
     "[data-field=feature]",
@@ -97,14 +96,13 @@ describe("HotlineHud bet steps (D-13)", () => {
     );
   });
 
-  it("spin updates balance from the snapshot and keeps 40 lines", () => {
+  it("spin updates balance and last win from the snapshot", () => {
     const { game, els } = setup();
     els["[data-action=spin]"].click();
     const snap = game.getSnapshot();
     expect(snap.phase).toBe("settled");
     expect(els["[data-field=balance]"].textContent).toBe(snap.balanceDisplay);
     expect(els["[data-field=last-win]"].textContent).toBe(snap.lastWinDisplay);
-    expect(els["[data-field=lines]"].textContent).toBe("40 lines");
   });
 
   it("counts the last win up when a tween time is set (D-15)", () => {
@@ -257,7 +255,6 @@ describe("HotlineHud free spins feature line (D-02)", () => {
       "[data-field=balance]",
       "[data-field=last-win]",
       "[data-field=bet]",
-      "[data-field=lines]",
       "[data-field=status]",
       "[data-field=combo]",
       "[data-action=spin]",

@@ -23,6 +23,7 @@ import {
   type NightStep,
   type SpinResult,
 } from "../logic/index.js";
+import { SYMBOL_URLS } from "../view/loadHotlineAssets.js";
 import { DEFAULT_WIN_CYCLE_MS } from "../view/WinLinesOverlay.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
 import {
@@ -138,6 +139,7 @@ export async function mountHotlineSession(
 
   const paytableOverlay = mountPaytableOverlay(screen, {
     onClose: () => closeInfo(),
+    iconFor: (id) => SYMBOL_URLS[id],
   });
 
   function applyDisplayFills(fills: readonly number[]): void {
