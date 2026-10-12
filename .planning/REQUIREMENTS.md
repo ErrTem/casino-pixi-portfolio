@@ -34,8 +34,8 @@
 
 ### Gamble
 
-- [ ] **GAMBLE-01**: After a line win, user can play VHS SURVIVE/DIE to double or lose the win, up to 10 rounds
-- [ ] **GAMBLE-02**: Gamble applies to line wins only (not bonus feature totals)
+- [x] **GAMBLE-01**: After a line win, user can play VHS SURVIVE/DIE to double or lose the win, up to 10 rounds
+- [x] **GAMBLE-02**: Gamble applies to line wins only (not bonus feature totals)
 
 ### Config
 
@@ -93,8 +93,8 @@ Deferred — not in current roadmap phases.
 | BONUS-02 | Phase 4 | Complete |
 | BONUS-03 | Phase 4 | Complete |
 | BONUS-04 | Phase 4 | Complete |
-| GAMBLE-01 | Phase 5 | Pending |
-| GAMBLE-02 | Phase 5 | Pending |
+| GAMBLE-01 | Phase 5 | Complete |
+| GAMBLE-02 | Phase 5 | Complete |
 | BASE-04 | Phase 5 | Pending |
 | PRES-02 | Phase 5 | Pending |
 
