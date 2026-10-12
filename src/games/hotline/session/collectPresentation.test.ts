@@ -171,3 +171,45 @@ describe("mountHotlineSession collect path contracts (D-12, D-14)", () => {
     expect(src).toMatch(/play\s*\(\s*["']jackpot["']\s*\)/);
   });
 });
+
+describe("mountHotlineSession gamble contracts (GAMBLE-01, GAMBLE-02)", () => {
+  const read = (p: string): string =>
+    readFileSync(join(import.meta.dirname, p), "utf8");
+
+  it("enterIdle offers gamble from the snapshot and spin clears it first", () => {
+    const src = read("mountHotlineSession.ts");
+    expect(src).toMatch(/setGambleEnabled/);
+    expect(src).toMatch(/getGambleSnapshot/);
+    expect(src).toMatch(/mountGambleOverlay/);
+    expect(src).toMatch(/resolveGamble/);
+    expect(src).toMatch(/:gamble/);
+    expect(src).toMatch(/"gamble"/);
+    const spinAt = src.indexOf("const result = game.spin()");
+    const clearAt = src.lastIndexOf("clearGambleOffer", spinAt);
+    expect(spinAt).toBeGreaterThan(0);
+    expect(clearAt).toBeGreaterThan(0);
+    expect(src).not.toMatch(/data-action=collect|data-action=take/);
+  });
+
+  it("html has the gamble overlay and hud control outside the canvas host", () => {
+    const html = readFileSync(join(import.meta.dirname, "../../../../index.html"), "utf8");
+    const tpl = html.slice(html.indexOf('id="hotline-screen-template"'));
+    expect(tpl).toMatch(/data-field="gamble-overlay"/);
+    expect(tpl).toMatch(/data-action="gamble"/);
+    expect(tpl).toMatch(/data-action="survive"/);
+    expect(tpl).toMatch(/data-action="die"/);
+    expect(tpl).toMatch(/CURRENT WIN/);
+    expect(tpl).toMatch(/GAMBLE TO WIN/);
+    const hostOpen = tpl.indexOf('id="game-canvas-host"');
+    const hostClose = tpl.indexOf("</div>", hostOpen);
+    const inside = tpl.slice(hostOpen, hostClose);
+    expect(inside).not.toMatch(/gamble|survive|die/);
+  });
+
+  it("overlay binder writes text only and has no collect control", () => {
+    const src = read("../hud/GambleOverlay.ts");
+    expect(src).toMatch(/mountGambleOverlay/);
+    expect(src).toMatch(/textContent/);
+    expect(src).not.toMatch(/\.innerHTML\s*=/);
+  });
+});

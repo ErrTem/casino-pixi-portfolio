@@ -275,3 +275,43 @@ describe("HotlineHud free spins feature line (D-02)", () => {
   });
 });
 
+
+describe("HotlineHud gamble control (GAMBLE-01, D-01)", () => {
+  it("starts with gamble disabled and enables it on request", () => {
+    const { els, hud } = setup();
+    expect(typeof hud.setGambleEnabled).toBe("function");
+    expect(els["[data-action=gamble]"].disabled).toBe(true);
+    hud.setGambleEnabled(true);
+    expect(els["[data-action=gamble]"].disabled).toBe(false);
+    hud.setGambleEnabled(false);
+    expect(els["[data-action=gamble]"].disabled).toBe(true);
+  });
+
+  it("busy locks gamble even when it is enabled", () => {
+    const { els, hud } = setup();
+    expect(typeof hud.setGambleEnabled).toBe("function");
+    hud.setGambleEnabled(true);
+    hud.setBusy(true);
+    expect(els["[data-action=gamble]"].disabled).toBe(true);
+    hud.setBusy(false);
+    expect(els["[data-action=gamble]"].disabled).toBe(false);
+  });
+
+  it("gamble click calls onGamble and ignores clicks after dispose", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-gamble", config });
+    const { root, els } = makeRoot();
+    let calls = 0;
+    const hud = mountHotlineHud(root, game, {
+      betStepCount: config.math.betStepsCents.length,
+      onGamble: () => {
+        calls += 1;
+      },
+    });
+    hud.render(game.getSnapshot());
+    els["[data-action=gamble]"].click();
+    expect(calls).toBe(1);
+    hud.dispose();
+    expect(els["[data-action=gamble]"].count()).toBe(0);
+  });
+});
