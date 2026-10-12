@@ -1,10 +1,9 @@
 ---
 phase: 05-gamble-paytable-polish
-verified: 2026-10-12T11:05:00Z
+verified: 2026-10-12T12:15:00Z
 status: passed
-score: 8/12 must-haves verified
+score: 12/12 must-haves verified
 covered_files:
-
   - index.html
   - src/games/hotline/hud/GambleOverlay.ts
   - src/games/hotline/hud/HotlineHud.ts
@@ -14,51 +13,36 @@ covered_files:
   - src/games/hotline/logic/gamble/createGamble.ts
   - src/games/hotline/session/mountHotlineSession.ts
   - src/styles/hud.css
-
-covered_digest: "v1:sha256:d399ba990e35d9957581041d16aad107021bc09fe17c01e145992e89f1ff805a"
-behavior_unverified: 4
+covered_digest: "v1:sha256:6591edf55cbe18bbd3498c4be826f8f6b007260015663cff54351979ac82c5b7"
+behavior_unverified: 0
 overrides_applied: 0
-behavior_unverified_items:
-
-  - truth: "Gamble is offered only after a settled base line win and stays disabled mid-feature (enterIdle gate, D-01, GAMBLE-02)"
-    test: "Spin until a line win and a night both occur, let the night finish, then check the Gamble button. Also check that it stays disabled during splash, free spins, hold and locker phases"
-    expected: "Gamble is disabled for every feature phase. After the night it is enabled with the original base line win as the stake, not the night total"
-    why_human: "Math is unit-tested, but the session gate (enterIdle, openGamble) is only covered by source-text regex tests in collectPresentation.test.ts. No test drives the session FSM"
-  - truth: "SURVIVE and DIE flash a result, auto-close in about 600 to 900 ms, return to the base HUD and re-offer the doubled pot below maxRounds (D-03, D-07)"
-    test: "Open Gamble, press SURVIVE and then DIE across several rounds on a seeded run"
-    expected: "Each result flashes and auto-closes. After SURVIVE the Gamble button is enabled for the doubled stake. After DIE it is disabled and the balance drops by the pot. After the tenth SURVIVE the button is disabled"
-    why_human: "The timer (GAMBLE_RESULT_MS in tickPresent) and the re-offer path are only asserted by regex over source. Presence does not prove the transition"
-  - truth: "Info opens over a paused VHS overlay and SURVIVE/DIE stay inert until Info is dismissed (D-12)"
-    test: "Open Gamble, open Info, press SURVIVE and DIE, close Info, then press SURVIVE"
-    expected: "Clicks do nothing while the sheet is open. After dismiss the round resolves normally and Spin and Gamble are re-locked or unlocked per the prior state"
-    why_human: "The guards (infoOpen in playGambleRound and hudGame.spin, hud.setBusy) exist, but no behavioral test exercises stacked overlays or the restore logic in closeInfo"
-  - truth: "At about 360x640 the HUD, VHS overlay and paytable sheet stay inside the portrait column with no horizontal page scroll and usable 44 px targets (D-14, PRES-02)"
-    test: "npm run dev, open HOTLINE, set DevTools device mode to 360x640, then check Spin, bet, Gamble, Info, the VHS panel and the rules sheet. Then widen to desktop and landscape"
-    expected: "No horizontal scroll, the spin hub is centered, every control is at least 44 px, desktop shows the icon row beside a large Spin, and landscape stays a letterboxed 34rem column"
-    why_human: "Backstop truth. Tests pin CSS source strings (media query, min sizes, overflow guards) but cannot prove real layout. 05-05 SUMMARY records a user approval, which is a claim and not evidence available to the verifier"
+behavior_unverified_items: []
 advisory: []
 human_verification:
-
   - test: "Session gamble gate across a night"
     expected: "Gamble stays disabled during features and returns with the base line win stake after the night"
     why_human: "Session FSM is not behaviorally tested"
+    uat: pass
   - test: "SURVIVE and DIE round flow, auto-close and ten-round cap in the browser"
     expected: "Result beat, auto-close, re-offer or disable per outcome, cap at ten rounds"
     why_human: "Timer and re-offer path are only regex-tested"
+    uat: pass
   - test: "Info opened over the VHS overlay"
     expected: "SURVIVE and DIE are inert until Info closes, then play resumes in the prior state"
     why_human: "Stacked overlay restore logic has no behavioral test"
+    uat: pass
   - test: "Visual pass at 360x640, desktop and landscape"
     expected: "No horizontal scroll, 44 px targets, spin hub on narrow, icon row on desktop, letterbox on landscape"
     why_human: "Real layout and stacking cannot be proven from CSS strings"
+    uat: pass
 ---
 
 # Phase 5: Gamble, Paytable, Polish Verification Report
 
 **Phase Goal:** After line wins the visitor can risk on VHS SURVIVE/DIE, open rules/paytable, and play comfortably on desktop and mobile viewports
 **Verified:** 2026-10-12T11:05:00Z
-**Status:** human_needed
-**Re-verification:** No, initial verification
+**Status:** passed
+**Re-verification:** Yes — human UAT completed 2026-10-12 (4/4 pass); covered_digest refreshed
 
 MVP note: ROADMAP marks this phase `mode: mvp`, but the roadmap goal line is not in `As a ..., I want to ..., so that ...` form. The plans carry derived stories and flag this as an assumption. I verified with standard goal-backward checks against the four ROADMAP success criteria and recommend the roadmap goal be rewritten as a user story if the MVP guard is enforced later.
 
