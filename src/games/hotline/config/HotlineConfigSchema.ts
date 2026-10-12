@@ -102,7 +102,13 @@ const pickEmSchema = z.object({
   picks: z.literal(5),
 });
 
-// runtime reads freeSpins holdAndWin and pickEm knobs at feature play
+// vhs gamble after a base win, chain length and survive odds
+const gambleSchema = z.object({
+  maxRounds: positiveInt,
+  surviveChance: chance01,
+});
+
+// runtime reads freeSpins holdAndWin pickEm and gamble knobs at feature play
 const featuresSchema = z.object({
   tokenOdds: tokenOddsSchema,
   bonusPrizes: z.array(bonusPrizeSchema).min(1),
@@ -110,6 +116,7 @@ const featuresSchema = z.object({
   freeSpins: freeSpinsSchema,
   holdAndWin: holdAndWinSchema,
   pickEm: pickEmSchema,
+  gamble: gambleSchema,
 });
 
 export const HotlineConfigSchema = z

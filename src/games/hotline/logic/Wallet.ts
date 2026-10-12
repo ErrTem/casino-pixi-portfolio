@@ -36,6 +36,14 @@ export class Wallet {
     this.balanceCents += Math.floor(amountCents);
   }
 
+  /** take a whole positive amount back out, false when it does not fit */
+  debit(amountCents: Cents): boolean {
+    if (!Number.isInteger(amountCents) || amountCents <= 0) return false;
+    if (amountCents > this.balanceCents) return false;
+    this.balanceCents -= amountCents;
+    return true;
+  }
+
   reset(): void {
     this.balanceCents = this.startingBalanceCents;
   }

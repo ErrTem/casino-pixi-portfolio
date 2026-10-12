@@ -1,5 +1,5 @@
 import { centsToDisplay } from "../../../shared/money/cents.js";
-import { createRng } from "../../../shared/rng/createRng.js";
+import { createRng, type Rng } from "../../../shared/rng/createRng.js";
 import type { HotlineConfig } from "../config/HotlineConfigSchema.js";
 import { createComboQueue } from "./collectors/ComboQueue.js";
 import { createPhoneMeters, type PhoneMeters } from "./collectors/PhoneMeters.js";
@@ -19,6 +19,11 @@ import {
   type HoldSnapshot,
 } from "./features/holdAndWin.js";
 import { createPickEm, type PickEm } from "./features/pickEm.js";
+import {
+  createGamble,
+  type GambleResolve,
+  type GambleSnapshot,
+} from "./gamble/createGamble.js";
 import {
   createNight,
   type Night,
@@ -58,6 +63,11 @@ export interface HotlineGame {
   pickLocker(index: number): number | null;
   stepHoldRespin(): { done: boolean };
   holdSnapshot(): HoldSnapshot | null;
+  /** drop the gamble pot, the credited win stays in the wallet */
+  clearGambleOffer(): void;
+  /** one survive or die step on the base line win, null when nothing is offered */
+  resolveGamble(rng: Rng): GambleResolve | null;
+  getGambleSnapshot(): GambleSnapshot;
 }
 
 export interface CreateHotlineGameOptions {
@@ -99,6 +109,7 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   const wallet = createWallet(math.startingBalanceCents, steps);
   const meters: PhoneMeters = createPhoneMeters(config.features.tokenOdds.meterTarget);
   const comboQueue = createComboQueue();
+  const gamble = createGamble(config.features.gamble);
 
   let betStepIndex = 0;
   let phase: HotlineSnapshot["phase"] = "idle";
@@ -108,6 +119,8 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
   let collectorOutcome: CollectorOutcome = emptyOutcome();
   let night: Night | null = null;
   let featureBetCents = 0;
+  // base spin line wins only, never night totals or free spin wins
+  let baseLineWinCents = 0;
   let fsSpinPending = false;
   let pickEm: PickEm | null = null;
   let hold: HoldAndWin | null = null;
@@ -152,6 +165,8 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       const betCents = steps[betStepIndex];
       const placed = wallet.placeBet(betCents);
       if (!placed.ok) return placed;
+      gamble.clear();
+      baseLineWinCents = 0;
 
       grid = engine.spin();
       lineWins = evaluatePaylines({
@@ -163,6 +178,8 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
       });
       lastWinCents = lineWins.reduce((sum, w) => sum + w.payoutCents, 0);
       wallet.credit(lastWinCents);
+      baseLineWinCents = lastWinCents;
+      if (baseLineWinCents > 0) gamble.offer(baseLineWinCents);
 
       collectorOutcome = resolveCollectors({
         rng: collectorsRng,
@@ -289,6 +306,25 @@ export function createHotlineGame(options: CreateHotlineGameOptions): HotlineGam
 
     holdSnapshot(): HoldSnapshot | null {
       return hold ? hold.snapshot() : null;
+    },
+
+    clearGambleOffer(): void {
+      gamble.clear();
+      baseLineWinCents = 0;
+    },
+
+    resolveGamble(rng: Rng): GambleResolve | null {
+      const before = gamble.snapshot();
+      const res = gamble.resolve(rng);
+      if (!res) return null;
+      // the pot is already in the wallet, survive adds it once more and die takes it back
+      if (res.survived) wallet.credit(before.stakeCents);
+      else wallet.debit(before.stakeCents);
+      return res;
+    },
+
+    getGambleSnapshot(): GambleSnapshot {
+      return gamble.snapshot();
     },
 
     getSnapshot(): HotlineSnapshot {

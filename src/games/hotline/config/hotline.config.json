@@ -95,6 +95,7 @@
       "jackpotSymbolChance": 0.04,
       "jackpotTierWeights": { "mini": 70, "minor": 25, "major": 5 }
     },
-    "pickEm": { "lockers": 12, "picks": 5 }
+    "pickEm": { "lockers": 12, "picks": 5 },
+    "gamble": { "maxRounds": 10, "surviveChance": 0.5 }
   }
 }

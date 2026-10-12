@@ -32,6 +32,12 @@ export {
   freeSpinTokenOdds,
 } from "./features/freeSpins.js";
 export {
+  createGamble,
+  type Gamble,
+  type GambleResolve,
+  type GambleSnapshot,
+} from "./gamble/createGamble.js";
+export {
   createPickEm,
   type PickEm,
   type PickEmSnapshot,
