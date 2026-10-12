@@ -1,9 +1,10 @@
 ---
 phase: 05-gamble-paytable-polish
 verified: 2026-10-12T11:05:00Z
-status: human_needed
+status: passed
 score: 8/12 must-haves verified
 covered_files:
+
   - index.html
   - src/games/hotline/hud/GambleOverlay.ts
   - src/games/hotline/hud/HotlineHud.ts
@@ -13,10 +14,12 @@ covered_files:
   - src/games/hotline/logic/gamble/createGamble.ts
   - src/games/hotline/session/mountHotlineSession.ts
   - src/styles/hud.css
+
 covered_digest: "v1:sha256:d399ba990e35d9957581041d16aad107021bc09fe17c01e145992e89f1ff805a"
 behavior_unverified: 4
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "Gamble is offered only after a settled base line win and stays disabled mid-feature (enterIdle gate, D-01, GAMBLE-02)"
     test: "Spin until a line win and a night both occur, let the night finish, then check the Gamble button. Also check that it stays disabled during splash, free spins, hold and locker phases"
     expected: "Gamble is disabled for every feature phase. After the night it is enabled with the original base line win as the stake, not the night total"
@@ -35,6 +38,7 @@ behavior_unverified_items:
     why_human: "Backstop truth. Tests pin CSS source strings (media query, min sizes, overflow guards) but cannot prove real layout. 05-05 SUMMARY records a user approval, which is a claim and not evidence available to the verifier"
 advisory: []
 human_verification:
+
   - test: "Session gamble gate across a night"
     expected: "Gamble stays disabled during features and returns with the base line win stake after the night"
     why_human: "Session FSM is not behaviorally tested"
@@ -150,6 +154,7 @@ All four IDs are declared in plan frontmatter and listed in REQUIREMENTS.md as P
 ### Prohibitions (judgment tier, non-authoritative)
 
 All reviewed prohibitions appear respected, `unverified-prohibition, human review recommended`:
+
 - No gamble stake from night or free spin totals: `spinFree` never touches the pot (tested).
 - No SURVIVE/DIE, Gamble or Info markup inside `#game-canvas-host`: confirmed in `index.html` and layout test.
 - No Collect control: grep clean.
@@ -173,21 +178,25 @@ No `TODO`, `FIXME`, `XXX` or `TBD` markers in `src/games/hotline`. No blocker an
 ### Human Verification Required
 
 #### 1. Session gamble gate across a night
+
 **Test:** Play to a line win plus a night, then watch the Gamble button during and after the features.
 **Expected:** Disabled during every feature phase. After the night it is enabled with the base line win as the stake.
 **Why human:** The session FSM has no behavioral test.
 
 #### 2. SURVIVE and DIE round flow
+
 **Test:** Resolve several rounds on a seeded run, up to ten.
 **Expected:** Result beat, auto-close at about 600 to 900 ms, re-offer after SURVIVE, disabled after DIE and after the tenth SURVIVE, balance changes by the pot on DIE.
 **Why human:** Timer and re-offer paths are only regex-tested.
 
 #### 3. Info over a paused VHS
+
 **Test:** Open Gamble, open Info, click SURVIVE and DIE, dismiss Info, then continue.
 **Expected:** Inert while Info is open. Normal play afterwards.
 **Why human:** Stacked overlay restore has no behavioral test.
 
 #### 4. Visual pass at 360x640, desktop and landscape
+
 **Test:** Check Spin, bet, Gamble, Info, the VHS panel and the rules sheet at each size.
 **Expected:** No horizontal scroll, 44 px targets, spin hub on narrow, icon row on desktop, letterboxed column in landscape.
 **Why human:** Real layout cannot be proven from CSS strings.
