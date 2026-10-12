@@ -154,6 +154,34 @@ describe("HotlineConfigSchema", () => {
     expect(() => HotlineConfigSchema.parse(badHigh)).toThrow(ZodError);
   });
 
+  it("bundles gamble knobs of ten rounds and an even chance", () => {
+    const cfg = HotlineConfigSchema.parse(fixture());
+    expect(cfg.features.gamble.maxRounds).toBe(10);
+    expect(cfg.features.gamble.surviveChance).toBe(0.5);
+  });
+
+  it("throws ZodError when features.gamble is missing", () => {
+    const bad = fixture();
+    delete bad.features.gamble;
+    expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+  });
+
+  it("rejects gamble maxRounds that is not a positive integer", () => {
+    for (const value of [0, -1, 2.5]) {
+      const bad = fixture();
+      bad.features.gamble.maxRounds = value;
+      expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+    }
+  });
+
+  it("rejects gamble surviveChance outside 0..1", () => {
+    for (const value of [-0.1, 1.2]) {
+      const bad = fixture();
+      bad.features.gamble.surviveChance = value;
+      expect(() => HotlineConfigSchema.parse(bad)).toThrow(ZodError);
+    }
+  });
+
   it("rejects holdAndWin landChance above 1", () => {
     const bad = fixture();
     bad.features.holdAndWin.landChance = 1.1;

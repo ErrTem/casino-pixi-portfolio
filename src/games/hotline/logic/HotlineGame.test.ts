@@ -620,3 +620,121 @@ describe("combo night green red purple (BONUS-04, D-16, D-19)", () => {
   });
 });
 
+describe("gamble stake capture (GAMBLE-01, GAMBLE-02)", () => {
+  function withOdds(chance: number): HotlineConfig {
+    return {
+      ...config,
+      features: {
+        ...config.features,
+        tokenOdds: {
+          meterTarget: config.features.tokenOdds.meterTarget,
+          perSpinChance: { green: chance, red: 0, purple: 0 },
+          triggerChance: { green: chance, red: 0, purple: 0 },
+        },
+        freeSpins: { ...config.features.freeSpins, retriggerChance: 0 },
+      },
+    } as HotlineConfig;
+  }
+
+  const quiet = withOdds(0);
+  const greenNight = withOdds(1);
+
+  function baseWin(game: HotlineGame): number {
+    return game.getSnapshot().lineWins.reduce((s, w) => s + w.payoutCents, 0);
+  }
+
+  // first seed whose opening base spin pays something
+  function winSeed(cfg: HotlineConfig): string {
+    for (let i = 0; i < 400; i++) {
+      const seed = `gw${i}`;
+      const g = createHotlineGame({ seed, config: cfg });
+      g.spin();
+      if (baseWin(g) > 0) return seed;
+    }
+    throw new Error("no winning seed found");
+  }
+
+  // first seed whose opening base spin pays nothing
+  function dudSeed(cfg: HotlineConfig): string {
+    for (let i = 0; i < 400; i++) {
+      const seed = `gd${i}`;
+      const g = createHotlineGame({ seed, config: cfg });
+      g.spin();
+      if (baseWin(g) === 0) return seed;
+    }
+    throw new Error("no dud seed found");
+  }
+
+  function rngOf(...values: number[]) {
+    let i = 0;
+    return { next: () => values[Math.min(i++, values.length - 1)] };
+  }
+
+  it("has no offer before any spin", () => {
+    const game = createHotlineGame({ seed: "g0", config: quiet });
+    expect(game.getGambleSnapshot()).toEqual({
+      stakeCents: 0,
+      roundsDone: 0,
+      offered: false,
+    });
+  });
+
+  it("captures the base line win as the stake", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    game.spin();
+    expect(game.getGambleSnapshot()).toEqual({
+      stakeCents: baseWin(game),
+      roundsDone: 0,
+      offered: true,
+    });
+  });
+
+  it("offers nothing after a spin with no line win", () => {
+    const game = createHotlineGame({ seed: dudSeed(quiet), config: quiet });
+    game.spin();
+    expect(game.getGambleSnapshot().offered).toBe(false);
+    expect(game.resolveGamble(rngOf(0.1))).toBeNull();
+  });
+
+  it("survive credits the stake once more and keeps the offer open", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    game.spin();
+    const win = baseWin(game);
+    const before = cents(game.getSnapshot().balanceDisplay);
+    const res = game.resolveGamble(rngOf(0.1));
+    expect(res).toEqual({
+      survived: true,
+      stakeCents: win * 2,
+      roundsDone: 1,
+      offered: true,
+    });
+    expect(cents(game.getSnapshot().balanceDisplay)).toBe(before + win);
+    expect(game.getGambleSnapshot().stakeCents).toBe(win * 2);
+  });
+
+  it("a new base spin replaces the previous pot", () => {
+    const game = createHotlineGame({ seed: winSeed(quiet), config: quiet });
+    game.spin();
+    game.resolveGamble(rngOf(0.1));
+    game.spin();
+    const snap = game.getGambleSnapshot();
+    expect(snap.roundsDone).toBe(0);
+    expect(snap.stakeCents).toBe(baseWin(game));
+  });
+
+  it("free spin wins never replace the base pot", () => {
+    const game = createHotlineGame({ seed: winSeed(greenNight), config: greenNight });
+    game.spin();
+    const pot = game.getGambleSnapshot().stakeCents;
+    expect(pot).toBe(baseWin(game));
+    expect(game.isNightActive()).toBe(true);
+    let guard = 0;
+    while (game.isNightActive() && guard < 100) {
+      guard += 1;
+      const step = game.nextNightStep();
+      if (step.kind === "fs_spin") game.spinFree();
+    }
+    expect(game.getGambleSnapshot().stakeCents).toBe(pot);
+  });
+});
+
