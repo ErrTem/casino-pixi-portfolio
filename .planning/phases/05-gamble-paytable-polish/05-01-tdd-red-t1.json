@@ -1,0 +1,9 @@
+{
+  "command": "npx vitest run src/games/hotline/config --reporter=tap",
+  "exitCode": 1,
+  "output": "TAP version 13\nok 1 - parses the bundled envelope\nok 2 - exposes the feature tables\nok 3 - uses green red purple perSpinChance and triggerChance keys\nok 4 - throws ZodError when triggerChance is missing\nok 5 - throws ZodError when a chance is outside 0..1\nok 6 - throws ZodError when math is missing\nok 7 - throws ZodError on a wrong grid size\nok 8 - throws ZodError when a payline row is out of range\nok 9 - throws ZodError when the wild symbol has no weight\nok 10 - throws ZodError when a feature table is missing\nok 11 - rejects freeSpins wildWeights length other than 4\nok 12 - rejects freeSpins wildWeights not above the base wild weight\nok 13 - rejects retriggerChance above 1\nok 14 - rejects maxRetriggers below 0\nok 15 - rejects pickEm lockers other than 12\nok 16 - rejects pickEm picks other than 5\nok 17 - rejects prizeWeights length mismatch\nok 18 - rejects missing pickEm or holdAndWin bonusId\nok 19 - rejects holdAndWin startCells outside 1..19\nnot ok 20 - bundles gamble knobs of ten rounds and an even chance\nnot ok 21 - throws ZodError when features.gamble is missing\nnot ok 22 - rejects gamble maxRounds that is not a positive integer\nnot ok 23 - rejects gamble surviveChance outside 0..1\nok 24 - rejects holdAndWin landChance above 1\nok 25 - returns the parsed bundled config\n# tests 25\n# pass 21\n# fail 4\n",
+  "targetTest": "throws ZodError when features.gamble is missing",
+  "targetFile": "src/games/hotline/config/HotlineConfigSchema.test.ts",
+  "expected": "ZodError thrown",
+  "actual": "expected function to throw an error, but it didn't"
+}
