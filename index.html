@@ -304,14 +304,6 @@
             </button>
             <button
               type="button"
-              data-action="info"
-              class="hotline-info-btn"
-              aria-label="Paytable and rules"
-            >
-              Info
-            </button>
-            <button
-              type="button"
               data-action="mute"
               class="mute-toggle"
               aria-pressed="false"
@@ -495,14 +487,27 @@
               </div>
               <span class="hotline-lines" data-field="lines">40 lines</span>
             </div>
-            <button
-              type="button"
-              data-action="gamble"
-              class="hotline-gamble-btn"
-              disabled
-            >
-              Gamble
-            </button>
+            <div class="hotline-bar__icons">
+              <button
+                type="button"
+                data-action="gamble"
+                class="hotline-icon-btn hotline-gamble-btn"
+                aria-label="Gamble"
+                disabled
+              >
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">2x</span>
+                <span class="hotline-icon-btn__label">Gamble</span>
+              </button>
+              <button
+                type="button"
+                data-action="info"
+                class="hotline-icon-btn hotline-info-btn"
+                aria-label="Paytable and rules"
+              >
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">i</span>
+                <span class="hotline-icon-btn__label">Info</span>
+              </button>
+            </div>
             <button
               type="button"
               data-action="spin"

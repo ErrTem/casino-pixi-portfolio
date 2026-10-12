@@ -171,6 +171,59 @@ describe("hotline screen template (D-09 / D-13 / BASE-02)", () => {
   });
 });
 
+describe("hotline spin hub layout (PRES-02 / D-13 / D-14 / D-15 / D-16)", () => {
+  const tpl = (): string => innerById(html, "hotline-screen-template");
+
+  /** body of the first at-rule block that starts with the given media prefix */
+  function mediaBlock(prefix: string): string {
+    const at = css.indexOf(prefix);
+    if (at < 0) throw new Error(`${prefix} not found in hud.css`);
+    const open = css.indexOf("{", at);
+    let depth = 1;
+    let i = open + 1;
+    while (i < css.length && depth > 0) {
+      if (css[i] === "{") depth += 1;
+      if (css[i] === "}") depth -= 1;
+      i += 1;
+    }
+    return css.slice(open + 1, i - 1);
+  }
+
+  it("keeps gamble and info as icon buttons in the hotline bar, outside the canvas host", () => {
+    const bar = innerById(tpl(), "hud-bar");
+    const host = innerById(tpl(), "game-canvas-host");
+    for (const name of ["gamble", "info", "spin", "bet-dec", "bet-inc"] as const) {
+      expect(hasAttr(bar, "action", name), `${name} lives in the hotline bar`).toBe(true);
+      expect(hasAttr(host, "action", name), `${name} stays out of the canvas host`).toBe(false);
+    }
+    expect(bar).toMatch(/hotline-bar__icons/);
+    expect(innerById(tpl(), "top-chrome")).not.toMatch(/data-action\s*=\s*["']info["']/);
+  });
+
+  it("reflows the bar into a spin centered hub at the narrow breakpoint", () => {
+    const narrow = mediaBlock("@media (max-width: 480px)");
+    expect(narrow).toMatch(/\.hotline-bar\s*\{[^}]*display:\s*grid/);
+    expect(narrow).toMatch(/grid-template-areas/);
+    expect(narrow).toMatch(/"dec spin inc"/);
+    expect(narrow).toMatch(/"gamble spin info"/);
+    expect(narrow).toMatch(/\.hotline-bar \.primary-cta\s*\{[^}]*grid-area:\s*spin/);
+  });
+
+  it("sizes icon and hub controls to at least 44 by 44 css px", () => {
+    expect(css).toMatch(/\.hotline-icon-btn\s*\{[^}]*min-width:\s*2\.75rem[^}]*min-height:\s*2\.75rem/);
+    const narrow = mediaBlock("@media (max-width: 480px)");
+    expect(narrow).toMatch(/\.hotline-bar \.stake-stepper button\s*\{[^}]*min-width:\s*2\.75rem[^}]*min-height:\s*2\.75rem/);
+    expect(narrow).toMatch(/\.hotline-icon-btn\s*\{[^}]*width:\s*2\.75rem[^}]*height:\s*2\.75rem/);
+  });
+
+  it("keeps the 34rem portrait column and never enables pointer events on the canvas host", () => {
+    expect(css).toMatch(/\.hotline-screen\s*\{[^}]*max-width:\s*34rem/);
+    expect(css).toMatch(/\.canvas-host\s*\{[^}]*pointer-events:\s*none/);
+    expect(css).toMatch(/\.canvas-host canvas\s*\{[^}]*pointer-events:\s*none/);
+    expect(css).not.toMatch(/\.canvas-host[^{]*\{[^}]*pointer-events:\s*(auto|all)/);
+  });
+});
+
 describe("portfolio chrome (SHELL-04 / D-13)", () => {
   it("page title names the portfolio, not Crash Demo", () => {
     const titleMatch = html.match(/<title>([^<]*)<\/title>/i);

@@ -915,13 +915,41 @@ input {
   }
 }
 
+/* desktop strip, bet group then a compact gamble and info icon row then a large spin */
 .hotline-bar {
   display: flex;
   align-items: stretch;
   gap: 0.55rem;
+  min-width: 0;
+  max-width: 100%;
   padding: 0.7rem 0.75rem;
   border-radius: var(--radius-card);
   background: var(--card);
+}
+
+.hotline-bar .stake-group {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.hotline-bar__icons {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.hotline-bar .primary-cta {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 4.5rem;
+}
+
+/* hud bar sits flat so only the icon row can rise above the feature and gamble overlays */
+.hotline-screen .hud-bar {
+  z-index: auto;
+  min-width: 0;
 }
 
 .hotline-bet {
@@ -1050,22 +1078,49 @@ input {
   cursor: default;
 }
 
-.hotline-gamble-btn {
-  align-self: stretch;
-  flex: 0 0 auto;
-  min-width: 4.4rem;
-  max-width: 28%;
-  padding: 0.4rem 0.55rem;
-  border: 1px solid #ffe566;
+/* compact icon buttons for gamble and info, at least 44 by 44 css px, rise above the overlays so info opens over a paused gamble */
+.hotline-icon-btn {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  box-sizing: border-box;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid #9be7ff;
   border-radius: 0;
   background: #1a0a2e;
-  color: #ffe566;
+  color: #9be7ff;
   font-family: "Retro Computer", ui-monospace, monospace;
-  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+.hotline-icon-btn__glyph {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.hotline-icon-btn__label {
+  font-size: 0.5rem;
+  line-height: 1;
+}
+
+.hotline-icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hotline-gamble-btn {
+  border-color: #ffe566;
+  color: #ffe566;
 }
 
 .hotline-gamble-btn:disabled {
@@ -1247,27 +1302,9 @@ input {
   overflow: hidden;
 }
 
-/* info button, same pill as menu and sound, header stays above the vhs panel so info opens over it */
+/* header keeps its raised layer from the info sheet plan, menu and sound stay reachable */
 .hotline-screen .top-chrome {
   z-index: 6;
-}
-
-.hotline-info-btn {
-  padding: 0.35rem 0.7rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  min-height: 2.25rem;
-  white-space: nowrap;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--card);
-  color: var(--text);
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.hotline-info-btn:hover {
-  background: var(--border);
 }
 
 /* paytable and rules sheet, one scrollable stack above every other overlay */
@@ -1385,4 +1422,85 @@ input {
   line-height: 1.35;
   color: #e8dcff;
   overflow-wrap: anywhere;
+}
+
+/* narrow spin hub, large center spin with bet and icon buttons on both sides, floor is about 360 by 640 */
+@media (max-width: 480px) {
+  .hotline-bar {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+    grid-template-areas:
+      "stake stake stake"
+      "dec spin inc"
+      "gamble spin info";
+    gap: 0.35rem 0.5rem;
+    align-items: stretch;
+    padding: 0.5rem 0.6rem;
+  }
+
+  /* flatten the groups so every control becomes a grid item of the bar */
+  .hotline-bar .stake-group,
+  .hotline-bar .stake-stepper,
+  .hotline-bar__icons {
+    display: contents;
+  }
+
+  .hotline-bar .stake-display {
+    grid-area: stake;
+    justify-self: start;
+    align-self: center;
+  }
+
+  .hotline-bar .hotline-lines {
+    grid-area: stake;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .hotline-bar .stake-stepper button {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 1.35rem;
+  }
+
+  .hotline-bar [data-action="bet-dec"] {
+    grid-area: dec;
+  }
+
+  .hotline-bar [data-action="bet-inc"] {
+    grid-area: inc;
+  }
+
+  .hotline-bar [data-action="gamble"] {
+    grid-area: gamble;
+  }
+
+  .hotline-bar [data-action="info"] {
+    grid-area: info;
+  }
+
+  .hotline-bar .primary-cta {
+    grid-area: spin;
+    min-height: 5.75rem;
+  }
+
+  .hotline-bar .primary-cta__label {
+    font-size: 1.6rem;
+  }
+
+  .hotline-icon-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+  }
+
+  .hotline-icon-btn__glyph {
+    font-size: 1rem;
+  }
+
+  .hotline-icon-btn__label {
+    display: none;
+  }
 }
