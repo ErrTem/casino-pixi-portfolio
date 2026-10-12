@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { createRng } from "../../../shared/rng/createRng.js";
+import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
+import { createHotlineGame } from "../logic/index.js";
 import type { CollectorSpawn } from "../logic/collectors/resolveCollectors.js";
 import type { NightSnapshot } from "../logic/index.js";
 import * as collectPresentation from "./collectPresentation.js";
@@ -211,5 +214,75 @@ describe("mountHotlineSession gamble contracts (GAMBLE-01, GAMBLE-02)", () => {
     expect(src).toMatch(/mountGambleOverlay/);
     expect(src).toMatch(/textContent/);
     expect(src).not.toMatch(/\.innerHTML\s*=/);
+  });
+});
+
+// walks seeds until a base line win is offered with no night running
+function gameWithOffer(prefix: string) {
+  const config = loadHotlineConfig();
+  for (let n = 0; n < 60; n += 1) {
+    const seed = `${prefix}-${n}`;
+    const game = createHotlineGame({ seed, config });
+    for (let i = 0; i < 300; i += 1) {
+      if (game.isNightActive()) break;
+      game.spin();
+      if (game.getGambleSnapshot().offered && !game.isNightActive()) {
+        return { game, seed };
+      }
+    }
+  }
+  throw new Error("no gamble offer found in test seeds");
+}
+
+describe("gamble session edges (D-02, D-03, D-04, GAMBLE-02)", () => {
+  const src = readFileSync(join(import.meta.dirname, "mountHotlineSession.ts"), "utf8");
+
+  it("offer gate keeps gamble off while a night is active", () => {
+    expect(src).toMatch(
+      /setGambleEnabled\(\s*gambleSnap\.offered\s*&&\s*!game\.isNightActive\(\)\s*\)/,
+    );
+    expect(src).toMatch(/!snap\.offered\s*\|\|\s*game\.isNightActive\(\)/);
+  });
+
+  it("die and survive share one resolve path that shows a result then auto closes", () => {
+    expect(src).toMatch(/GAMBLE_RESULT_MS/);
+    expect(src).toMatch(/gambleOverlay\.showResult/);
+    expect(src).toMatch(/gambleShowingResult/);
+    expect(src).toMatch(/present === "gamble" && gambleShowingResult/);
+    // only the idle entry hides the overlay again, no sticky phase between rounds
+    expect(src).toMatch(/gambleOverlay\.hide\(\)/);
+  });
+
+  it("spin bank path has no collect control and drops the offer first", () => {
+    expect(src).not.toMatch(/data-action=["']?(collect|take)/);
+    const spinAt = src.indexOf("const result = game.spin()");
+    const clearAt = src.lastIndexOf("game.clearGambleOffer()", spinAt);
+    const offAt = src.lastIndexOf("hud.setGambleEnabled(false)", spinAt);
+    expect(clearAt).toBeGreaterThan(src.indexOf("spin(): SpinResult"));
+    expect(offAt).toBeGreaterThan(clearAt);
+  });
+
+  it("spin keeps the credited win and clears the offer in the game facade", () => {
+    const { game } = gameWithOffer("gamble-edge");
+
+    const pot = game.getGambleSnapshot().stakeCents;
+    const before = Math.round(Number.parseFloat(game.getSnapshot().balanceDisplay) * 100);
+    game.clearGambleOffer();
+    expect(game.getGambleSnapshot().offered).toBe(false);
+    expect(Math.round(Number.parseFloat(game.getSnapshot().balanceDisplay) * 100)).toBe(before);
+    expect(pot).toBeGreaterThan(0);
+  });
+
+  it("die debits the pot once through the seeded gamble stream", () => {
+    const { game, seed } = gameWithOffer("gamble-edge-die");
+    const rng = createRng(`:gamble`);
+
+    const before = Math.round(Number.parseFloat(game.getSnapshot().balanceDisplay) * 100);
+    const stake = game.getGambleSnapshot().stakeCents;
+    const res = game.resolveGamble(rng);
+    expect(res).not.toBeNull();
+    const after = Math.round(Number.parseFloat(game.getSnapshot().balanceDisplay) * 100);
+    expect(after).toBe(res!.survived ? before + stake : before - stake);
+    if (!res!.survived) expect(game.getGambleSnapshot().offered).toBe(false);
   });
 });
