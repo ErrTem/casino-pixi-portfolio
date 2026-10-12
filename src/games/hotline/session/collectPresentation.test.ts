@@ -333,3 +333,45 @@ describe("info sheet session and markup (BASE-04, D-09, D-12)", () => {
     expect(src).toMatch(/if \(present !== "gamble" \|\| gambleShowingResult \|\| infoOpen\)/);
   });
 });
+describe("gamble beeps and vhs art hooks (PRES-02, D-08)", () => {
+  const read = (p: string): string =>
+    readFileSync(join(import.meta.dirname, p), "utf8");
+
+  it("session plays open survive and die beeps on the matching edges", () => {
+    const src = read("mountHotlineSession.ts");
+    const openAt = src.indexOf("function openGamble");
+    const playAt = src.indexOf("function playGambleRound");
+    const splashAt = src.indexOf("function showSplash");
+    expect(src.slice(openAt, playAt)).toMatch(/audio\.play\(\s*"gamble_open"\s*\)/);
+    const round = src.slice(playAt, splashAt);
+    expect(round).toMatch(/audio\.play\(\s*"gamble_survive"\s*\)/);
+    expect(round).toMatch(/audio\.play\(\s*"gamble_die"\s*\)/);
+  });
+
+  it("overlay hooks the three optional vhs pngs with fixed static paths", () => {
+    const src = read("../hud/GambleOverlay.ts");
+    expect(src).toMatch(/\/assets\/hotline\/vhs-gamble-panel\.png/);
+    expect(src).toMatch(/\/assets\/hotline\/vhs-btn-survive\.png/);
+    expect(src).toMatch(/\/assets\/hotline\/vhs-btn-die\.png/);
+    expect(src).not.toMatch(/\.innerHTML\s*=/);
+  });
+
+  it("vhs pngs stay out of the pixi loader list", () => {
+    const src = read("../view/loadHotlineAssets.ts");
+    expect(src).not.toMatch(/vhs-/);
+  });
+
+  it("asset list names the three vhs files and forbids loader edits", () => {
+    const list = readFileSync(
+      join(
+        import.meta.dirname,
+        "../../../../.planning/phases/05-gamble-paytable-polish/05-ASSET-LIST.md",
+      ),
+      "utf8",
+    );
+    expect(list).toMatch(/vhs-gamble-panel\.png/);
+    expect(list).toMatch(/vhs-btn-survive\.png/);
+    expect(list).toMatch(/vhs-btn-die\.png/);
+    expect(list).toMatch(/HOTLINE_ASSET_URLS/);
+  });
+});

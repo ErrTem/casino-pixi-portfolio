@@ -24,6 +24,12 @@ const FEATURE_EVENTS: SfxEvent[] = [
   "jackpot",
 ];
 
+const GAMBLE_EVENTS: SfxEvent[] = [
+  "gamble_open",
+  "gamble_survive",
+  "gamble_die",
+];
+
 const ALL_EVENTS: SfxEvent[] = [
   "bet_lock",
   "takeoff",
@@ -34,6 +40,7 @@ const ALL_EVENTS: SfxEvent[] = [
   "win",
   ...COLLECTOR_EVENTS,
   ...FEATURE_EVENTS,
+  ...GAMBLE_EVENTS,
 ];
 
 function makeContext(): { ctx: BeepAudioContext; pitches: number[] } {
@@ -119,6 +126,16 @@ describe("createBeepAudioPort", () => {
     }
     expect(pitches).toHaveLength(FEATURE_EVENTS.length);
     expect(new Set(pitches).size).toBe(FEATURE_EVENTS.length);
+  });
+
+  it("keeps gamble events distinct from each other", () => {
+    const { ctx, pitches } = makeContext();
+    const port = createBeepAudioPort({ audioContext: ctx });
+    for (const event of GAMBLE_EVENTS) {
+      port.play(event);
+    }
+    expect(pitches).toHaveLength(GAMBLE_EVENTS.length);
+    expect(new Set(pitches).size).toBe(GAMBLE_EVENTS.length);
   });
 
   it("stays silent while muted and after dispose", () => {
