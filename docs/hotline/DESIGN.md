@@ -104,4 +104,34 @@ Desktop is a centered tall column with the rooftop filling the sides.
 
 ## Asset handoff
 
-The asset table follows.
+Each Stitch prompt feeds files in the table below. Names and sizes match the shipped pack under `public/assets/hotline/`.
+
+| file | size | alpha | fed by | status |
+|------|------|-------|--------|--------|
+| backdrop-rooftop.png | 1080x1920 | opaque | Prompt 3 | placed |
+| frame-crt.png | 900x720 | transparent center | Prompt 3 | placed |
+| phone-green.png | 256x256 | transparent | Prompt 3 | placed |
+| phone-red.png | 256x256 | transparent | Prompt 3 | placed |
+| phone-purple.png | 256x256 | transparent | Prompt 3 | placed |
+| sym-wild-mask.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-hi-pistol.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-hi-cassette.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-hi-car.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-lo-ace.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-lo-king.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-lo-queen.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-lo-jack.png | 128x128 | transparent | Prompt 2 | placed |
+| sym-lo-ten.png | 128x128 | transparent | Prompt 2 | placed |
+| diskette-green.png | 128x128 | transparent | Prompt 2 | placed |
+| diskette-red.png | 128x128 | transparent | Prompt 2 | placed |
+| diskette-purple.png | 128x128 | transparent | Prompt 2 | placed |
+| vhs-gamble-panel.png | 640x720 | transparent edges ok | Prompt 4 | not placed, CSS neon fallback |
+| vhs-btn-survive.png | 320x128 | transparent | Prompt 4 | not placed, CSS neon fallback |
+| vhs-btn-die.png | 320x128 | transparent | Prompt 4 | not placed, CSS neon fallback |
+
+Rules:
+
+- Files go to `public/assets/hotline/` as loose real PNGs with these exact names (D-05, D-07).
+- You generate and place the final art. Stitch output is reference, the final cutout happens at the listed size.
+- Replacing a placed file needs no code change. A new filename does, because the loader pins 17 files, so keep the names.
+- CRT grime stays baked into `frame-crt.png` with a transparent window (D-08).
