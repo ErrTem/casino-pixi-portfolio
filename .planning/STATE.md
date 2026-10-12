@@ -159,6 +159,12 @@ None yet.
 |----------|------|--------|-------------|-----------|
 | *(none)* | | | | |
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 261012-jg6 | HOTLINE HUD polish 1-5: title near top, gold dollar callout, actions row, info sheet fonts and icons, turbo and auto | 2026-10-12 | b104ac2 | [261012-jg6-hotline-hud-polish-items-1-5-1-move-hotl](./quick/261012-jg6-hotline-hud-polish-items-1-5-1-move-hotl/) |
+
 ## Session Continuity
 
 Last session: 2026-10-12T10:45:50.996Z
