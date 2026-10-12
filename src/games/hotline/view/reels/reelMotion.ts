@@ -4,6 +4,9 @@
 export const SPIN_MIN_MS = 650;
 /** extra wait per reel so stops read left to right */
 export const STAGGER_MS = 240;
+/** turbo versions of the two waits above */
+export const TURBO_SPIN_MIN_MS = 260;
+export const TURBO_STAGGER_MS = 90;
 /** how long the landing ease takes once a reel is told to stop */
 export const LAND_MS = 420;
 /** scroll speed while spinning */
@@ -17,9 +20,11 @@ export function smoothstep(edge0: number, edge1: number, x: number): number {
 }
 
 /** ms after spin start when the given reel starts landing */
-export function staggerDelayMs(reelIndex: number): number {
+export function staggerDelayMs(reelIndex: number, turbo = false): number {
   const i = Number.isFinite(reelIndex) ? Math.max(0, Math.floor(reelIndex)) : 0;
-  return SPIN_MIN_MS + i * STAGGER_MS;
+  return turbo
+    ? TURBO_SPIN_MIN_MS + i * TURBO_STAGGER_MS
+    : SPIN_MIN_MS + i * STAGGER_MS;
 }
 
 /**

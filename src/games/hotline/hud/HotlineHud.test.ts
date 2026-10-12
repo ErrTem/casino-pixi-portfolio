@@ -19,7 +19,13 @@ class FakeEl {
   removeEventListener(type: string, fn: () => void): void {
     this.listeners.get(type)?.delete(fn);
   }
-  setAttribute(): void {}
+  attrs = new Map<string, string>();
+  setAttribute(name: string, value: string): void {
+    this.attrs.set(name, value);
+  }
+  getAttribute(name: string): string | null {
+    return this.attrs.get(name) ?? null;
+  }
   appendChild(child: FakeEl): FakeEl {
     this.children.push(child);
     return child;
@@ -49,6 +55,8 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-action=bet-inc]",
     "[data-action=gamble]",
     "[data-action=info]",
+    "[data-action=turbo]",
+    "[data-action=auto]",
   ];
   const els: Record<string, FakeEl> = {};
   for (const n of names) els[n] = new FakeEl();
@@ -365,5 +373,97 @@ describe("HotlineHud info control (BASE-04, D-09, D-12)", () => {
     const src = readFileSync(join(import.meta.dirname, "HotlineHud.ts"), "utf8");
     expect(src).toMatch(/data-action=info/);
     expect(src).not.toMatch(/infoBtn\.disabled\s*=/);
+  });
+});
+describe("HotlineHud turbo and auto controls (quick 261012-jg6)", () => {
+  function mount(extra: Record<string, unknown> = {}) {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-modes", config });
+    const { root, els } = makeRoot();
+    const hud = mountHotlineHud(root, game, {
+      betStepCount: config.math.betStepsCents.length,
+      ...extra,
+    });
+    hud.render(game.getSnapshot());
+    return { game, els, hud };
+  }
+
+  it("turbo click flips aria-pressed and reports on then off", () => {
+    const seen: boolean[] = [];
+    const { els } = mount({ onTurboChange: (on: boolean) => seen.push(on) });
+    const btn = els["[data-action=turbo]"];
+    btn.click();
+    expect(btn.getAttribute("aria-pressed")).toBe("true");
+    btn.click();
+    expect(btn.getAttribute("aria-pressed")).toBe("false");
+    expect(seen).toEqual([true, false]);
+  });
+
+  it("auto click reports on and setAuto resets without a callback", () => {
+    const seen: boolean[] = [];
+    const { els, hud } = mount({ onAutoChange: (on: boolean) => seen.push(on) });
+    const btn = els["[data-action=auto]"];
+    btn.click();
+    expect(btn.getAttribute("aria-pressed")).toBe("true");
+    expect(seen).toEqual([true]);
+    hud.setAuto(false);
+    expect(btn.getAttribute("aria-pressed")).toBe("false");
+    expect(seen).toEqual([true]);
+    btn.click();
+    expect(seen).toEqual([true, true]);
+  });
+
+  it("setBusy never locks turbo or auto", () => {
+    const { els, hud } = mount();
+    hud.setBusy(true);
+    expect(els["[data-action=turbo]"].disabled).toBe(false);
+    expect(els["[data-action=auto]"].disabled).toBe(false);
+  });
+
+  it("requestSpin runs the spin path and returns the result", () => {
+    const { game, els, hud } = mount();
+    const result = hud.requestSpin();
+    expect(result.ok).toBe(true);
+    expect(game.getSnapshot().phase).toBe("settled");
+    expect(els["[data-field=status]"].textContent).toBe("");
+    expect(els["[data-field=balance]"].textContent).toBe(
+      game.getSnapshot().balanceDisplay,
+    );
+  });
+
+  it("requestSpin writes the refusal reason to status", () => {
+    const config = loadHotlineConfig();
+    const game = createHotlineGame({ seed: "hud-refuse", config });
+    const refusing = {
+      ...game,
+      spin: () => ({ ok: false as const, reason: "insufficient_balance" }),
+    };
+    const { root, els } = makeRoot();
+    const hud = mountHotlineHud(root, refusing, {
+      betStepCount: config.math.betStepsCents.length,
+    });
+    const result = hud.requestSpin();
+    expect(result).toEqual({ ok: false, reason: "insufficient_balance" });
+    expect(els["[data-field=status]"].textContent).toBe("insufficient_balance");
+  });
+
+  it("requestSpin does nothing after dispose", () => {
+    const { hud } = mount();
+    hud.dispose();
+    expect(hud.requestSpin()).toEqual({ ok: false, reason: "" });
+  });
+
+  it("dispose removes the turbo and auto listeners", () => {
+    const { els, hud } = mount();
+    hud.dispose();
+    expect(els["[data-action=turbo]"].count()).toBe(0);
+    expect(els["[data-action=auto]"].count()).toBe(0);
+  });
+
+  it("hud source never disables turbo or auto", () => {
+    const src = readFileSync(join(import.meta.dirname, "HotlineHud.ts"), "utf8");
+    expect(src).toMatch(/data-action=turbo/);
+    expect(src).toMatch(/data-action=auto/);
+    expect(src).not.toMatch(/(turboBtn|autoBtn)\.disabled/);
   });
 });

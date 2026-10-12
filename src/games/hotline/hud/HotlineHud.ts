@@ -1,6 +1,10 @@
 import type { AudioPort } from "../../../shared/audio/AudioPort.js";
 import { saveMutePref } from "../../../shared/audio/mutePref.js";
-import type { HotlineGame, HotlineSnapshot } from "../logic/index.js";
+import type {
+  HotlineGame,
+  HotlineSnapshot,
+  SpinResult,
+} from "../logic/index.js";
 import type { ComboStripCell } from "./comboStripModel.js";
 import { formatMoney } from "./format.js";
 import { createLastWinTween } from "./lastWinTween.js";
@@ -17,6 +21,10 @@ export interface HotlineHud {
   setComboPath(cells: readonly ComboStripCell[]): void;
   /** free spins remaining line via textContent only */
   setFeatureLine(text: string): void;
+  /** same path as the spin button, auto spin calls this from the session */
+  requestSpin(): SpinResult;
+  /** sets the auto button state without firing onAutoChange */
+  setAuto(on: boolean): void;
   /** removes listeners */
   dispose(): void;
 }
@@ -31,6 +39,10 @@ export interface MountHotlineHudOptions {
   onGamble?: () => void;
   /** info button click, the session owns the rules sheet and the pause */
   onInfo?: () => void;
+  /** turbo button click, the session speeds up reels and the win cycle */
+  onTurboChange?: (on: boolean) => void;
+  /** auto button click, the session owns the spin loop */
+  onAutoChange?: (on: boolean) => void;
   /** clock for the count up, defaults to performance.now */
   now?: () => number;
 }
@@ -67,6 +79,9 @@ export function mountHotlineHud(
   const gambleBtn = need<HTMLButtonElement>(root, "[data-action=gamble]");
   // info is never locked by busy, the rules sheet may open any time
   const infoBtn = need<HTMLButtonElement>(root, "[data-action=info]");
+  // turbo and auto stay live while busy so the player can stop auto mid spin
+  const turboBtn = need<HTMLButtonElement>(root, "[data-action=turbo]");
+  const autoBtn = need<HTMLButtonElement>(root, "[data-action=auto]");
   const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
   if (audio && !muteBtn) {
     throw new Error("hotline hud: [data-action=mute] missing");
@@ -75,6 +90,8 @@ export function mountHotlineHud(
   let disposed = false;
   let busy = false;
   let gambleEnabled = false;
+  let turboOn = false;
+  let autoOn = false;
   let lastSnap: HotlineSnapshot | null = null;
 
   function syncMuteLabel(): void {
@@ -136,11 +153,32 @@ export function mountHotlineHud(
     syncMuteLabel();
   }
 
-  const onSpin = (): void => {
+  function requestSpin(): SpinResult {
+    if (disposed) return { ok: false, reason: "" };
     audio?.unlock();
     const result = game.spin();
     statusEl.textContent = result.ok ? "" : result.reason;
     render(game.getSnapshot());
+    return result;
+  }
+  const onSpin = (): void => {
+    requestSpin();
+  };
+
+  const onTurboClick = (): void => {
+    if (disposed) return;
+    audio?.unlock();
+    turboOn = !turboOn;
+    turboBtn.setAttribute("aria-pressed", turboOn ? "true" : "false");
+    options.onTurboChange?.(turboOn);
+  };
+
+  const onAutoClick = (): void => {
+    if (disposed) return;
+    audio?.unlock();
+    autoOn = !autoOn;
+    autoBtn.setAttribute("aria-pressed", autoOn ? "true" : "false");
+    options.onAutoChange?.(autoOn);
   };
 
   // bet steps only move through config indexes, the game clamps the rest
@@ -176,12 +214,20 @@ export function mountHotlineHud(
   incBtn.addEventListener("click", onInc);
   gambleBtn.addEventListener("click", onGambleClick);
   infoBtn.addEventListener("click", onInfoClick);
+  turboBtn.addEventListener("click", onTurboClick);
+  autoBtn.addEventListener("click", onAutoClick);
   muteBtn?.addEventListener("click", onMute);
   gambleBtn.disabled = true;
   syncMuteLabel();
 
   return {
     render,
+    requestSpin,
+    setAuto(next: boolean): void {
+      if (disposed) return;
+      autoOn = next;
+      autoBtn.setAttribute("aria-pressed", next ? "true" : "false");
+    },
     setBusy(next: boolean): void {
       if (disposed) return;
       busy = next;
@@ -244,6 +290,8 @@ export function mountHotlineHud(
       incBtn.removeEventListener("click", onInc);
       gambleBtn.removeEventListener("click", onGambleClick);
       infoBtn.removeEventListener("click", onInfoClick);
+      turboBtn.removeEventListener("click", onTurboClick);
+      autoBtn.removeEventListener("click", onAutoClick);
       muteBtn?.removeEventListener("click", onMute);
     },
   };

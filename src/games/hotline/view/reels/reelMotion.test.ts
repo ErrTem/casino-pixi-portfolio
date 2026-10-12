@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   LAND_MS,
   SPIN_CELLS_PER_MS,
+  SPIN_MIN_MS,
+  STAGGER_MS,
+  TURBO_SPIN_MIN_MS,
+  TURBO_STAGGER_MS,
   landOffset,
   smoothstep,
   staggerDelayMs,
@@ -18,6 +22,38 @@ describe("staggerDelayMs", () => {
   it("clamps bad indexes to the first reel", () => {
     expect(staggerDelayMs(-3)).toBe(staggerDelayMs(0));
     expect(staggerDelayMs(Number.NaN)).toBe(staggerDelayMs(0));
+  });
+
+  it("keeps today's numbers when turbo is off or missing", () => {
+    for (let reel = 0; reel < 5; reel += 1) {
+      expect(staggerDelayMs(reel, false)).toBe(staggerDelayMs(reel));
+      expect(staggerDelayMs(reel)).toBe(SPIN_MIN_MS + reel * STAGGER_MS);
+    }
+  });
+
+  it("turbo lands every reel sooner and still left to right", () => {
+    for (let reel = 0; reel < 5; reel += 1) {
+      expect(staggerDelayMs(reel, true)).toBeLessThan(staggerDelayMs(reel, false));
+      if (reel > 0) {
+        expect(staggerDelayMs(reel, true)).toBeGreaterThan(
+          staggerDelayMs(reel - 1, true),
+        );
+      }
+    }
+    expect(staggerDelayMs(0, true)).toBe(TURBO_SPIN_MIN_MS);
+    expect(staggerDelayMs(1, true) - staggerDelayMs(0, true)).toBe(
+      TURBO_STAGGER_MS,
+    );
+  });
+
+  it("turbo last reel is at most half of the normal time", () => {
+    expect(staggerDelayMs(4, true)).toBeLessThanOrEqual(
+      staggerDelayMs(4, false) / 2,
+    );
+  });
+
+  it("turbo clamps bad indexes too", () => {
+    expect(staggerDelayMs(-1, true)).toBe(staggerDelayMs(0, true));
   });
 });
 

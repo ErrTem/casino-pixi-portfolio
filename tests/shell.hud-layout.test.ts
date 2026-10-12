@@ -156,14 +156,14 @@ describe("hotline screen template (D-09 / D-13 / BASE-02)", () => {
     expect(hasAttr(top, "action", "mute")).toBe(true);
   });
 
-  it("puts spin, bet steppers, bet readout and the fixed 40 lines under hud-bar", () => {
+  it("puts spin, bet steppers and bet readout under hud-bar with no lines readout", () => {
     const bar = innerById(tpl(), "hud-bar");
     expect(hasAttr(bar, "action", "spin")).toBe(true);
     expect(hasAttr(bar, "action", "bet-dec")).toBe(true);
     expect(hasAttr(bar, "action", "bet-inc")).toBe(true);
     expect(hasAttr(bar, "field", "bet")).toBe(true);
-    expect(hasAttr(bar, "field", "lines")).toBe(true);
-    expect(bar).toMatch(/40 lines/i);
+    expect(hasAttr(bar, "field", "lines")).toBe(false);
+    expect(bar).not.toMatch(/40 lines/i);
   });
 
   it("adds no free text bet input to the hotline template", () => {
@@ -189,14 +189,26 @@ describe("hotline spin hub layout (PRES-02 / D-13 / D-14 / D-15 / D-16)", () => 
     return css.slice(open + 1, i - 1);
   }
 
-  it("keeps gamble and info as icon buttons in the hotline bar, outside the canvas host", () => {
-    const bar = innerById(tpl(), "hud-bar");
+  it("keeps info, turbo, auto and gamble in an actions row above the bar, outside the canvas host", () => {
+    const hud = innerById(tpl(), "hud-bar");
     const host = innerById(tpl(), "game-canvas-host");
-    for (const name of ["gamble", "info", "spin", "bet-dec", "bet-inc"] as const) {
-      expect(hasAttr(bar, "action", name), `${name} lives in the hotline bar`).toBe(true);
+    const actions = hud.slice(
+      hud.indexOf('class="hotline-actions"'),
+      hud.indexOf('class="hotline-bar"'),
+    );
+    for (const name of ["gamble", "info", "turbo", "auto", "spin", "bet-dec", "bet-inc"] as const) {
+      expect(hasAttr(hud, "action", name), `${name} lives in the hud bar`).toBe(true);
       expect(hasAttr(host, "action", name), `${name} stays out of the canvas host`).toBe(false);
     }
-    expect(bar).toMatch(/hotline-bar__icons/);
+    expect(actions).toMatch(/hotline-actions__left/);
+    expect(actions).toMatch(/hotline-actions__right/);
+    expect(actions.indexOf("data-action=\"info\"")).toBeLessThan(actions.indexOf("hotline-actions__right"));
+    expect(actions.indexOf("data-action=\"gamble\"")).toBeGreaterThan(actions.indexOf("hotline-actions__right"));
+    expect(actions.indexOf("data-action=\"auto\"")).toBeLessThan(actions.indexOf("data-action=\"gamble\""));
+    const barOnly = hud.slice(hud.indexOf("hotline-bar"));
+    expect(hasAttr(barOnly, "action", "info")).toBe(false);
+    expect(hasAttr(barOnly, "action", "gamble")).toBe(false);
+    expect(hud).not.toMatch(/hotline-icon-btn__label/);
     expect(innerById(tpl(), "top-chrome")).not.toMatch(/data-action\s*=\s*["']info["']/);
   });
 
@@ -205,7 +217,8 @@ describe("hotline spin hub layout (PRES-02 / D-13 / D-14 / D-15 / D-16)", () => 
     expect(narrow).toMatch(/\.hotline-bar\s*\{[^}]*display:\s*grid/);
     expect(narrow).toMatch(/grid-template-areas/);
     expect(narrow).toMatch(/"dec spin inc"/);
-    expect(narrow).toMatch(/"gamble spin info"/);
+    expect(narrow).toMatch(/"stake stake stake"/);
+    expect(narrow).not.toMatch(/"gamble spin info"/);
     expect(narrow).toMatch(/\.hotline-bar \.primary-cta\s*\{[^}]*grid-area:\s*spin/);
   });
 
@@ -213,7 +226,8 @@ describe("hotline spin hub layout (PRES-02 / D-13 / D-14 / D-15 / D-16)", () => 
     expect(css).toMatch(/\.hotline-icon-btn\s*\{[^}]*min-width:\s*2\.75rem[^}]*min-height:\s*2\.75rem/);
     const narrow = mediaBlock("@media (max-width: 480px)");
     expect(narrow).toMatch(/\.hotline-bar \.stake-stepper button\s*\{[^}]*min-width:\s*2\.75rem[^}]*min-height:\s*2\.75rem/);
-    expect(narrow).toMatch(/\.hotline-icon-btn\s*\{[^}]*width:\s*2\.75rem[^}]*height:\s*2\.75rem/);
+    expect(narrow).toMatch(/\.hotline-icon-btn\s*\{[^}]*height:\s*2\.75rem/);
+    expect(narrow).toMatch(/\.hotline-icon-btn:not\(\.hotline-mode-btn\)\s*\{[^}]*width:\s*2\.75rem/);
   });
 
   it("guards the bar and every hotline overlay against horizontal overflow (D-14)", () => {

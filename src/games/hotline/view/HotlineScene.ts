@@ -36,6 +36,8 @@ export interface HotlineScene {
   setPhoneGlow: (color: TokenColor | null) => void;
   /** pass through to the win lines overlay cycle interval */
   setWinCycleMs: (ms: number) => void;
+  /** faster reel stops on the next spin */
+  setTurbo: (on: boolean) => void;
   /** swap crt reels for sticky hold board and phones for jackpot strip */
   setHoldMode: (on: boolean) => void;
   syncHold: (snapshot: HoldSnapshot) => void;
@@ -310,6 +312,11 @@ export function createHotlineScene(
     setWinCycleMs(ms: number): void {
       if (destroyed) return;
       overlay.setIntervalMs(ms);
+    },
+
+    setTurbo(on: boolean): void {
+      if (destroyed) return;
+      reelWindow.setTurbo(on);
     },
 
     setHoldMode(on: boolean): void {

@@ -1115,6 +1115,18 @@ input {
   line-height: 1;
 }
 
+/* turbo and auto carry words, so they grow wider than the square floor */
+.hotline-mode-btn .hotline-icon-btn__glyph {
+  font-size: 0.6rem;
+}
+
+.hotline-mode-btn[aria-pressed="true"] {
+  border-color: #ff4da6;
+  background: #ff4da6;
+  color: #12061f;
+  box-shadow: 0 0 0.7rem rgba(255, 77, 166, 0.7);
+}
+
 .hotline-icon-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -1537,12 +1549,23 @@ input {
   }
 
   .hotline-icon-btn {
-    width: 2.75rem;
     height: 2.75rem;
     padding: 0;
   }
 
+  .hotline-icon-btn:not(.hotline-mode-btn) {
+    width: 2.75rem;
+  }
+
+  .hotline-mode-btn {
+    padding: 0 0.45rem;
+  }
+
   .hotline-icon-btn__glyph {
     font-size: 1rem;
+  }
+
+  .hotline-mode-btn .hotline-icon-btn__glyph {
+    font-size: 0.6rem;
   }
 }

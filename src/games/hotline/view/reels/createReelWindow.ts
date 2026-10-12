@@ -19,6 +19,8 @@ export interface ReelWindow {
   setGrid: (grid: string[][]) => void;
   /** spin all reels and land them on `grid`, one after another */
   start: (grid: string[][]) => void;
+  /** turbo shortens the stop stagger of the next spin */
+  setTurbo: (on: boolean) => void;
   update: (deltaMS: number) => void;
   isSpinning: () => boolean;
   destroy: () => void;
@@ -32,6 +34,7 @@ export function createReelWindow(options: ReelWindowOptions): ReelWindow {
   let left = 0;
   let top = 0;
   let destroyed = false;
+  let turbo = false;
 
   for (let reel = 0; reel < reels; reel += 1) {
     const strip = createReelStrip({
@@ -69,8 +72,13 @@ export function createReelWindow(options: ReelWindowOptions): ReelWindow {
     start(grid: string[][]): void {
       if (destroyed) return;
       strips.forEach((strip, reel) => {
-        strip.start(grid[reel] ?? [], staggerDelayMs(reel));
+        strip.start(grid[reel] ?? [], staggerDelayMs(reel, turbo));
       });
+    },
+
+    setTurbo(on: boolean): void {
+      if (destroyed) return;
+      turbo = !!on;
     },
 
     update(deltaMS: number): void {

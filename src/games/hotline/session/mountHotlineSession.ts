@@ -26,6 +26,7 @@ import {
 import { SYMBOL_URLS } from "../view/loadHotlineAssets.js";
 import { DEFAULT_WIN_CYCLE_MS } from "../view/WinLinesOverlay.js";
 import { mountHotlineView } from "../view/mountHotlineView.js";
+import { autoGapMs, shouldAutoSpin, shouldStopAuto } from "./autoSpin.js";
 import {
   baselineFromMeterFills,
   formatComboStrip,
@@ -36,6 +37,7 @@ import {
 
 const LAST_WIN_TWEEN_MS = 900;
 const FS_WIN_CYCLE_MS = 480;
+const TURBO_WIN_CYCLE_MS = 450;
 const FS_GAP_MS = 220;
 const HOLD_RESPIN_MS = 320;
 // result beat on the vhs panel before it closes by itself
@@ -118,6 +120,10 @@ export async function mountHotlineSession(
   let gambleElapsed = 0;
   // set while the rules sheet is up, play stays paused until dismiss (D-12)
   let infoOpen = false;
+  // turbo speeds reels and the win cycle, auto spins again while idle
+  let turbo = false;
+  let autoOn = false;
+  let autoIdleMs = 0;
   // own stream so gamble rolls never shift the reel or bonus streams
   const gambleRng = createRng(`${ctx.seed}:gamble`);
 
@@ -169,6 +175,16 @@ export async function mountHotlineSession(
     hud.setFeatureLine(formatFeatureLine(game.getSnapshot().night));
   }
 
+  function baseWinCycleMs(): number {
+    return turbo ? TURBO_WIN_CYCLE_MS : DEFAULT_WIN_CYCLE_MS;
+  }
+
+  function stopAuto(): void {
+    autoOn = false;
+    autoIdleMs = 0;
+    hud.setAuto(false);
+  }
+
   function enterIdle(): void {
     present = "idle";
     busy = false;
@@ -178,7 +194,7 @@ export async function mountHotlineSession(
     hud.setFeatureLine("");
     view?.scene.setPhoneGlow(null);
     view?.scene.setHoldMode(false);
-    view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
+    view?.scene.setWinCycleMs(baseWinCycleMs());
     pendingOutcome = null;
     landed = [];
     holdRespinElapsed = 0;
@@ -202,6 +218,8 @@ export async function mountHotlineSession(
     }
     const snap = game.getGambleSnapshot();
     if (!snap.offered || game.isNightActive()) return;
+    // gamble hands the decision to the player, auto ends here
+    stopAuto();
     present = "gamble";
     busy = true;
     gambleShowingResult = false;
@@ -358,7 +376,7 @@ export async function mountHotlineSession(
         () => {
           ctx.audio.play("feature_end");
           if (step.color === "green") {
-            view?.scene.setWinCycleMs(DEFAULT_WIN_CYCLE_MS);
+            view?.scene.setWinCycleMs(baseWinCycleMs());
           }
           advanceNight();
         },
@@ -457,6 +475,17 @@ export async function mountHotlineSession(
     lastWinTweenMs: LAST_WIN_TWEEN_MS,
     onGamble: openGamble,
     onInfo: openInfo,
+    onTurboChange: (on) => {
+      turbo = on;
+      view?.scene.setTurbo(on);
+      // mid presentation the next enterIdle picks the new cycle up
+      if (present === "idle") view?.scene.setWinCycleMs(baseWinCycleMs());
+    },
+    onAutoChange: (on) => {
+      autoOn = on;
+      // prime the gap so the first auto spin fires on the next idle frame
+      autoIdleMs = on ? autoGapMs(turbo) : 0;
+    },
   });
 
   // info may open any time, busy locks spin gamble and bet until dismiss
@@ -559,6 +588,31 @@ export async function mountHotlineSession(
   };
   menuBtn.addEventListener("click", onMenuClick);
 
+  // auto waits through features, splashes and the info sheet, it only spins from idle
+  function tickAuto(deltaMS: number): void {
+    if (!autoOn) return;
+    const scene = view?.scene;
+    const spinning = scene ? scene.isSpinning() : false;
+    if (present !== "idle" || busy || spinning) {
+      autoIdleMs = 0;
+      return;
+    }
+    autoIdleMs += clampDelta(deltaMS);
+    const go = shouldAutoSpin({
+      autoOn,
+      idle: present === "idle",
+      busy,
+      spinning,
+      infoOpen,
+      idleMs: autoIdleMs,
+      gapMs: autoGapMs(turbo),
+    });
+    if (!go) return;
+    autoIdleMs = 0;
+    const result = hud.requestSpin();
+    if (shouldStopAuto(result)) stopAuto();
+  }
+
   let disposed = false;
   let onTick: ((ticker: Ticker) => void) | null = null;
 
@@ -609,7 +663,10 @@ export async function mountHotlineSession(
   onTick = (ticker: Ticker): void => {
     // scene first so the hud reads the motion state after this frame
     view!.scene.sync(game.getSnapshot(), ticker.deltaMS);
-    if (!infoOpen) tickPresent(ticker.deltaMS);
+    if (!infoOpen) {
+      tickPresent(ticker.deltaMS);
+      tickAuto(ticker.deltaMS);
+    }
     hud.render(hudGame.getSnapshot());
   };
   ctx.app.ticker.add(onTick);
