@@ -182,7 +182,7 @@ Plans:
   3. User can open a paytable/rules overlay explaining symbols, phones, bonuses, and gamble
   4. Layout remains playable on desktop and mobile viewport sizes
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans executed
 
 Plans:
 **Wave 1**
@@ -203,7 +203,7 @@ Plans:
 
 **Wave 5** *(blocked on Waves 2 and 4)*
 
-- [ ] 05-05-PLAN.md — VHS asset list, gamble beeps, viewport walkthrough (PRES-02, D-08)
+- [x] 05-05-PLAN.md — VHS asset list, gamble beeps, viewport walkthrough (PRES-02, D-08)
 
 **UI hint**: yes
 
@@ -218,7 +218,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. HOTLINE Base Playable | 7/7 | Complete    | 2026-10-10 |
 | 3. Diskette Collectors + Trigger Queue | 5/5 | Complete    | 2026-10-11 |
 | 4. Three Bonuses + Combo Nights | 5/5 | Complete    | 2026-10-11 |
-| 5. Gamble + Paytable + Polish | 4/5 | In Progress|  |
+| 5. Gamble + Paytable + Polish | 5/5 | In Progress|  |
 
 ## Coverage Map
 

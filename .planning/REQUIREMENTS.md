@@ -45,7 +45,7 @@
 ### Presentation
 
 - [x] **PRES-01**: HOTLINE presents motel rooftop at sunset with CRT/VHS monitor framing and Retro Computer font from `src/shared/fonts/`
-- [ ] **PRES-02**: Layout remains playable on desktop and mobile viewport sizes
+- [x] **PRES-02**: Layout remains playable on desktop and mobile viewport sizes
 
 ## v2 Requirements
 
@@ -96,7 +96,7 @@ Deferred — not in current roadmap phases.
 | GAMBLE-01 | Phase 5 | Complete |
 | GAMBLE-02 | Phase 5 | Complete |
 | BASE-04 | Phase 5 | Complete |
-| PRES-02 | Phase 5 | Pending |
+| PRES-02 | Phase 5 | Complete |
 
 **Coverage:**
 

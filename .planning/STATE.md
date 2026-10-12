@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: HOTLINE + multi-game menu
 current_phase: 05
 current_phase_name: Gamble + Paytable + Polish
-status: executing
-stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-12T09:30:57.036Z"
+status: verifying
+stopped_at: Completed 05-05-PLAN.md
+last_updated: "2026-10-12T10:45:51.080Z"
 last_activity: 2026-10-12
 last_activity_desc: Phase 05 execution resumed (wave continue)
-state_head: 3ef62e468363071e656b470477b548ed214d120e
+state_head: 1730c586c9e56b1ddc2809f5fd78860e11752072
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 26
-  completed_plans: 25
+  completed_plans: 26
 ---
 
 # Project State
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 
 Phase: 05 (Gamble + Paytable + Polish) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-12 — Phase 05 execution resumed (wave continue)
 
 Progress: [████████░░] 80%
@@ -87,6 +87,7 @@ Progress: [████████░░] 80%
 | Phase 05 P02 | 6 min | 2 tasks | 7 files |
 | Phase 05 P03 | 9min | 2 tasks | 11 files |
 | Phase 05 P04 | 6 min | 2 tasks | 3 files |
+| Phase 05 P05 | 12min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -141,6 +142,7 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-02: SURVIVE and DIE share one seeded resolve path, 750 ms result beat, enterIdle re-offers for chaining
 - [Phase 05]: 05-03: Info opens over paused VHS by raising hotline top chrome above overlays, play pauses by infoOpen gating tickPresent and busy
 - [Phase 05]: 05-04 narrow hub breakpoint is max-width 480px, Info moved into the bar icon row and icon buttons rise above overlays
+- [Phase 05]: 05-05: vhs pngs attach only on load, stay out of HOTLINE_ASSET_URLS (17 pin holds), gamble beeps own pitches
 
 ### Pending Todos
 
@@ -159,6 +161,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-12T09:30:56.956Z
-Stopped at: Completed 05-04-PLAN.md
+Last session: 2026-10-12T10:45:50.996Z
+Stopped at: Completed 05-05-PLAN.md
 Resume file: None
