@@ -361,6 +361,61 @@
         </div>
 
         <div
+          class="hotline-gamble-overlay"
+          data-field="gamble-overlay"
+          hidden
+        >
+          <div
+            class="hotline-gamble-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotline-gamble-title"
+          >
+            <div
+              id="hotline-gamble-title"
+              class="hotline-gamble-panel__title"
+            >
+              VHS GAMBLE
+            </div>
+            <div class="hotline-gamble-panel__row">
+              <span class="hotline-gamble-panel__label">CURRENT WIN</span>
+              <span
+                class="hotline-gamble-panel__value"
+                data-field="gamble-current"
+              >-</span>
+            </div>
+            <div class="hotline-gamble-panel__row">
+              <span class="hotline-gamble-panel__label">GAMBLE TO WIN</span>
+              <span
+                class="hotline-gamble-panel__value"
+                data-field="gamble-to-win"
+              >-</span>
+            </div>
+            <div
+              class="hotline-gamble-panel__result"
+              data-field="gamble-result"
+              aria-live="polite"
+            ></div>
+            <div class="hotline-gamble-panel__actions">
+              <button
+                type="button"
+                data-action="survive"
+                class="hotline-gamble-panel__btn hotline-gamble-panel__btn--survive"
+              >
+                SURVIVE
+              </button>
+              <button
+                type="button"
+                data-action="die"
+                class="hotline-gamble-panel__btn hotline-gamble-panel__btn--die"
+              >
+                DIE
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
           class="hotline-combo"
           data-field="combo"
           aria-live="polite"
@@ -397,6 +452,14 @@
               </div>
               <span class="hotline-lines" data-field="lines">40 lines</span>
             </div>
+            <button
+              type="button"
+              data-action="gamble"
+              class="hotline-gamble-btn"
+              disabled
+            >
+              Gamble
+            </button>
             <button
               type="button"
               data-action="spin"

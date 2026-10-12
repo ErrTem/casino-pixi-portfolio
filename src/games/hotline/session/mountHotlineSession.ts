@@ -1,8 +1,10 @@
 import type { Ticker } from "pixi.js";
+import { createRng } from "../../../shared/rng/createRng.js";
 import type { GameSession, ShellContext } from "../../../shell/types.js";
 import { loadHotlineConfig } from "../config/loadHotlineConfig.js";
 import { buildComboStripCells } from "../hud/comboStripModel.js";
 import { mountFeatureOverlay } from "../hud/FeatureOverlay.js";
+import { mountGambleOverlay } from "../hud/GambleOverlay.js";
 import { mountHotlineHud } from "../hud/HotlineHud.js";
 import type {
   CollectorOutcome,
@@ -33,6 +35,8 @@ const LAST_WIN_TWEEN_MS = 900;
 const FS_WIN_CYCLE_MS = 480;
 const FS_GAP_MS = 220;
 const HOLD_RESPIN_MS = 320;
+// result beat on the vhs panel before it closes by itself
+const GAMBLE_RESULT_MS = 750;
 
 type PresentPhase =
   | "idle"
@@ -42,7 +46,8 @@ type PresentPhase =
   | "fs_gap"
   | "splash"
   | "hold_respin"
-  | "pick";
+  | "pick"
+  | "gamble";
 
 const FEATURE_TITLE: Record<TokenColor, string> = {
   green: "Free Spins",
@@ -106,6 +111,10 @@ export async function mountHotlineSession(
   let nightStarted = false;
   let splashContinue: (() => void) | null = null;
   let settleArmed = false;
+  let gambleShowingResult = false;
+  let gambleElapsed = 0;
+  // own stream so gamble rolls never shift the reel or bonus streams
+  const gambleRng = createRng(`${ctx.seed}:gamble`);
 
   const overlay = mountFeatureOverlay(screen, {
     onContinue: () => {
@@ -115,6 +124,11 @@ export async function mountHotlineSession(
       overlay.hideSplash();
       next?.();
     },
+  });
+
+  const gambleOverlay = mountGambleOverlay(screen, {
+    onSurvive: () => playGambleRound(),
+    onDie: () => playGambleRound(),
   });
 
   function applyDisplayFills(fills: readonly number[]): void {
@@ -161,8 +175,48 @@ export async function mountHotlineSession(
     lastSpinWasFree = false;
     nightStarted = false;
     splashContinue = null;
+    gambleShowingResult = false;
+    gambleElapsed = 0;
     overlay.hideLockers();
     overlay.hideSplash();
+    gambleOverlay.hide();
+    // only a settled base line win can be gambled, never mid feature
+    const gambleSnap = game.getGambleSnapshot();
+    hud.setGambleEnabled(gambleSnap.offered && !game.isNightActive());
+  }
+
+  function openGamble(): void {
+    if (busy || present !== "idle" || view?.scene.isSpinning()) return;
+    const snap = game.getGambleSnapshot();
+    if (!snap.offered || game.isNightActive()) return;
+    present = "gamble";
+    busy = true;
+    gambleShowingResult = false;
+    gambleElapsed = 0;
+    hud.setBusy(true);
+    hud.setGambleEnabled(false);
+    gambleOverlay.show({
+      currentWin: formatCents(snap.stakeCents),
+      gambleToWin: formatCents(snap.stakeCents * 2),
+    });
+  }
+
+  // one resolve per round, the result beat locks both buttons
+  function playGambleRound(): void {
+    if (present !== "gamble" || gambleShowingResult) return;
+    const before = game.getGambleSnapshot();
+    const res = game.resolveGamble(gambleRng);
+    if (!res) {
+      enterIdle();
+      return;
+    }
+    gambleShowingResult = true;
+    gambleElapsed = 0;
+    if (res.survived) ctx.audio.play("win");
+    gambleOverlay.showResult({
+      survived: res.survived,
+      amount: formatCents(res.survived ? res.stakeCents : before.stakeCents),
+    });
   }
 
   function showSplash(
@@ -352,6 +406,9 @@ export async function mountHotlineSession(
     spin(): SpinResult {
       // ignore mid presentation, empty reason clears the status line
       if (busy || view?.scene.isSpinning()) return { ok: false, reason: "" };
+      // spin banks the credited win and drops the gamble offer
+      game.clearGambleOffer();
+      hud.setGambleEnabled(false);
       const result = game.spin();
       if (result.ok && view) {
         view.scene.setPhoneGlow(null);
@@ -380,6 +437,7 @@ export async function mountHotlineSession(
     audio: ctx.audio,
     betStepCount: config.math.betStepsCents.length,
     lastWinTweenMs: LAST_WIN_TWEEN_MS,
+    onGamble: openGamble,
   });
 
   function onReelsSettled(snap: HotlineSnapshot): void {
@@ -442,6 +500,14 @@ export async function mountHotlineSession(
       view.scene.setHoldMode(false);
       advanceNight();
     }
+
+    if (present === "gamble" && gambleShowingResult) {
+      if (dt <= 0) return;
+      gambleElapsed += dt;
+      if (gambleElapsed < GAMBLE_RESULT_MS) return;
+      // auto close, enterIdle re-offers the doubled pot when rounds are left
+      enterIdle();
+    }
   }
 
   const menuEl = screen.querySelector("[data-action=menu]");
@@ -473,6 +539,7 @@ export async function mountHotlineSession(
     }
     view?.scene.setHoldMode(false);
     overlay.dispose();
+    gambleOverlay.dispose();
     hud.dispose();
     if (view) {
       view.scene.destroy();

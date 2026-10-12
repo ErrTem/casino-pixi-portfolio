@@ -7,8 +7,10 @@ import { createLastWinTween } from "./lastWinTween.js";
 
 export interface HotlineHud {
   render(snap: HotlineSnapshot): void;
-  /** lock spin and bet steppers through flights and combo stub */
+  /** lock spin gamble and bet steppers through flights and combo stub */
   setBusy(busy: boolean): void;
+  /** gamble stays off by default, busy still locks it when enabled */
+  setGambleEnabled(enabled: boolean): void;
   /** combo strip copy via textContent only */
   setCombo(text: string): void;
   /** highlighted night path cells via createElement spans */
@@ -25,6 +27,8 @@ export interface MountHotlineHudOptions {
   betStepCount: number;
   /** count up time for the last win readout, 0 or missing shows it at once */
   lastWinTweenMs?: number;
+  /** gamble button click, the session owns the overlay and the round */
+  onGamble?: () => void;
   /** clock for the count up, defaults to performance.now */
   now?: () => number;
 }
@@ -59,6 +63,7 @@ export function mountHotlineHud(
   const spinBtn = need<HTMLButtonElement>(root, "[data-action=spin]");
   const decBtn = need<HTMLButtonElement>(root, "[data-action=bet-dec]");
   const incBtn = need<HTMLButtonElement>(root, "[data-action=bet-inc]");
+  const gambleBtn = need<HTMLButtonElement>(root, "[data-action=gamble]");
   const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
   if (audio && !muteBtn) {
     throw new Error("hotline hud: [data-action=mute] missing");
@@ -66,6 +71,7 @@ export function mountHotlineHud(
 
   let disposed = false;
   let busy = false;
+  let gambleEnabled = false;
   let lastSnap: HotlineSnapshot | null = null;
 
   function syncMuteLabel(): void {
@@ -100,7 +106,12 @@ export function mountHotlineHud(
     return formatMoney(lastWinTween.valueAt(t));
   }
 
+  function syncGamble(): void {
+    gambleBtn.disabled = busy || !gambleEnabled;
+  }
+
   function syncControls(snap: HotlineSnapshot): void {
+    syncGamble();
     if (busy) {
       spinBtn.disabled = true;
       decBtn.disabled = true;
@@ -148,10 +159,17 @@ export function mountHotlineHud(
     syncMuteLabel();
   };
 
+  const onGambleClick = (): void => {
+    if (disposed || gambleBtn.disabled) return;
+    options.onGamble?.();
+  };
+
   spinBtn.addEventListener("click", onSpin);
   decBtn.addEventListener("click", onDec);
   incBtn.addEventListener("click", onInc);
+  gambleBtn.addEventListener("click", onGambleClick);
   muteBtn?.addEventListener("click", onMute);
+  gambleBtn.disabled = true;
   syncMuteLabel();
 
   return {
@@ -166,6 +184,12 @@ export function mountHotlineHud(
       spinBtn.disabled = busy;
       decBtn.disabled = busy;
       incBtn.disabled = busy;
+      syncGamble();
+    },
+    setGambleEnabled(next: boolean): void {
+      if (disposed) return;
+      gambleEnabled = next;
+      syncGamble();
     },
     setCombo(text: string): void {
       if (disposed) return;
@@ -210,6 +234,7 @@ export function mountHotlineHud(
       spinBtn.removeEventListener("click", onSpin);
       decBtn.removeEventListener("click", onDec);
       incBtn.removeEventListener("click", onInc);
+      gambleBtn.removeEventListener("click", onGambleClick);
       muteBtn?.removeEventListener("click", onMute);
     },
   };

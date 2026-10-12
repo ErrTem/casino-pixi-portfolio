@@ -1050,6 +1050,150 @@ input {
   cursor: default;
 }
 
+.hotline-gamble-btn {
+  align-self: stretch;
+  flex: 0 0 auto;
+  min-width: 4.4rem;
+  max-width: 28%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #ffe566;
+  border-radius: 0;
+  background: #1a0a2e;
+  color: #ffe566;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.hotline-gamble-btn:disabled {
+  border-color: #4a3a5e;
+  color: #6b5a80;
+  cursor: default;
+}
+
+/* vhs survive or die panel, css chrome until the art pack lands */
+.hotline-gamble-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 1rem;
+  background: rgba(8, 2, 18, 0.88);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.hotline-gamble-overlay[hidden] {
+  display: none;
+}
+
+.hotline-gamble-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  box-sizing: border-box;
+  width: min(100%, 20rem);
+  padding: 1.1rem 0.9rem;
+  border: 2px solid #ff4da6;
+  background: #12061f;
+  box-shadow: 0 0 1.2rem rgba(255, 77, 166, 0.45);
+  text-align: center;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hotline-gamble-panel__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ff4da6;
+}
+
+.hotline-gamble-panel__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hotline-gamble-panel__label {
+  font-size: 0.7rem;
+  color: #9be7ff;
+}
+
+.hotline-gamble-panel__value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ffe566;
+}
+
+.hotline-gamble-panel__result {
+  min-height: 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #9be7ff;
+}
+
+.hotline-gamble-overlay--survive .hotline-gamble-panel {
+  border-color: #7dffb3;
+  box-shadow: 0 0 1.2rem rgba(125, 255, 179, 0.5);
+}
+
+.hotline-gamble-overlay--survive .hotline-gamble-panel__result {
+  color: #7dffb3;
+}
+
+.hotline-gamble-overlay--die .hotline-gamble-panel {
+  border-color: #ff3b3b;
+  box-shadow: 0 0 1.4rem rgba(255, 59, 59, 0.65);
+}
+
+.hotline-gamble-overlay--die .hotline-gamble-panel__result {
+  color: #ff3b3b;
+}
+
+.hotline-gamble-panel__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.hotline-gamble-panel__btn {
+  min-height: 3.2rem;
+  padding: 0.5rem 0.35rem;
+  border: 2px solid #9be7ff;
+  border-radius: 0;
+  background: #1a0a2e;
+  color: #9be7ff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.hotline-gamble-panel__btn--survive {
+  border-color: #7dffb3;
+  color: #7dffb3;
+}
+
+.hotline-gamble-panel__btn--die {
+  border-color: #ff3b3b;
+  color: #ff3b3b;
+}
+
+.hotline-gamble-panel__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .hotline-combo {
   min-height: 1.25rem;
   margin: 0.35rem 0.75rem 0;

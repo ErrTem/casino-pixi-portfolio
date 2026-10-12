@@ -48,6 +48,7 @@ function makeRoot(): { root: Element; els: Record<string, FakeEl> } {
     "[data-action=spin]",
     "[data-action=bet-dec]",
     "[data-action=bet-inc]",
+    "[data-action=gamble]",
   ];
   const els: Record<string, FakeEl> = {};
   for (const n of names) els[n] = new FakeEl();
@@ -309,6 +310,9 @@ describe("HotlineHud gamble control (GAMBLE-01, D-01)", () => {
       },
     });
     hud.render(game.getSnapshot());
+    els["[data-action=gamble]"].click();
+    expect(calls).toBe(0);
+    hud.setGambleEnabled(true);
     els["[data-action=gamble]"].click();
     expect(calls).toBe(1);
     hud.dispose();
