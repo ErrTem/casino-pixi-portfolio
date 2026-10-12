@@ -7,7 +7,7 @@ import { createLastWinTween } from "./lastWinTween.js";
 
 export interface HotlineHud {
   render(snap: HotlineSnapshot): void;
-  /** lock spin gamble and bet steppers through flights and combo stub */
+  /** lock spin gamble and bet steppers through flights and combo stub, info stays on */
   setBusy(busy: boolean): void;
   /** gamble stays off by default, busy still locks it when enabled */
   setGambleEnabled(enabled: boolean): void;
@@ -29,6 +29,8 @@ export interface MountHotlineHudOptions {
   lastWinTweenMs?: number;
   /** gamble button click, the session owns the overlay and the round */
   onGamble?: () => void;
+  /** info button click, the session owns the rules sheet and the pause */
+  onInfo?: () => void;
   /** clock for the count up, defaults to performance.now */
   now?: () => number;
 }
@@ -64,6 +66,8 @@ export function mountHotlineHud(
   const decBtn = need<HTMLButtonElement>(root, "[data-action=bet-dec]");
   const incBtn = need<HTMLButtonElement>(root, "[data-action=bet-inc]");
   const gambleBtn = need<HTMLButtonElement>(root, "[data-action=gamble]");
+  // info is never locked by busy, the rules sheet may open any time
+  const infoBtn = need<HTMLButtonElement>(root, "[data-action=info]");
   const muteBtn = root.querySelector<HTMLButtonElement>("[data-action=mute]");
   if (audio && !muteBtn) {
     throw new Error("hotline hud: [data-action=mute] missing");
@@ -164,10 +168,16 @@ export function mountHotlineHud(
     options.onGamble?.();
   };
 
+  const onInfoClick = (): void => {
+    if (disposed) return;
+    options.onInfo?.();
+  };
+
   spinBtn.addEventListener("click", onSpin);
   decBtn.addEventListener("click", onDec);
   incBtn.addEventListener("click", onInc);
   gambleBtn.addEventListener("click", onGambleClick);
+  infoBtn.addEventListener("click", onInfoClick);
   muteBtn?.addEventListener("click", onMute);
   gambleBtn.disabled = true;
   syncMuteLabel();
@@ -235,6 +245,7 @@ export function mountHotlineHud(
       decBtn.removeEventListener("click", onDec);
       incBtn.removeEventListener("click", onInc);
       gambleBtn.removeEventListener("click", onGambleClick);
+      infoBtn.removeEventListener("click", onInfoClick);
       muteBtn?.removeEventListener("click", onMute);
     },
   };

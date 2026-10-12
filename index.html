@@ -304,6 +304,14 @@
             </button>
             <button
               type="button"
+              data-action="info"
+              class="hotline-info-btn"
+              aria-label="Paytable and rules"
+            >
+              Info
+            </button>
+            <button
+              type="button"
               data-action="mute"
               class="mute-toggle"
               aria-pressed="false"
@@ -412,6 +420,41 @@
                 DIE
               </button>
             </div>
+          </div>
+        </div>
+
+        <div
+          class="hotline-paytable-overlay"
+          data-field="paytable-overlay"
+          hidden
+        >
+          <div
+            class="hotline-paytable-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotline-paytable-title"
+          >
+            <div class="hotline-paytable-head">
+              <div
+                id="hotline-paytable-title"
+                class="hotline-paytable-head__title"
+              >
+                PAYTABLE AND RULES
+              </div>
+              <button
+                type="button"
+                data-action="paytable-close"
+                class="hotline-paytable-head__close"
+                aria-label="Close paytable"
+              >
+                X
+              </button>
+            </div>
+            <div
+              class="hotline-paytable-body"
+              data-field="paytable-body"
+              tabindex="0"
+            ></div>
           </div>
         </div>
 

@@ -6,6 +6,8 @@ import { buildComboStripCells } from "../hud/comboStripModel.js";
 import { mountFeatureOverlay } from "../hud/FeatureOverlay.js";
 import { mountGambleOverlay } from "../hud/GambleOverlay.js";
 import { mountHotlineHud } from "../hud/HotlineHud.js";
+import { mountPaytableOverlay } from "../hud/PaytableOverlay.js";
+import { paytableSheetModel } from "../hud/paytableSheetModel.js";
 import type {
   CollectorOutcome,
   CollectorSpawn,
@@ -113,11 +115,14 @@ export async function mountHotlineSession(
   let settleArmed = false;
   let gambleShowingResult = false;
   let gambleElapsed = 0;
+  // set while the rules sheet is up, play stays paused until dismiss (D-12)
+  let infoOpen = false;
   // own stream so gamble rolls never shift the reel or bonus streams
   const gambleRng = createRng(`${ctx.seed}:gamble`);
 
   const overlay = mountFeatureOverlay(screen, {
     onContinue: () => {
+      if (infoOpen) return;
       if (present !== "splash") return;
       const next = splashContinue;
       splashContinue = null;
@@ -129,6 +134,10 @@ export async function mountHotlineSession(
   const gambleOverlay = mountGambleOverlay(screen, {
     onSurvive: () => playGambleRound(),
     onDie: () => playGambleRound(),
+  });
+
+  const paytableOverlay = mountPaytableOverlay(screen, {
+    onClose: () => closeInfo(),
   });
 
   function applyDisplayFills(fills: readonly number[]): void {
@@ -186,7 +195,9 @@ export async function mountHotlineSession(
   }
 
   function openGamble(): void {
-    if (busy || present !== "idle" || view?.scene.isSpinning()) return;
+    if (busy || infoOpen || present !== "idle" || view?.scene.isSpinning()) {
+      return;
+    }
     const snap = game.getGambleSnapshot();
     if (!snap.offered || game.isNightActive()) return;
     present = "gamble";
@@ -203,7 +214,7 @@ export async function mountHotlineSession(
 
   // one resolve per round, the result beat locks both buttons
   function playGambleRound(): void {
-    if (present !== "gamble" || gambleShowingResult) return;
+    if (present !== "gamble" || gambleShowingResult || infoOpen) return;
     const before = game.getGambleSnapshot();
     const res = game.resolveGamble(gambleRng);
     if (!res) {
@@ -254,6 +265,7 @@ export async function mountHotlineSession(
       hud.setBusy(true);
       overlay.showLockerGrid({
         onPick(index) {
+          if (infoOpen) return;
           const revealed = game.pickLocker(index);
           if (revealed === null) return;
           overlay.revealLocker(index, `x${revealed}`);
@@ -405,7 +417,9 @@ export async function mountHotlineSession(
     ...game,
     spin(): SpinResult {
       // ignore mid presentation, empty reason clears the status line
-      if (busy || view?.scene.isSpinning()) return { ok: false, reason: "" };
+      if (busy || infoOpen || view?.scene.isSpinning()) {
+        return { ok: false, reason: "" };
+      }
       // spin banks the credited win and drops the gamble offer
       game.clearGambleOffer();
       hud.setGambleEnabled(false);
@@ -438,7 +452,28 @@ export async function mountHotlineSession(
     betStepCount: config.math.betStepsCents.length,
     lastWinTweenMs: LAST_WIN_TWEEN_MS,
     onGamble: openGamble,
+    onInfo: openInfo,
   });
+
+  // info may open any time, busy locks spin gamble and bet until dismiss
+  function openInfo(): void {
+    if (infoOpen) return;
+    infoOpen = true;
+    hud.setBusy(true);
+    paytableOverlay.open(paytableSheetModel(config));
+  }
+
+  function closeInfo(): void {
+    if (!infoOpen) return;
+    infoOpen = false;
+    paytableOverlay.close();
+    // back to whatever the presentation was doing
+    hud.setBusy(busy);
+    if (present === "idle" && !busy) {
+      const gambleSnap = game.getGambleSnapshot();
+      hud.setGambleEnabled(gambleSnap.offered && !game.isNightActive());
+    }
+  }
 
   function onReelsSettled(snap: HotlineSnapshot): void {
     settleArmed = false;
@@ -540,6 +575,7 @@ export async function mountHotlineSession(
     view?.scene.setHoldMode(false);
     overlay.dispose();
     gambleOverlay.dispose();
+    paytableOverlay.dispose();
     hud.dispose();
     if (view) {
       view.scene.destroy();
@@ -569,7 +605,7 @@ export async function mountHotlineSession(
   onTick = (ticker: Ticker): void => {
     // scene first so the hud reads the motion state after this frame
     view!.scene.sync(game.getSnapshot(), ticker.deltaMS);
-    tickPresent(ticker.deltaMS);
+    if (!infoOpen) tickPresent(ticker.deltaMS);
     hud.render(hudGame.getSnapshot());
   };
   ctx.app.ticker.add(onTick);
