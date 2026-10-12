@@ -932,16 +932,17 @@ input {
   gap: 0.4rem;
 }
 
-/* desktop strip, bet group then a large spin */
+/* desktop strip, same neon chrome as the actions row (square corners, outline, dark fill) */
 .hotline-bar {
   display: flex;
   align-items: stretch;
   gap: 0.45rem;
   min-width: 0;
   max-width: 100%;
-  padding: 0.4rem 0.65rem;
-  border-radius: var(--radius-card);
-  background: var(--card);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
 .hotline-bar .stake-group {
@@ -950,6 +951,10 @@ input {
   gap: 0.2rem;
   padding: 0.2rem 0.3rem;
   justify-content: center;
+  border: 1px solid #9be7ff;
+  border-radius: 0;
+  background: #1a0a2e;
+  box-shadow: 0 0 0.55rem rgba(155, 231, 255, 0.28);
 }
 
 .hotline-bar .stake-stepper button {
@@ -958,12 +963,24 @@ input {
   height: 1.6rem;
   min-width: 1.6rem;
   min-height: 1.6rem;
+  border: 1px solid #9be7ff;
+  border-radius: 0;
+  background: #12061f;
+  color: #9be7ff;
+  font-family: "Retro Computer", ui-monospace, monospace;
   font-size: 0.95rem;
 }
 
 .hotline-bar .stake-stepper input[type="number"] {
   min-height: 1.6rem;
+  font-family: "Retro Computer", ui-monospace, monospace;
   font-size: 0.95rem;
+  color: #e8f7ff;
+}
+
+.hotline-bar .stake-currency {
+  font-family: "Retro Computer", ui-monospace, monospace;
+  color: #e8f7ff;
 }
 
 .hotline-bar .primary-cta {
@@ -971,10 +988,30 @@ input {
   min-width: 0;
   min-height: 2.85rem;
   padding: 0.35rem 0.75rem;
+  border: 1px solid #ff4da6;
+  border-radius: 0;
+  background: #1a0a2e;
+  color: #ff9ed2;
+  box-shadow: 0 0 0.7rem rgba(255, 77, 166, 0.35);
+  font-family: "Retro Computer", ui-monospace, monospace;
+}
+
+.hotline-bar .primary-cta:not(:disabled):hover {
+  border-color: #ff7ec0;
+  color: #ffe3f1;
+  box-shadow: 0 0 0.9rem rgba(255, 77, 166, 0.55);
+}
+
+.hotline-bar .primary-cta:disabled {
+  border-color: #4a3a5e;
+  color: #6b5a80;
+  box-shadow: none;
+  background: #12061f;
 }
 
 .hotline-bar .primary-cta__label {
   font-size: 1.15rem;
+  letter-spacing: 0.08em;
 }
 
 /* hud bar sits flat so only the actions row can rise above the feature and gamble overlays */
