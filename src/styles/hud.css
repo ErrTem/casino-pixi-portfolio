@@ -1257,6 +1257,41 @@ input {
   cursor: default;
 }
 
+/* optional vhs pngs from /assets/hotline, attached by script only when they load, the neon css above is the fallback */
+.hotline-vhs-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hotline-gamble-panel--art,
+.hotline-gamble-panel__btn--art {
+  position: relative;
+  isolation: isolate;
+}
+
+.hotline-gamble-panel--art {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hotline-gamble-panel--art > :not(.hotline-vhs-art) {
+  position: relative;
+  z-index: 1;
+}
+
+.hotline-gamble-panel__btn--art {
+  border-color: transparent;
+  background: transparent;
+  overflow: hidden;
+}
+
 .hotline-combo {
   min-width: 0;
   overflow-wrap: anywhere;

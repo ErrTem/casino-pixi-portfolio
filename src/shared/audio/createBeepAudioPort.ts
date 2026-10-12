@@ -53,6 +53,9 @@ const PITCH_HZ: Record<SfxEvent, number> = {
   hold_respin: 420,
   pick_reveal: 910,
   jackpot: 1200,
+  gamble_open: 500,
+  gamble_survive: 1040,
+  gamble_die: 140,
 };
 
 export function createBeepAudioPort(

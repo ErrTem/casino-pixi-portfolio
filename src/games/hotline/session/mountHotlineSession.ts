@@ -206,6 +206,7 @@ export async function mountHotlineSession(
     gambleElapsed = 0;
     hud.setBusy(true);
     hud.setGambleEnabled(false);
+    ctx.audio.play("gamble_open");
     gambleOverlay.show({
       currentWin: formatCents(snap.stakeCents),
       gambleToWin: formatCents(snap.stakeCents * 2),
@@ -223,7 +224,8 @@ export async function mountHotlineSession(
     }
     gambleShowingResult = true;
     gambleElapsed = 0;
-    if (res.survived) ctx.audio.play("win");
+    if (res.survived) ctx.audio.play("gamble_survive");
+    else ctx.audio.play("gamble_die");
     gambleOverlay.showResult({
       survived: res.survived,
       amount: formatCents(res.survived ? res.stakeCents : before.stakeCents),

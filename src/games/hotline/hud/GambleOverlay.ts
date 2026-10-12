@@ -18,6 +18,36 @@ function need<T extends Element>(root: Element, selector: string): T {
   return el;
 }
 
+// fixed static paths, public/assets/hotline is served as is and never goes through the pixi loader
+const VHS_PANEL_URL = "/assets/hotline/vhs-gamble-panel.png";
+const VHS_SURVIVE_URL = "/assets/hotline/vhs-btn-survive.png";
+const VHS_DIE_URL = "/assets/hotline/vhs-btn-die.png";
+
+// probes one optional png, only a file that decodes is attached so the css neon look stays when it is absent
+function attachOptionalArt(
+  host: HTMLElement,
+  url: string,
+  artClass: string,
+  isDisposed: () => boolean,
+): void {
+  if (typeof Image === "undefined") return;
+  const img = new Image();
+  img.alt = "";
+  img.draggable = false;
+  img.className = "hotline-vhs-art";
+  img.setAttribute("aria-hidden", "true");
+  img.onload = (): void => {
+    if (isDisposed()) return;
+    host.insertBefore(img, host.firstChild);
+    host.classList.add(artClass);
+  };
+  img.onerror = (): void => {
+    img.onload = null;
+    img.onerror = null;
+  };
+  img.src = url;
+}
+
 // vhs survive or die panel binder, lives outside the canvas host
 export function mountGambleOverlay(
   screen: Element,
@@ -31,6 +61,14 @@ export function mountGambleOverlay(
   const dieBtn = need<HTMLButtonElement>(root, "[data-action=die]");
 
   let disposed = false;
+
+  const panelEl = root.querySelector<HTMLElement>(".hotline-gamble-panel");
+  const isDisposed = (): boolean => disposed;
+  if (panelEl) {
+    attachOptionalArt(panelEl, VHS_PANEL_URL, "hotline-gamble-panel--art", isDisposed);
+  }
+  attachOptionalArt(surviveBtn, VHS_SURVIVE_URL, "hotline-gamble-panel__btn--art", isDisposed);
+  attachOptionalArt(dieBtn, VHS_DIE_URL, "hotline-gamble-panel__btn--art", isDisposed);
 
   const onSurviveClick = (): void => {
     if (disposed || surviveBtn.disabled) return;

@@ -16,7 +16,10 @@ export type SfxEvent =
   | "hold_land"
   | "hold_respin"
   | "pick_reveal"
-  | "jackpot";
+  | "jackpot"
+  | "gamble_open"
+  | "gamble_survive"
+  | "gamble_die";
 
 export interface AudioPort {
   play(event: SfxEvent): void;
