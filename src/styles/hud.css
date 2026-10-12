@@ -972,7 +972,9 @@ input {
   position: relative;
   width: 100%;
   max-width: 34rem;
+  min-width: 0;
   margin-inline: auto;
+  overflow-x: hidden;
 }
 
 .hotline-screen .canvas-host {
@@ -986,9 +988,12 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  max-width: 100%;
   padding: 1rem;
   background: rgba(8, 2, 18, 0.82);
   pointer-events: auto;
+  overflow: hidden;
 }
 
 .hotline-feature-overlay[hidden] {
@@ -1001,6 +1006,7 @@ input {
   align-items: center;
   gap: 0.65rem;
   width: min(100%, 18rem);
+  min-width: 0;
   padding: 1.25rem 1rem;
   border: 1px solid #ff4da6;
   background: #12061f;
@@ -1056,6 +1062,7 @@ input {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.55rem;
   width: min(100%, 22rem);
+  min-width: 0;
 }
 
 .hotline-feature-lockers__btn {
@@ -1154,6 +1161,7 @@ input {
   gap: 0.7rem;
   box-sizing: border-box;
   width: min(100%, 20rem);
+  min-width: 0;
   padding: 1.1rem 0.9rem;
   border: 2px solid #ff4da6;
   background: #12061f;
@@ -1250,6 +1258,8 @@ input {
 }
 
 .hotline-combo {
+  min-width: 0;
+  overflow-wrap: anywhere;
   min-height: 1.25rem;
   margin: 0.35rem 0.75rem 0;
   padding: 0.2rem 0.45rem;
@@ -1283,6 +1293,8 @@ input {
 }
 
 .hotline-feature {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 0.15rem 0.75rem 0;
   padding: 0;
   font-family: "Retro Computer", ui-monospace, monospace;

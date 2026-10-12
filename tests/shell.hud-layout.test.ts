@@ -216,6 +216,24 @@ describe("hotline spin hub layout (PRES-02 / D-13 / D-14 / D-15 / D-16)", () => 
     expect(narrow).toMatch(/\.hotline-icon-btn\s*\{[^}]*width:\s*2\.75rem[^}]*height:\s*2\.75rem/);
   });
 
+  it("guards the bar and every hotline overlay against horizontal overflow (D-14)", () => {
+    expect(css).toMatch(/\.hotline-screen\s*\{[^}]*min-width:\s*0[^}]*overflow-x:\s*hidden/);
+    expect(css).toMatch(/\.hotline-bar\s*\{[^}]*min-width:\s*0[^}]*max-width:\s*100%/);
+    for (const sel of [
+      ".hotline-feature-overlay",
+      ".hotline-gamble-overlay",
+      ".hotline-paytable-overlay",
+    ]) {
+      const re = new RegExp(`${sel.replace(".", "\\.")}\\s*\\{([^}]*)\\}`);
+      const block = re.exec(css);
+      expect(block, `${sel} rule exists`).toBeTruthy();
+      expect(block![1]).toMatch(/overflow:\s*hidden/);
+    }
+    expect(css).toMatch(/\.hotline-gamble-panel\s*\{[^}]*width:\s*min\(100%/);
+    expect(css).toMatch(/\.hotline-paytable-sheet\s*\{[^}]*width:\s*min\(100%/);
+    expect(css).toMatch(/\.hotline-paytable-sheet\s*\{[^}]*min-width:\s*0/);
+  });
+
   it("keeps the 34rem portrait column and never enables pointer events on the canvas host", () => {
     expect(css).toMatch(/\.hotline-screen\s*\{[^}]*max-width:\s*34rem/);
     expect(css).toMatch(/\.canvas-host\s*\{[^}]*pointer-events:\s*none/);
