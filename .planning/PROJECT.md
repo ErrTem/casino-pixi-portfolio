@@ -26,18 +26,18 @@ A portfolio visitor can open the menu, launch **HOTLINE**, and feel the full Wit
 - ✓ Crash session adapter with leak-free leave; one shell-owned Pixi Application — Phase 1
 - ✓ Portfolio mute key (`portfolio-demo:mute`) + boot seed reuse across launches — Phase 1
 - ✓ Menu tile icons (user-supplied) for Crash and HOTLINE — Phase 1
+- ✓ HOTLINE slot: 5x4 grid, 40 fixed paylines, left-to-right wins — Phase 2
+- ✓ Game math/feature weights via JSON config in a backend-like shape — Phase 2
+- ✓ Hotline Miami presentation: motel rooftop sunset, monitor/VHS chrome, Retro Computer — Phase 2
+- ✓ Three rotary-phone meters; colored diskette tokens fill them — Phase 3
+- ✓ Green free spins, Red Hold & Win, Purple locker Pick'em — Phase 4
+- ✓ Bonuses can trigger together (combo nights) — Phase 4
+- ✓ Gamble: VHS SURVIVE/DIE double-or-nothing (up to 10 rounds) — Phase 5
+- ✓ Info paytable sheet + responsive desktop/mobile HUD polish — Phase 5
 
 ### Active
 
-- [ ] HOTLINE slot: 5x4 grid, 40 fixed paylines, left-to-right wins
-- [ ] Three rotary-phone meters on motel rooftop; colored diskette tokens fill them
-- [ ] Green line: 24 free spins with extra Wild masks on reels 2-5
-- [ ] Red line: Hold & Win respins with cash symbols and jackpot path
-- [ ] Purple line: Pick'em over lockers with instant cash prizes
-- [ ] Bonuses can trigger together (combo nights)
-- [ ] Gamble: VHS SURVIVE/DIE double-or-nothing (up to 10 rounds)
-- [ ] Game math/feature weights via JSON config in a backend-like shape (example, not live API)
-- [ ] Hotline Miami presentation: motel rooftop sunset, monitor/VHS chrome, Retro Computer font already in repo
+- (none — v1.0 HOTLINE + menu milestone requirements shipped)
 
 ### Out of Scope
 
@@ -117,4 +117,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-09 after Phase 1*
+*Last updated: 2026-10-12 after Phase 5*
