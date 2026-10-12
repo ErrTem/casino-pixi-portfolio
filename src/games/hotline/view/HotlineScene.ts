@@ -54,6 +54,9 @@ const GLASS = { x: 100, y: 97, w: 698, h: 536 };
 const SCREEN_COLOR = 0x0a0614;
 const SCREEN_ALPHA = 0.9;
 const TITLE_COLOR = 0xff2e93;
+// title sits this far below the canvas top edge
+const TITLE_TOP_MIN_PX = 30;
+const TITLE_TOP_MAX_PX = 50;
 
 function snapshotKey(snap: HotlineSnapshot): string {
   const wins = snap.lineWins.map((w) => `${w.lineIndex}:${w.count}`).join(",");
@@ -88,7 +91,7 @@ export function createHotlineScene(
       letterSpacing: 4,
     },
   });
-  title.anchor.set(0.5);
+  title.anchor.set(0.5, 0);
   const phones = createPhonesLayer(
     textures,
     config.features.tokenOdds.meterTarget,
@@ -142,25 +145,30 @@ export function createHotlineScene(
     backdrop.scale.set(cover);
     backdrop.position.set(w / 2, h / 2);
 
-    // tall column: title, phones, then the crt, centered as one block
+    // title is pinned near the top, phones and crt form one block below it
     const margin = Math.max(6, w * 0.02);
     const titleSize = Math.round(Math.min(Math.max(w * 0.07, 14), 40, h * 0.06));
-    const titleH = titleSize * 1.6;
+    const titleTop = Math.min(
+      TITLE_TOP_MAX_PX,
+      Math.max(TITLE_TOP_MIN_PX, h * 0.05),
+    );
+    const titleBottom = titleTop + titleSize * 1.25;
     const phoneH = Math.max(24, Math.min(w * 0.2, h * 0.15, 120));
     const availW = Math.max(1, w - margin * 2);
-    const availFrameH = Math.max(1, h - titleH - phoneH - margin * 2);
+    const availFrameH = Math.max(1, h - titleBottom - phoneH - margin * 2);
     const scale = Math.min(availW / FRAME_W, availFrameH / FRAME_H);
     const frameW = FRAME_W * scale;
     const frameH = FRAME_H * scale;
-    const blockH = titleH + phoneH + frameH;
-    const top = Math.max(margin, (h - blockH) / 2);
+    const blockH = phoneH + frameH;
+    // center the block in the space under the title, never above it
+    const top = titleBottom + Math.max(0, (h - titleBottom - blockH) / 2);
     const frameLeft = (w - frameW) / 2;
-    const frameTop = top + titleH + phoneH;
+    const frameTop = top + phoneH;
 
     title.style.fontSize = titleSize;
-    title.position.set(w / 2, top + titleH / 2);
-    phones.layout(frameLeft, top + titleH, frameW, phoneH);
-    jackpot.layout(frameLeft, top + titleH, frameW, phoneH);
+    title.position.set(w / 2, titleTop);
+    phones.layout(frameLeft, top, frameW, phoneH);
+    jackpot.layout(frameLeft, top, frameW, phoneH);
     frame.position.set(frameLeft, frameTop);
     frame.width = frameW;
     frame.height = frameH;

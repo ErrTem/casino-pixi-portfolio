@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { LineWin } from "../logic/evaluatePaylines.js";
-import { formatMoney } from "../hud/format.js";
+import { formatWinCallout } from "../hud/format.js";
 import { createWinCycle } from "./winCycle.js";
 
 export interface WinGeometry {
@@ -30,12 +30,10 @@ export interface WinLinesOverlay {
 // hotline pink, not the witch pots green
 const NEON = 0xff2e93;
 const NEON_CORE = 0xffe3f1;
+// same gold as the css splash total and gamble value
+const GOLD = 0xffe566;
 export const DEFAULT_WIN_CYCLE_MS = 1100;
 const PULSE_MS = 700;
-
-function formatCents(cents: number): string {
-  return formatMoney(cents / 100);
-}
 
 export function createWinLinesOverlay(): WinLinesOverlay {
   const container = new Container();
@@ -50,7 +48,7 @@ export function createWinLinesOverlay(): WinLinesOverlay {
       fontFamily: "sans-serif",
       fontSize: 16,
       fontWeight: "bold",
-      fill: NEON_CORE,
+      fill: GOLD,
     },
   });
   label.anchor.set(0.5);
@@ -113,7 +111,7 @@ export function createWinLinesOverlay(): WinLinesOverlay {
         .stroke({ width: 3, color: NEON, alpha: 0.55 });
     }
 
-    label.text = `LINE ${win.lineIndex + 1} PAYS ${formatCents(win.payoutCents)}`;
+    label.text = formatWinCallout(win.payoutCents);
     label.position.set(callout.x, callout.y);
     const padX = 14;
     const padY = 6;
