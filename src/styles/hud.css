@@ -936,10 +936,10 @@ input {
 .hotline-bar {
   display: flex;
   align-items: stretch;
-  gap: 0.55rem;
+  gap: 0.45rem;
   min-width: 0;
   max-width: 100%;
-  padding: 0.7rem 0.75rem;
+  padding: 0.4rem 0.65rem;
   border-radius: var(--radius-card);
   background: var(--card);
 }
@@ -947,12 +947,34 @@ input {
 .hotline-bar .stake-group {
   flex: 0 1 auto;
   min-width: 0;
+  gap: 0.2rem;
+  padding: 0.2rem 0.3rem;
+  justify-content: center;
+}
+
+.hotline-bar .stake-stepper button {
+  flex-basis: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  min-width: 1.6rem;
+  min-height: 1.6rem;
+  font-size: 0.95rem;
+}
+
+.hotline-bar .stake-stepper input[type="number"] {
+  min-height: 1.6rem;
+  font-size: 0.95rem;
 }
 
 .hotline-bar .primary-cta {
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 4.5rem;
+  min-height: 2.85rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.hotline-bar .primary-cta__label {
+  font-size: 1.15rem;
 }
 
 /* hud bar sits flat so only the actions row can rise above the feature and gamble overlays */
@@ -1506,9 +1528,9 @@ input {
     grid-template-areas:
       "stake stake stake"
       "dec spin inc";
-    gap: 0.35rem 0.5rem;
+    gap: 0.3rem 0.45rem;
     align-items: stretch;
-    padding: 0.5rem 0.6rem;
+    padding: 0.35rem 0.5rem;
   }
 
   /* flatten the groups so every control becomes a grid item of the bar */
@@ -1541,11 +1563,12 @@ input {
 
   .hotline-bar .primary-cta {
     grid-area: spin;
-    min-height: 5.75rem;
+    min-height: 3.25rem;
+    padding: 0.3rem 0.5rem;
   }
 
   .hotline-bar .primary-cta__label {
-    font-size: 1.6rem;
+    font-size: 1.25rem;
   }
 
   .hotline-icon-btn {
