@@ -6,13 +6,13 @@ Client-only PixiJS demos. **Crash** or **Slots**
 
 Neon 5×4 slot (3 Witch Pots–style loop): diskettes into phones, free spins / hold / lockers, VHS gamble
 
-![Slots](docs/screenshots/hotline.jpg)
+![Slots](docs/screenshots/slots.gif)
 
 ## Crash
 
 Cash out before the rocket blows.
 
-![Crash](docs/screenshots/crash.jpg)
+![Crash](docs/screenshots/crash.gif)
 
 ## Run
 
