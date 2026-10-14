@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import {
+  LEGACY_MUTE_STORAGE_KEY,
   MUTE_STORAGE_KEY,
   loadMutePref,
   saveMutePref,
@@ -18,14 +19,19 @@ function memoryStore(initial: Record<string, string> = {}): MuteStore {
   };
 }
 
-it("save then load round-trips muted=true as crash-demo:mute=1", () => {
+it("MUTE_STORAGE_KEY is portfolio-demo:mute", () => {
+  expect(MUTE_STORAGE_KEY).toBe("portfolio-demo:mute");
+  expect(LEGACY_MUTE_STORAGE_KEY).toBe("crash-demo:mute");
+});
+
+it("save then load round-trips muted=true as portfolio-demo:mute=1", () => {
   const store = memoryStore();
   saveMutePref(true, store);
   expect(store.getItem(MUTE_STORAGE_KEY)).toBe("1");
   expect(loadMutePref(store)).toBe(true);
 });
 
-it("save then load round-trips muted=false as crash-demo:mute=0", () => {
+it("save then load round-trips muted=false as portfolio-demo:mute=0", () => {
   const store = memoryStore();
   saveMutePref(false, store);
   expect(store.getItem(MUTE_STORAGE_KEY)).toBe("0");
@@ -42,4 +48,41 @@ it("last write wins when toggling mute then unmute", () => {
   saveMutePref(false, store);
   expect(store.getItem(MUTE_STORAGE_KEY)).toBe("0");
   expect(loadMutePref(store)).toBe(false);
+});
+
+it("migrates legacy muted=1 into portfolio-demo:mute", () => {
+  const store = memoryStore({ [LEGACY_MUTE_STORAGE_KEY]: "1" });
+  expect(loadMutePref(store)).toBe(true);
+  expect(store.getItem(MUTE_STORAGE_KEY)).toBe("1");
+  expect(store.getItem(LEGACY_MUTE_STORAGE_KEY)).toBe("1");
+});
+
+it("migrates legacy muted=0 into portfolio-demo:mute", () => {
+  const store = memoryStore({ [LEGACY_MUTE_STORAGE_KEY]: "0" });
+  expect(loadMutePref(store)).toBe(false);
+  expect(store.getItem(MUTE_STORAGE_KEY)).toBe("0");
+  expect(store.getItem(LEGACY_MUTE_STORAGE_KEY)).toBe("0");
+});
+
+it("new key wins when both keys exist", () => {
+  const store = memoryStore({
+    [MUTE_STORAGE_KEY]: "0",
+    [LEGACY_MUTE_STORAGE_KEY]: "1",
+  });
+  expect(loadMutePref(store)).toBe(false);
+  expect(store.getItem(MUTE_STORAGE_KEY)).toBe("0");
+  expect(store.getItem(LEGACY_MUTE_STORAGE_KEY)).toBe("1");
+});
+
+it("malformed legacy value is ignored and new key stays absent", () => {
+  const store = memoryStore({ [LEGACY_MUTE_STORAGE_KEY]: "yes" });
+  expect(loadMutePref(store)).toBe(false);
+  expect(store.getItem(MUTE_STORAGE_KEY)).toBeNull();
+});
+
+it("empty store returns false and writes nothing", () => {
+  const store = memoryStore();
+  expect(loadMutePref(store)).toBe(false);
+  expect(store.getItem(MUTE_STORAGE_KEY)).toBeNull();
+  expect(store.getItem(LEGACY_MUTE_STORAGE_KEY)).toBeNull();
 });

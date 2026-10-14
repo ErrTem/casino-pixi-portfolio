@@ -1,0 +1,100 @@
+{
+  "gameId": "hotline",
+  "version": "0.1.0",
+  "math": {
+    "rows": 4,
+    "reels": 5,
+    "paylineCount": 40,
+    "startingBalanceCents": 100000,
+    "betStepsCents": [10, 20, 50, 100, 200, 500, 1000],
+    "wildSymbolId": "mask",
+    "symbolWeights": [
+      { "mask": 3, "pistol": 5, "cassette": 6, "car": 7, "ace": 10, "king": 12, "queen": 14, "jack": 15, "ten": 16 },
+      { "mask": 3, "pistol": 5, "cassette": 6, "car": 7, "ace": 10, "king": 12, "queen": 14, "jack": 15, "ten": 16 },
+      { "mask": 3, "pistol": 5, "cassette": 6, "car": 7, "ace": 10, "king": 12, "queen": 14, "jack": 15, "ten": 16 },
+      { "mask": 3, "pistol": 5, "cassette": 6, "car": 7, "ace": 10, "king": 12, "queen": 14, "jack": 15, "ten": 16 },
+      { "mask": 3, "pistol": 5, "cassette": 6, "car": 7, "ace": 10, "king": 12, "queen": 14, "jack": 15, "ten": 16 }
+    ],
+    "paylines": [
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [2, 2, 2, 2, 2],
+      [3, 3, 3, 3, 3],
+      [0, 0, 0, 0, 1],
+      [0, 0, 1, 1, 1],
+      [0, 0, 1, 2, 2],
+      [0, 1, 1, 1, 2],
+      [0, 1, 1, 2, 3],
+      [0, 1, 0, 1, 2],
+      [0, 1, 2, 1, 0],
+      [1, 1, 1, 1, 0],
+      [1, 1, 1, 2, 1],
+      [1, 1, 0, 1, 0],
+      [1, 1, 2, 1, 1],
+      [1, 0, 0, 0, 0],
+      [1, 0, 1, 1, 1],
+      [1, 0, 1, 0, 1],
+      [1, 2, 2, 2, 1],
+      [1, 2, 2, 3, 3],
+      [1, 2, 1, 0, 0],
+      [1, 2, 3, 3, 3],
+      [2, 2, 2, 2, 1],
+      [2, 2, 2, 1, 2],
+      [2, 2, 1, 1, 2],
+      [2, 2, 1, 2, 3],
+      [2, 2, 3, 2, 3],
+      [2, 1, 1, 0, 1],
+      [2, 1, 0, 0, 1],
+      [2, 1, 2, 2, 2],
+      [2, 1, 2, 1, 2],
+      [2, 3, 3, 2, 2],
+      [2, 3, 2, 2, 3],
+      [2, 3, 2, 3, 2],
+      [3, 3, 2, 2, 2],
+      [3, 3, 2, 1, 0],
+      [3, 2, 2, 2, 1],
+      [3, 2, 2, 3, 3],
+      [3, 2, 1, 0, 0],
+      [3, 2, 3, 3, 3]
+    ]
+  },
+  "paytable": {
+    "pistol": { "3": 5, "4": 20, "5": 100 },
+    "cassette": { "3": 4, "4": 15, "5": 60 },
+    "car": { "3": 3, "4": 10, "5": 40 },
+    "ace": { "3": 2, "4": 6, "5": 20 },
+    "king": { "3": 1.5, "4": 5, "5": 15 },
+    "queen": { "3": 1, "4": 4, "5": 10 },
+    "jack": { "3": 0.8, "4": 3, "5": 8 },
+    "ten": { "3": 0.5, "4": 2, "5": 6 }
+  },
+  "features": {
+    "tokenOdds": {
+      "meterTarget": 6,
+      "perSpinChance": { "green": 0.06, "red": 0.05, "purple": 0.04 }
+    },
+    "bonusPrizes": [
+      { "bonusId": "pickEm", "prizeMultipliers": [2, 3, 5, 10, 25], "prizeWeights": [40, 28, 18, 10, 4] },
+      { "bonusId": "holdAndWin", "prizeMultipliers": [1, 2, 5, 10, 20, 50], "prizeWeights": [40, 28, 16, 9, 5, 2] },
+      { "bonusId": "freeSpins", "prizeMultipliers": [5, 8, 10, 15] }
+    ],
+    "jackpotMultipliers": { "mini": 20, "minor": 50, "major": 200, "grand": 1000 },
+    "freeSpins": {
+      "spins": 24,
+      "wildWeights": [9, 9, 9, 9],
+      "retriggerChance": 0.04,
+      "retriggerSpins": 6,
+      "maxRetriggers": 3,
+      "nested": { "red": true, "purple": true }
+    },
+    "holdAndWin": {
+      "startCells": 5,
+      "respins": 3,
+      "landChance": 0.1,
+      "jackpotSymbolChance": 0.04,
+      "jackpotTierWeights": { "mini": 70, "minor": 25, "major": 5 }
+    },
+    "pickEm": { "lockers": 12, "picks": 5 },
+    "gamble": { "maxRounds": 1, "surviveChance": 0.5 }
+  }
+}

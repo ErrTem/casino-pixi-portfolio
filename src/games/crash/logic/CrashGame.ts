@@ -58,9 +58,7 @@ function slotToSnap(slot: RoundState["slots"][number]): BetSnap {
   };
 }
 
-/**
- * GameLogic facade
- */
+/** crash round + wallet + history */
 export function createGame(options: CreateGameOptions): CrashGame {
   const rng: Rng = createRng(options.seed);
   const wallet = new Wallet(CRASH_CONFIG.startingBalanceCents);

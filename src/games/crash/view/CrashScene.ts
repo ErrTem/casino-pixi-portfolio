@@ -33,6 +33,7 @@ import {
 
 export interface CrashScene {
   sync: (snapshot: CrashSnapshot, deltaMS: number) => void;
+  destroy: () => void;
 }
 
 export interface CrashSceneOptions {
@@ -381,5 +382,15 @@ export function createCrashScene(
     });
   }
 
-  return { sync };
+  let destroyed = false;
+  function destroy(): void {
+    if (destroyed) return;
+    destroyed = true;
+    backdrop.container.destroy({ children: true });
+    world.destroy({ children: true });
+    theater.container.destroy({ children: true });
+    flash.destroy({ children: true });
+  }
+
+  return { sync, destroy };
 }

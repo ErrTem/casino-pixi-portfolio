@@ -40,6 +40,22 @@ const PITCH_HZ: Record<SfxEvent, number> = {
   takeoff: 660,
   cash_out: 880,
   crash: 160,
+  spin: 330,
+  reel_stop: 520,
+  win: 990,
+  token_spawn: 700,
+  token_land: 840,
+  phone_trigger: 560,
+  queue_step: 480,
+  feature_start: 610,
+  feature_end: 390,
+  hold_land: 760,
+  hold_respin: 420,
+  pick_reveal: 910,
+  jackpot: 1200,
+  gamble_open: 500,
+  gamble_survive: 1040,
+  gamble_die: 140,
 };
 
 export function createBeepAudioPort(

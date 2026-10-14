@@ -6,281 +6,574 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>Crash Demo - Portfolio</title>
+    <title>Casino Demos - Portfolio</title>
     <link rel="stylesheet" href="/src/styles/hud.css" />
   </head>
   <body>
-    <div id="app" class="app-shell">
-      <header id="top-chrome" class="top-chrome">
-        <div class="top-chrome__balance">
-          <span class="money-icon" aria-hidden="true">$</span>
-          <div class="balance" data-field="balance">-</div>
-          <div class="last-win" aria-label="Last win">
-            <span class="last-win__label">Last</span>
-            <span class="last-win__value" data-field="last-win">-</span>
+    <div id="app"></div>
+    <template id="crash-screen-template">
+      <div id="crash-screen" class="app-shell crash-screen">
+        <header id="top-chrome" class="top-chrome">
+          <div class="top-chrome__balance">
+            <span class="money-icon" aria-hidden="true">$</span>
+            <div class="balance" data-field="balance">-</div>
+            <div class="last-win" aria-label="Last win">
+              <span class="last-win__label">Last</span>
+              <span class="last-win__value" data-field="last-win">-</span>
+            </div>
+          </div>
+          <div class="top-chrome__actions">
+            <button type="button" data-action="menu" class="menu-back">
+              Menu
+            </button>
+            <button type="button" data-action="reset-wallet" class="reset-demo">
+              Reset demo
+            </button>
+            <button
+              type="button"
+              data-action="mute"
+              class="mute-toggle"
+              aria-pressed="false"
+            >
+              Sound: On
+            </button>
+          </div>
+        </header>
+
+        <div id="history-band" class="history-band">
+          <div
+            class="session-stats"
+            data-field="session-stats"
+            aria-label="Session stats"
+          >
+            <span>Avg <span data-field="stat-avg">-</span></span>
+            <span>Max <span data-field="stat-max">n/a</span></span>
+          </div>
+          <div
+            data-field="history"
+            class="history-strip"
+            role="list"
+            aria-label="Crash history"
+          ></div>
+        </div>
+
+        <!-- reserved pixi mount, keep empty of monetary controls -->
+        <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
+          <p class="canvas-placeholder">Game view</p>
+        </div>
+
+        <footer id="hud-bar" class="hud-bar">
+          <div class="bet-panels">
+            <section class="bet-panel" data-slot="0" aria-label="Bet panel 1">
+              <div class="bet-panel__top">
+                <button
+                  type="button"
+                  data-action="autoplay"
+                  class="autoplay-btn"
+                  aria-pressed="false"
+                >
+                  Autoplay
+                </button>
+                <div class="auto-co-group">
+                  <label class="auto-toggle">
+                    <input
+                      type="checkbox"
+                      data-field="auto-co-toggle"
+                      aria-label="Auto cash out"
+                    />
+                    <span>Auto cash out</span>
+                  </label>
+                  <div class="auto-co-stepper">
+                    <button
+                      type="button"
+                      data-action="auto-co-dec"
+                      aria-label="Decrease auto cash out"
+                      disabled
+                    >
+                      −
+                    </button>
+                    <div class="auto-co-value">
+                      <span class="auto-co-value__prefix" aria-hidden="true"
+                        >x</span
+                      >
+                      <input
+                        data-field="auto-co"
+                        type="number"
+                        min="1.01"
+                        max="100"
+                        step="0.01"
+                        value="2.00"
+                        disabled
+                        aria-label="Auto cash out multiplier"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      data-action="auto-co-inc"
+                      aria-label="Increase auto cash out"
+                      disabled
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="bet-panel__action">
+                <div class="stake-group">
+                  <div class="stake-stepper">
+                    <button
+                      type="button"
+                      data-action="stake-dec"
+                      aria-label="Decrease stake"
+                    >
+                      −
+                    </button>
+                    <div class="stake-display">
+                      <input
+                        data-field="bet-input"
+                        type="number"
+                        min="10"
+                        max="1000"
+                        step="1"
+                        value="100"
+                        aria-label="Bet amount"
+                      />
+                      <span class="stake-currency" aria-hidden="true">$</span>
+                    </div>
+                    <button
+                      type="button"
+                      data-action="stake-inc"
+                      aria-label="Increase stake"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div
+                    data-field="chips"
+                    class="chip-row"
+                    role="group"
+                    aria-label="Quick add stake"
+                  ></div>
+                </div>
+                <button
+                  type="button"
+                  data-action="primary"
+                  class="primary-cta primary-cta--bet"
+                >
+                  <span class="primary-cta__label" data-field="primary-label"
+                    >BET</span
+                  >
+                  <span
+                    class="primary-cta__amount"
+                    data-field="primary-amount"
+                    >100.00</span
+                  >
+                </button>
+              </div>
+            </section>
+
+            <section class="bet-panel" data-slot="1" aria-label="Bet panel 2">
+              <div class="bet-panel__top">
+                <button
+                  type="button"
+                  data-action="autoplay"
+                  class="autoplay-btn"
+                  aria-pressed="false"
+                >
+                  Autoplay
+                </button>
+                <div class="auto-co-group">
+                  <label class="auto-toggle">
+                    <input
+                      type="checkbox"
+                      data-field="auto-co-toggle"
+                      aria-label="Auto cash out"
+                    />
+                    <span>Auto cash out</span>
+                  </label>
+                  <div class="auto-co-stepper">
+                    <button
+                      type="button"
+                      data-action="auto-co-dec"
+                      aria-label="Decrease auto cash out"
+                      disabled
+                    >
+                      −
+                    </button>
+                    <div class="auto-co-value">
+                      <span class="auto-co-value__prefix" aria-hidden="true"
+                        >x</span
+                      >
+                      <input
+                        data-field="auto-co"
+                        type="number"
+                        min="1.01"
+                        max="100"
+                        step="0.01"
+                        value="2.00"
+                        disabled
+                        aria-label="Auto cash out multiplier"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      data-action="auto-co-inc"
+                      aria-label="Increase auto cash out"
+                      disabled
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="bet-panel__action">
+                <div class="stake-group">
+                  <div class="stake-stepper">
+                    <button
+                      type="button"
+                      data-action="stake-dec"
+                      aria-label="Decrease stake"
+                    >
+                      −
+                    </button>
+                    <div class="stake-display">
+                      <input
+                        data-field="bet-input"
+                        type="number"
+                        min="10"
+                        max="1000"
+                        step="1"
+                        value="100"
+                        aria-label="Bet amount"
+                      />
+                      <span class="stake-currency" aria-hidden="true">$</span>
+                    </div>
+                    <button
+                      type="button"
+                      data-action="stake-inc"
+                      aria-label="Increase stake"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div
+                    data-field="chips"
+                    class="chip-row"
+                    role="group"
+                    aria-label="Quick add stake"
+                  ></div>
+                </div>
+                <button
+                  type="button"
+                  data-action="primary"
+                  class="primary-cta primary-cta--bet"
+                >
+                  <span class="primary-cta__label" data-field="primary-label"
+                    >BET</span
+                  >
+                  <span
+                    class="primary-cta__amount"
+                    data-field="primary-amount"
+                    >100.00</span
+                  >
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <span data-field="phase" class="visually-hidden"></span>
+          <span data-field="live-mult" class="visually-hidden">1.00×</span>
+          <span data-field="status" class="hud-status" aria-live="polite"></span>
+        </footer>
+      </div>
+    </template>
+    <template id="hotline-screen-template">
+      <div id="hotline-screen" class="app-shell hotline-screen">
+        <header id="top-chrome" class="top-chrome">
+          <div class="top-chrome__balance">
+            <span class="money-icon" aria-hidden="true">$</span>
+            <div class="balance" data-field="balance">-</div>
+            <div class="last-win" aria-label="Last win">
+              <span class="last-win__label">LAST WIN</span>
+              <span class="last-win__value" data-field="last-win">0.00</span>
+            </div>
+          </div>
+          <div class="top-chrome__actions">
+            <button type="button" data-action="menu" class="menu-back">
+              Menu
+            </button>
+            <button
+              type="button"
+              data-action="mute"
+              class="mute-toggle"
+              aria-pressed="false"
+            >
+              Sound: On
+            </button>
+          </div>
+        </header>
+
+        <!-- reserved pixi mount, keep empty of monetary controls -->
+        <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
+          <p class="canvas-placeholder">Game view</p>
+        </div>
+
+        <div
+          class="hotline-feature-overlay"
+          data-field="feature-overlay"
+          hidden
+        >
+          <div
+            class="hotline-feature-splash"
+            data-field="feature-splash"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotline-feature-title"
+          >
+            <div
+              id="hotline-feature-title"
+              class="hotline-feature-splash__title"
+              data-field="feature-title"
+            ></div>
+            <div
+              class="hotline-feature-splash__total"
+              data-field="feature-total"
+            ></div>
+            <div
+              class="hotline-feature-splash__note"
+              data-field="feature-note"
+            ></div>
+            <button
+              type="button"
+              data-action="feature-continue"
+              class="hotline-feature-splash__continue"
+            >
+              Continue
+            </button>
+          </div>
+          <div
+            class="hotline-feature-lockers"
+            data-field="feature-lockers"
+            hidden
+            role="group"
+            aria-label="Locker picks"
+          ></div>
+        </div>
+
+        <div
+          class="hotline-gamble-overlay"
+          data-field="gamble-overlay"
+          hidden
+        >
+          <div
+            class="hotline-gamble-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotline-gamble-title"
+          >
+            <div class="hotline-gamble-panel__hazard" aria-hidden="true"></div>
+            <div class="hotline-gamble-panel__system">
+              <span class="hotline-gamble-panel__system-label"
+                >HOTLINE CASSETTE SYSTEM</span
+              >
+              <span class="hotline-gamble-panel__system-badge"
+                >T-120 HQ // HI-FI</span
+              >
+            </div>
+            <div
+              id="hotline-gamble-title"
+              class="hotline-gamble-panel__title"
+            >
+              VHS GAMBLE
+            </div>
+            <p class="hotline-gamble-panel__subtitle">
+              CHOOSE YOUR FATE // 50/50 DOUBLE OR NOTHING
+            </p>
+            <div class="hotline-gamble-panel__crt">
+              <div class="hotline-gamble-panel__row">
+                <span class="hotline-gamble-panel__label">CURRENT WIN</span>
+                <span
+                  class="hotline-gamble-panel__value"
+                  data-field="gamble-current"
+                  >-</span
+                >
+              </div>
+              <div class="hotline-gamble-panel__row">
+                <div class="hotline-gamble-panel__row-meta">
+                  <span class="hotline-gamble-panel__label">GAMBLE TO WIN</span>
+                  <span class="hotline-gamble-panel__mult">MULTIPLIER: 2X</span>
+                </div>
+                <span
+                  class="hotline-gamble-panel__value"
+                  data-field="gamble-to-win"
+                  >-</span
+                >
+              </div>
+              <div
+                class="hotline-gamble-panel__result"
+                data-field="gamble-result"
+                aria-live="polite"
+              ></div>
+            </div>
+            <div class="hotline-gamble-panel__actions">
+              <button
+                type="button"
+                data-action="survive"
+                class="hotline-gamble-panel__btn hotline-gamble-panel__btn--survive"
+              >
+                <span class="hotline-gamble-panel__btn-main">SURVIVE</span>
+                <span class="hotline-gamble-panel__btn-sub">TAKE RISK (50%)</span>
+              </button>
+              <button
+                type="button"
+                data-action="die"
+                class="hotline-gamble-panel__btn hotline-gamble-panel__btn--die"
+              >
+                <span class="hotline-gamble-panel__btn-main">DIE</span>
+                <span class="hotline-gamble-panel__btn-sub">TAKE RISK (50%)</span>
+              </button>
+            </div>
+            <button
+              type="button"
+              data-action="collect"
+              class="hotline-gamble-panel__btn hotline-gamble-panel__btn--collect"
+            >
+              <span class="hotline-gamble-panel__collect-label"
+                >COLLECT AND EXIT</span
+              >
+              <span
+                class="hotline-gamble-panel__collect-value"
+                data-field="gamble-collect"
+                >-</span
+              >
+            </button>
           </div>
         </div>
-        <div class="top-chrome__actions">
-          <button type="button" data-action="reset-wallet" class="reset-demo">
-            Reset demo
-          </button>
-          <button
-            type="button"
-            data-action="mute"
-            class="mute-toggle"
-            aria-pressed="false"
-          >
-            Sound: On
-          </button>
-        </div>
-      </header>
 
-      <div id="history-band" class="history-band">
         <div
-          class="session-stats"
-          data-field="session-stats"
-          aria-label="Session stats"
+          class="hotline-paytable-overlay"
+          data-field="paytable-overlay"
+          hidden
         >
-          <span>Avg <span data-field="stat-avg">-</span></span>
-          <span>Max <span data-field="stat-max">n/a</span></span>
+          <div
+            class="hotline-paytable-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotline-paytable-title"
+          >
+            <div class="hotline-paytable-head">
+              <div
+                id="hotline-paytable-title"
+                class="hotline-paytable-head__title"
+              >
+                PAYTABLE AND RULES
+              </div>
+              <button
+                type="button"
+                data-action="paytable-close"
+                class="hotline-paytable-head__close"
+                aria-label="Close paytable"
+              >
+                X
+              </button>
+            </div>
+            <div
+              class="hotline-paytable-body"
+              data-field="paytable-body"
+              tabindex="0"
+            ></div>
+          </div>
         </div>
+
         <div
-          data-field="history"
-          class="history-strip"
-          role="list"
-          aria-label="Crash history"
+          class="hotline-combo"
+          data-field="combo"
+          aria-live="polite"
         ></div>
-      </div>
 
-      <!-- Reserved Pixi mount - keep empty of monetary controls (VIS-02) -->
-      <div id="game-canvas-host" class="canvas-host" aria-label="Game view">
-        <p class="canvas-placeholder">Game view</p>
-      </div>
+        <div
+          class="hotline-feature"
+          data-field="feature"
+          aria-live="polite"
+        ></div>
 
-      <footer id="hud-bar" class="hud-bar">
-        <div class="bet-panels">
-          <section class="bet-panel" data-slot="0" aria-label="Bet panel 1">
-            <div class="bet-panel__top">
+        <footer id="hud-bar" class="hud-bar">
+          <div class="hotline-actions">
+            <div class="hotline-actions__left">
               <button
                 type="button"
-                data-action="autoplay"
-                class="autoplay-btn"
+                data-action="info"
+                class="hotline-icon-btn hotline-info-btn"
+                aria-label="Paytable and rules"
+              >
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">I</span>
+              </button>
+            </div>
+            <div class="hotline-actions__right">
+              <button
+                type="button"
+                data-action="turbo"
+                class="hotline-icon-btn hotline-mode-btn"
+                aria-label="Turbo spins"
                 aria-pressed="false"
               >
-                Autoplay
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">TURBO</span>
               </button>
-              <div class="auto-co-group">
-                <label class="auto-toggle">
-                  <input
-                    type="checkbox"
-                    data-field="auto-co-toggle"
-                    aria-label="Auto cash out"
-                  />
-                  <span>Auto cash out</span>
-                </label>
-                <div class="auto-co-stepper">
-                  <button
-                    type="button"
-                    data-action="auto-co-dec"
-                    aria-label="Decrease auto cash out"
-                    disabled
-                  >
-                    −
-                  </button>
-                  <div class="auto-co-value">
-                    <span class="auto-co-value__prefix" aria-hidden="true"
-                      >x</span
-                    >
-                    <input
-                      data-field="auto-co"
-                      type="number"
-                      min="1.01"
-                      max="100"
-                      step="0.01"
-                      value="2.00"
-                      disabled
-                      aria-label="Auto cash out multiplier"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    data-action="auto-co-inc"
-                    aria-label="Increase auto cash out"
-                    disabled
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="bet-panel__action">
-              <div class="stake-group">
-                <div class="stake-stepper">
-                  <button
-                    type="button"
-                    data-action="stake-dec"
-                    aria-label="Decrease stake"
-                  >
-                    −
-                  </button>
-                  <div class="stake-display">
-                    <input
-                      data-field="bet-input"
-                      type="number"
-                      min="10"
-                      max="1000"
-                      step="1"
-                      value="100"
-                      aria-label="Bet amount"
-                    />
-                    <span class="stake-currency" aria-hidden="true">$</span>
-                  </div>
-                  <button
-                    type="button"
-                    data-action="stake-inc"
-                    aria-label="Increase stake"
-                  >
-                    +
-                  </button>
-                </div>
-                <div
-                  data-field="chips"
-                  class="chip-row"
-                  role="group"
-                  aria-label="Quick add stake"
-                ></div>
-              </div>
               <button
                 type="button"
-                data-action="primary"
-                class="primary-cta primary-cta--bet"
-              >
-                <span class="primary-cta__label" data-field="primary-label"
-                  >BET</span
-                >
-                <span
-                  class="primary-cta__amount"
-                  data-field="primary-amount"
-                  >100.00</span
-                >
-              </button>
-            </div>
-          </section>
-
-          <section class="bet-panel" data-slot="1" aria-label="Bet panel 2">
-            <div class="bet-panel__top">
-              <button
-                type="button"
-                data-action="autoplay"
-                class="autoplay-btn"
+                data-action="auto"
+                class="hotline-icon-btn hotline-mode-btn"
+                aria-label="Auto spin"
                 aria-pressed="false"
               >
-                Autoplay
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">AUTO</span>
               </button>
-              <div class="auto-co-group">
-                <label class="auto-toggle">
-                  <input
-                    type="checkbox"
-                    data-field="auto-co-toggle"
-                    aria-label="Auto cash out"
-                  />
-                  <span>Auto cash out</span>
-                </label>
-                <div class="auto-co-stepper">
-                  <button
-                    type="button"
-                    data-action="auto-co-dec"
-                    aria-label="Decrease auto cash out"
-                    disabled
-                  >
-                    −
-                  </button>
-                  <div class="auto-co-value">
-                    <span class="auto-co-value__prefix" aria-hidden="true"
-                      >x</span
-                    >
-                    <input
-                      data-field="auto-co"
-                      type="number"
-                      min="1.01"
-                      max="100"
-                      step="0.01"
-                      value="2.00"
-                      disabled
-                      aria-label="Auto cash out multiplier"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    data-action="auto-co-inc"
-                    aria-label="Increase auto cash out"
-                    disabled
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="bet-panel__action">
-              <div class="stake-group">
-                <div class="stake-stepper">
-                  <button
-                    type="button"
-                    data-action="stake-dec"
-                    aria-label="Decrease stake"
-                  >
-                    −
-                  </button>
-                  <div class="stake-display">
-                    <input
-                      data-field="bet-input"
-                      type="number"
-                      min="10"
-                      max="1000"
-                      step="1"
-                      value="100"
-                      aria-label="Bet amount"
-                    />
-                    <span class="stake-currency" aria-hidden="true">$</span>
-                  </div>
-                  <button
-                    type="button"
-                    data-action="stake-inc"
-                    aria-label="Increase stake"
-                  >
-                    +
-                  </button>
-                </div>
-                <div
-                  data-field="chips"
-                  class="chip-row"
-                  role="group"
-                  aria-label="Quick add stake"
-                ></div>
-              </div>
               <button
                 type="button"
-                data-action="primary"
-                class="primary-cta primary-cta--bet"
+                data-action="gamble"
+                class="hotline-icon-btn hotline-gamble-btn"
+                aria-label="Gamble"
+                disabled
               >
-                <span class="primary-cta__label" data-field="primary-label"
-                  >BET</span
-                >
-                <span
-                  class="primary-cta__amount"
-                  data-field="primary-amount"
-                  >100.00</span
-                >
+                <span class="hotline-icon-btn__glyph" aria-hidden="true">2x</span>
               </button>
             </div>
-          </section>
-        </div>
-
-        <span data-field="phase" class="visually-hidden"></span>
-        <span data-field="live-mult" class="visually-hidden">1.00×</span>
-        <span data-field="status" class="hud-status" aria-live="polite"></span>
-      </footer>
-    </div>
+          </div>
+          <div class="hotline-bar">
+            <div class="stake-group">
+              <div class="stake-stepper">
+                <button
+                  type="button"
+                  data-action="bet-dec"
+                  aria-label="Decrease bet"
+                >
+                  −
+                </button>
+                <div class="stake-display">
+                  <span class="hotline-bet" data-field="bet">-</span>
+                  <span class="stake-currency" aria-hidden="true">$</span>
+                </div>
+                <button
+                  type="button"
+                  data-action="bet-inc"
+                  aria-label="Increase bet"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              data-action="spin"
+              class="primary-cta primary-cta--bet"
+            >
+              <span class="primary-cta__label">SPIN</span>
+            </button>
+          </div>
+          <span data-field="status" class="hud-status" aria-live="polite"></span>
+        </footer>
+      </div>
+    </template>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

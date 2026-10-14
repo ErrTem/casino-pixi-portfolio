@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Client-only Crash (Aviator-like) portfolio demo — GameLogic Core",
+  "description": "Client-only casino demos: Crash and HOTLINE",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "pixi.js": "8.21.0",
-    "seedrandom": "^3.0.5"
+    "seedrandom": "^3.0.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

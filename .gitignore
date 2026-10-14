@@ -1,4 +1,4 @@
-# IDE
+﻿# IDE
 .idea/
 
 # Dependencies / build
@@ -10,11 +10,11 @@ dist/
 .env
 .env.*
 
-# Local agent / planning tooling (keep out of public tree)
-.planning/
+# Local agent / tooling (keep out of public tree)
 .agents/
 .gsd/
 .cursor/
+.planning/
 
 # Local AI tooling
 .claude/

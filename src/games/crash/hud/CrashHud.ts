@@ -48,6 +48,8 @@ export interface CrashHud {
    * syncs toggle UI and emphasizes reset, never calls resetWallet
    */
   stopAutoBet(slot: BetSlotId | "all", reason: string): void;
+  /** removes window listeners and pending tween */
+  dispose(): void;
 }
 
 export interface MountCrashHudOptions {
@@ -458,7 +460,7 @@ export function mountCrashHud(
   });
 
   // Space/Enter -> cash out all open flying slots; ignore while typing.
-  window.addEventListener("keydown", (e: KeyboardEvent) => {
+  const onKeydown = (e: KeyboardEvent): void => {
     if (e.key !== " " && e.key !== "Enter") return;
     if (e.repeat) return;
     if (isEditableTarget(e.target)) return;
@@ -470,9 +472,20 @@ export function mountCrashHud(
     e.preventDefault();
     audio?.unlock();
     game.requestCashOutAll();
-  });
+  };
+  window.addEventListener("keydown", onKeydown);
+
+  let disposed = false;
+
+  function dispose(): void {
+    if (disposed) return;
+    disposed = true;
+    window.removeEventListener("keydown", onKeydown);
+    cancelBalanceTween();
+  }
 
   function render(snap: CrashSnapshot): void {
+    if (disposed) return;
     lastSnap = snap;
 
     const payout = prevBets
@@ -572,5 +585,6 @@ export function mountCrashHud(
       return clampStake(Number(panel.bet.value));
     },
     stopAutoBet,
+    dispose,
   };
 }

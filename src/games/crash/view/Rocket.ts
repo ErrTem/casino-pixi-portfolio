@@ -15,6 +15,7 @@ export const ROCKET_ASSET_URLS = [
 export interface Rocket {
   container: Container;
   setBodyTextures: (textures: readonly Texture[]) => void;
+  setBodyTexture: (texture: Texture | null) => void;
   syncPose: (
     x: number,
     y: number,

@@ -1,7 +1,11 @@
+@font-face {
+  font-family: "Retro Computer";
+  src: url("../shared/fonts/retrocomputerrusbydaymarius.ttf") format("truetype");
+  font-display: swap;
+}
+
 :root {
-  /* Sampled from the frames. Surfaces: desktop crash field and cards.
-     Accent: its primary button. Danger / warning: dashboard gauge.
-     Success: desktop crash positive value. History pills: mobile crash strip. */
+  /* crash palette: field, card, accent, danger, success, history pills */
   --bg: #161648;
   --card: #1e2130;
   --field: #2a2e3d;
@@ -438,6 +442,7 @@ input {
 .primary-cta:focus-visible,
 .mute-toggle:focus-visible,
 .reset-demo:focus-visible,
+.menu-back:focus-visible,
 .autoplay-btn:focus-visible,
 .stake-stepper button:focus-visible,
 .auto-co-stepper button:focus-visible,
@@ -677,7 +682,8 @@ input {
 }
 
 .mute-toggle,
-.reset-demo {
+.reset-demo,
+.menu-back {
   padding: 0.35rem 0.7rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -692,8 +698,159 @@ input {
 }
 
 .mute-toggle:not(:disabled):hover,
-.reset-demo:not(:disabled):hover {
+.reset-demo:not(:disabled):hover,
+.menu-back:not(:disabled):hover {
   background: var(--border);
+}
+
+/* portfolio menu screen */
+.menu-screen {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.menu-bar {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.menu-header {
+  flex: 0 0 auto;
+  width: min(100%, 40rem);
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  padding-bottom: 0.45rem;
+  text-align: center;
+}
+
+.menu-title {
+  margin: 0;
+  font-family: "Retro Computer", "Segoe UI", system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.menu-subtitle {
+  margin: 0.45rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0 max(0.75rem, env(safe-area-inset-right)) 0
+    max(0.75rem, env(safe-area-inset-left));
+  width: min(100%, 40rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 520px) {
+  .menu-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+}
+
+.menu-tile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  position: relative;
+}
+
+.menu-tile:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--card) 80%, var(--border));
+}
+
+.menu-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.menu-tile:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.menu-tile:disabled .menu-tile__icon {
+  filter: grayscale(1);
+}
+
+.menu-tile__icon-wrap {
+  flex: 0 0 4.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--field) 0%,
+    color-mix(in srgb, var(--border) 70%, var(--accent)) 100%
+  );
+}
+
+.menu-tile__icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-tile__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.menu-tile__title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.menu-tile__blurb {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.menu-tile__chip {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .reset-demo--emphasize {
@@ -753,5 +910,1054 @@ input {
   .primary-cta {
     flex: 1 1 46%;
     min-width: 8rem;
+  }
+}
+
+/* row above the bar, info on the left over the stake group, gamble on the right over spin */
+.hotline-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.1rem;
+  min-width: 0;
+}
+
+.hotline-actions__left,
+.hotline-actions__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* desktop strip, stitch neon chrome (square corners, ice outline, dark fill) */
+.hotline-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0.45rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.hotline-bar .stake-group {
+  flex: 0 1 auto;
+  min-width: 0;
+  gap: 0.2rem;
+  padding: 0.2rem 0.3rem;
+  justify-content: center;
+  border: 1px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-panel);
+  box-shadow: var(--hl-bloom-ice);
+}
+
+.hotline-bar .stake-stepper button {
+  flex-basis: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  min-width: 1.6rem;
+  min-height: 1.6rem;
+  border: 1px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-night);
+  color: var(--hl-ice);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.hotline-bar .stake-stepper button:not(:disabled):hover {
+  border-color: var(--hl-neon-cyan);
+  color: var(--hl-neon-cyan);
+  background: rgba(57, 255, 232, 0.12);
+}
+
+.hotline-bar .stake-stepper input[type="number"] {
+  min-height: 1.6rem;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.95rem;
+  color: var(--hl-gold);
+}
+
+.hotline-bar .stake-currency {
+  font-family: "Retro Computer", ui-monospace, monospace;
+  color: var(--hl-gold);
+  text-shadow: var(--hl-bloom-gold);
+}
+
+.hotline-bar .hotline-bet {
+  color: var(--hl-gold);
+  text-shadow: var(--hl-bloom-gold);
+  text-transform: uppercase;
+}
+
+.hotline-bar .primary-cta {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.85rem;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--hl-neon-pink);
+  border-radius: 0;
+  background: var(--hl-neon-pink);
+  color: var(--hl-screen);
+  box-shadow: var(--hl-bloom-pink);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  text-transform: uppercase;
+  animation: hotline-spin-bloom 1.6s ease-in-out infinite;
+}
+
+.hotline-bar .primary-cta:not(:disabled):hover {
+  border-color: var(--hl-neon-pink);
+  color: var(--hl-screen);
+  background: #ff4da6;
+  box-shadow: 0 0 0 1px var(--hl-neon-pink), 0 0 12px rgba(255, 46, 147, 0.75),
+    0 0 22px rgba(255, 46, 147, 0.4);
+}
+
+.hotline-bar .primary-cta:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: none;
+  animation: none;
+}
+
+.hotline-bar .primary-cta:disabled {
+  border-color: #44204f;
+  color: #291533;
+  box-shadow: none;
+  background: #44204f;
+  animation: none;
+}
+
+.hotline-bar .primary-cta__label {
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@keyframes hotline-spin-bloom {
+  0%,
+  100% {
+    box-shadow: var(--hl-bloom-pink);
+  }
+  50% {
+    box-shadow: 0 0 0 1px var(--hl-neon-pink), 0 0 12px rgba(255, 46, 147, 0.8),
+      0 0 24px rgba(255, 46, 147, 0.45);
+  }
+}
+
+.hotline-ticker {
+  margin: 0.15rem 0 0;
+  padding: 0.1rem 0.15rem;
+  min-width: 0;
+  overflow: hidden;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--hl-neon-cyan);
+  text-shadow: 0 0 6px rgba(57, 255, 232, 0.55);
+  animation: hotline-ticker-shift 1.8s ease-in-out infinite;
+}
+
+@keyframes hotline-ticker-shift {
+  0%,
+  100% {
+    opacity: 0.85;
+    letter-spacing: 0.12em;
+  }
+  50% {
+    opacity: 1;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* hud bar sits flat so only the actions row can rise above the feature and gamble overlays */
+.hotline-screen .hud-bar {
+  z-index: auto;
+  min-width: 0;
+}
+
+.hotline-bet {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* portrait first column, wide screens letterbox instead of reflowing */
+.hotline-screen {
+  /* hotline neon tokens */
+  --hl-neon-pink: #ff2e93;
+  --hl-neon-cyan: #39ffe8;
+  --hl-gold: #ffe566;
+  --hl-ice: #9be7ff;
+  --hl-night: #12061f;
+  --hl-screen: #0a0614;
+  --hl-panel: #1a0a2e;
+  --hl-green: #7dffb3;
+  --hl-red: #ff3b3b;
+  --hl-purple: #c44dff;
+  --hl-bloom-pink: 0 0 0 1px var(--hl-neon-pink), 0 0 8px rgba(255, 46, 147, 0.6),
+    0 0 18px rgba(255, 46, 147, 0.3);
+  --hl-bloom-ice: 0 0 0 1px var(--hl-ice), 0 0 8px rgba(155, 231, 255, 0.45);
+  --hl-bloom-gold: 0 0 8px rgba(255, 229, 102, 0.55);
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  min-width: 0;
+  margin-inline: auto;
+  overflow-x: hidden;
+  background: var(--hl-night);
+  font-family: "Retro Computer", ui-monospace, monospace;
+}
+
+.hotline-screen .canvas-host {
+  background: var(--hl-screen);
+  border-color: color-mix(in srgb, var(--hl-purple) 45%, transparent);
+  border-radius: 0;
+}
+
+.hotline-feature-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 1rem;
+  background: rgba(8, 2, 18, 0.82);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.hotline-feature-overlay[hidden] {
+  display: none;
+}
+
+.hotline-feature-splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  width: min(100%, 18rem);
+  min-width: 0;
+  padding: 1.25rem 1rem;
+  border: 1px solid #ff4da6;
+  background: #12061f;
+  text-align: center;
+}
+
+.hotline-feature-splash__title,
+.hotline-feature-splash__total,
+.hotline-feature-splash__note,
+.hotline-feature-splash__continue {
+  font-family: "Retro Computer", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hotline-feature-splash__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ff4da6;
+}
+
+.hotline-feature-splash__total {
+  min-height: 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffe566;
+}
+
+.hotline-feature-splash__note {
+  min-height: 1rem;
+  font-size: 0.75rem;
+  color: #9be7ff;
+}
+
+.hotline-feature-splash__continue {
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid #9be7ff;
+  background: #1a0a2e;
+  color: #9be7ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hotline-feature-splash[hidden],
+.hotline-feature-lockers[hidden] {
+  display: none;
+}
+
+.hotline-feature-lockers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  width: min(100%, 22rem);
+  min-width: 0;
+  /* nudge pick-em grid up from overlay flex center */
+  transform: translateY(-3.5rem);
+}
+
+.hotline-feature-lockers__btn {
+  min-height: 3.1rem;
+  padding: 0.45rem 0.35rem;
+  border: 1px solid #c44dff;
+  background: #160820;
+  color: #e9b3ff;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.hotline-feature-lockers__btn:disabled {
+  border-color: #ffe566;
+  color: #ffe566;
+  cursor: default;
+}
+
+/* compact buttons for the actions row, at least 44 by 44 css px, rise above the overlays so info opens over a paused gamble */
+.hotline-icon-btn {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  box-sizing: border-box;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-panel);
+  color: var(--hl-ice);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 0 6px rgba(155, 231, 255, 0.28);
+}
+
+.hotline-icon-btn:not(:disabled):hover {
+  border-color: var(--hl-neon-cyan);
+  color: var(--hl-neon-cyan);
+  background: rgba(57, 255, 232, 0.15);
+  box-shadow: 0 0 10px rgba(57, 255, 232, 0.4);
+}
+
+.hotline-icon-btn__glyph {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+/* turbo and auto carry words, so they grow wider than the square floor */
+.hotline-mode-btn .hotline-icon-btn__glyph {
+  font-size: 0.6rem;
+}
+
+.hotline-mode-btn[aria-pressed="true"] {
+  border-color: var(--hl-neon-pink);
+  background: var(--hl-neon-pink);
+  color: var(--hl-screen);
+  box-shadow: var(--hl-bloom-pink);
+}
+
+.hotline-icon-btn:focus-visible {
+  outline: 2px solid var(--hl-neon-cyan);
+  outline-offset: 2px;
+}
+
+.hotline-gamble-btn {
+  border-color: var(--hl-gold);
+  color: var(--hl-gold);
+  box-shadow: var(--hl-bloom-gold);
+}
+
+.hotline-gamble-btn:not(:disabled):hover {
+  border-color: var(--hl-gold);
+  color: var(--hl-gold);
+  background: rgba(255, 229, 102, 0.12);
+}
+
+.hotline-gamble-btn:disabled {
+  border-color: #44204f;
+  color: #291533;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* vhs cassette panel, css neon chrome until optional vhs pngs land */
+.hotline-gamble-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 1rem;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.42) 50%,
+      rgba(0, 0, 0, 0.42)
+    ),
+    rgba(18, 6, 31, 0.9);
+  background-size: 100% 4px, auto;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.hotline-gamble-overlay[hidden] {
+  display: none;
+}
+
+.hotline-gamble-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  box-sizing: border-box;
+  width: min(100%, 21rem);
+  min-width: 0;
+  padding: 0.75rem 0.8rem 0.9rem;
+  border: 2px solid var(--hl-neon-pink);
+  border-radius: 0;
+  background: var(--hl-panel);
+  box-shadow: 0 0 25px rgba(255, 46, 147, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.8);
+  text-align: center;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.hotline-gamble-panel__hazard {
+  height: 0.55rem;
+  margin: -0.15rem 0 0.15rem;
+  border-bottom: 1px solid #000;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hl-night),
+    var(--hl-night) 8px,
+    var(--hl-neon-pink) 8px,
+    var(--hl-neon-pink) 16px
+  );
+  opacity: 0.85;
+}
+
+.hotline-gamble-panel__system {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--hl-neon-pink) 30%, transparent);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--hl-ice) 90%, transparent);
+}
+
+.hotline-gamble-panel__system-badge {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid color-mix(in srgb, var(--hl-neon-pink) 40%, transparent);
+  background: var(--hl-night);
+  color: var(--hl-neon-pink);
+  font-size: 0.45rem;
+}
+
+.hotline-gamble-panel__title {
+  margin-top: 0.15rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--hl-neon-pink);
+  text-shadow: 2px 0 var(--hl-neon-cyan), -2px 0 var(--hl-neon-pink),
+    0 0 12px rgba(255, 46, 147, 0.8);
+}
+
+.hotline-gamble-panel__subtitle {
+  margin: 0;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--hl-ice);
+  opacity: 0.9;
+}
+
+.hotline-gamble-panel__crt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.15rem 0;
+  padding: 0.65rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--hl-neon-cyan) 40%, transparent);
+  background: color-mix(in srgb, var(--hl-screen) 95%, transparent);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.65);
+}
+
+.hotline-gamble-panel__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.hotline-gamble-panel__row-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.hotline-gamble-panel__label {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--hl-ice);
+}
+
+.hotline-gamble-panel__mult {
+  font-size: 0.45rem;
+  letter-spacing: 0.08em;
+  color: var(--hl-neon-pink);
+}
+
+.hotline-gamble-panel__value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--hl-gold);
+  text-shadow: 0 0 8px rgba(255, 229, 102, 0.75);
+}
+
+.hotline-gamble-panel__result {
+  min-height: 1.1rem;
+  padding-top: 0.2rem;
+  border-top: 1px dotted color-mix(in srgb, var(--hl-neon-cyan) 40%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--hl-neon-cyan);
+  text-align: center;
+  text-shadow: 0 0 8px rgba(57, 255, 232, 0.8);
+}
+
+.hotline-gamble-panel__result:empty::before {
+  content: "[ AWAITING INPUT ]";
+}
+
+.hotline-gamble-overlay--survive .hotline-gamble-panel {
+  border-color: var(--hl-green);
+  box-shadow: 0 0 1.2rem rgba(125, 255, 179, 0.5);
+}
+
+.hotline-gamble-overlay--survive .hotline-gamble-panel__result {
+  color: var(--hl-green);
+}
+
+.hotline-gamble-overlay--die .hotline-gamble-panel {
+  border-color: var(--hl-red);
+  box-shadow: 0 0 1.4rem rgba(255, 59, 59, 0.65);
+}
+
+.hotline-gamble-overlay--die .hotline-gamble-panel__result {
+  color: var(--hl-red);
+}
+
+.hotline-gamble-panel__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.hotline-gamble-panel__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 3.2rem;
+  padding: 0.5rem 0.35rem;
+  border: 2px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-panel);
+  color: var(--hl-ice);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.hotline-gamble-panel__btn-main {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.hotline-gamble-panel__btn-sub {
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.hotline-gamble-panel__btn--survive {
+  border-color: var(--hl-green);
+  background: #0d1c16;
+  color: var(--hl-green);
+  box-shadow: 0 0 14px rgba(125, 255, 179, 0.45), inset 0 0 8px rgba(125, 255, 179, 0.25);
+}
+
+.hotline-gamble-panel__btn--die {
+  border-color: var(--hl-red);
+  background: #220b11;
+  color: var(--hl-red);
+  box-shadow: 0 0 14px rgba(255, 59, 59, 0.45), inset 0 0 8px rgba(255, 59, 59, 0.25);
+}
+
+.hotline-gamble-panel__btn--collect {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.65rem;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--hl-ice) 50%, transparent);
+  background: var(--hl-night);
+  color: var(--hl-ice);
+  box-shadow: none;
+}
+
+.hotline-gamble-panel__collect-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--hl-ice);
+}
+
+.hotline-gamble-panel__collect-value {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--hl-gold);
+  text-shadow: 0 0 8px rgba(255, 229, 102, 0.75);
+}
+
+.hotline-gamble-panel__btn--collect:not(:disabled):hover {
+  border-color: var(--hl-ice);
+  background: #1a082c;
+}
+
+.hotline-gamble-panel__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* optional vhs pngs from /assets/hotline, attached by script only when they load, the neon css above is the fallback */
+.hotline-vhs-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hotline-gamble-panel--art,
+.hotline-gamble-panel__btn--art {
+  position: relative;
+  isolation: isolate;
+}
+
+.hotline-gamble-panel--art {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hotline-gamble-panel--art > :not(.hotline-vhs-art) {
+  position: relative;
+  z-index: 1;
+}
+
+.hotline-gamble-panel__btn--art {
+  border-color: transparent;
+  background: transparent;
+  overflow: hidden;
+}
+
+.hotline-combo {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  min-height: 1.25rem;
+  margin: 0.35rem 0.75rem 0;
+  padding: 0.2rem 0.45rem;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ff4da6;
+  text-align: center;
+}
+
+.hotline-combo-step {
+  color: #ff4da6;
+  opacity: 0.55;
+}
+
+.hotline-combo-step.done {
+  opacity: 0.7;
+}
+
+.hotline-combo-step.active {
+  color: #ffe566;
+  opacity: 1;
+  text-shadow: 0 0 0.45rem rgba(255, 229, 102, 0.55);
+}
+
+.hotline-combo-joiner {
+  color: #ff4da6;
+  opacity: 0.45;
+}
+
+.hotline-feature {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  margin: 0.15rem 0.75rem 0.55rem;
+  padding: 0;
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7dffb3;
+  text-align: center;
+}
+
+.hotline-feature:empty {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* header keeps its raised layer from the info sheet plan, menu and sound stay reachable */
+.hotline-screen .top-chrome {
+  z-index: 6;
+  align-items: stretch;
+  background: transparent;
+  gap: 0.5rem;
+}
+
+.hotline-screen .top-chrome__balance {
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-panel);
+  box-shadow: var(--hl-bloom-ice);
+}
+
+@keyframes hotline-balance-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  35% {
+    opacity: 0.45;
+    transform: scale(1.12);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hotline-screen .top-chrome__balance--pulse {
+  animation: hotline-balance-pulse 0.55s ease-out;
+}
+
+.hotline-win-fly {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  color: var(--hl-gold);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.85rem;
+  text-shadow: var(--hl-bloom-gold);
+  text-transform: uppercase;
+  transition:
+    transform 0.5s ease-out,
+    opacity 0.5s ease-out;
+  will-change: transform, opacity;
+}
+
+.hotline-screen .top-chrome__actions {
+  align-items: stretch;
+}
+
+.hotline-screen .money-icon {
+  color: var(--hl-gold);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  text-shadow: var(--hl-bloom-gold);
+}
+
+.hotline-screen .balance {
+  color: var(--hl-gold);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.95rem;
+  text-shadow: var(--hl-bloom-gold);
+  text-transform: uppercase;
+}
+
+.hotline-screen .last-win {
+  margin-left: 0.2rem;
+  padding-left: 0.45rem;
+  border-left: 1px solid color-mix(in srgb, var(--hl-ice) 40%, transparent);
+}
+
+.hotline-screen .last-win__label {
+  color: var(--hl-ice);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hotline-screen .last-win__value {
+  color: var(--hl-neon-cyan);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.72rem;
+  text-shadow: 0 0 6px rgba(57, 255, 232, 0.45);
+  text-transform: uppercase;
+}
+
+.hotline-screen .mute-toggle,
+.hotline-screen .menu-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-width: 2.5rem;
+  min-height: 0;
+  height: auto;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--hl-ice);
+  border-radius: 0;
+  background: var(--hl-panel);
+  color: var(--hl-ice);
+  font-family: "Retro Computer", ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: var(--hl-bloom-ice);
+}
+
+.hotline-screen .mute-toggle:not(:disabled):hover,
+.hotline-screen .menu-back:not(:disabled):hover {
+  border-color: var(--hl-neon-pink);
+  color: var(--hl-neon-pink);
+  background: var(--hl-panel);
+}
+
+/* paytable and rules sheet, one scrollable stack above every other overlay */
+.hotline-paytable-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  background: rgba(8, 2, 18, 0.94);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.hotline-paytable-overlay[hidden] {
+  display: none;
+}
+
+.hotline-paytable-sheet {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: min(100%, 30rem);
+  min-width: 0;
+  min-height: 0;
+  border: 2px solid #ff4da6;
+  background: #12061f;
+  box-shadow: 0 0 1.2rem rgba(255, 77, 166, 0.45);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.hotline-paytable-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #ff4da6;
+}
+
+.hotline-paytable-head__title,
+.hotline-paytable__title,
+.hotline-paytable__row--symbol .hotline-paytable__label {
+  font-family: "Retro Computer", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}
+
+.hotline-paytable-head__title {
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ff4da6;
+  text-transform: uppercase;
+}
+
+.hotline-paytable-head__close {
+  flex: 0 0 auto;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 2px solid #9be7ff;
+  border-radius: 0;
+  background: #1a0a2e;
+  color: #9be7ff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hotline-paytable-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem 1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hotline-paytable__section {
+  margin-bottom: 1rem;
+}
+
+.hotline-paytable__title {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffe566;
+  text-transform: uppercase;
+}
+
+.hotline-paytable__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.hotline-paytable__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #3a1d5c;
+  background: #1a0a2e;
+}
+
+.hotline-paytable__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9be7ff;
+  text-transform: uppercase;
+}
+
+.hotline-paytable__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.hotline-paytable__icon {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+}
+
+.hotline-paytable__detail {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #e8dcff;
+  overflow-wrap: anywhere;
+}
+
+/* phone width: keep desktop stake + spin row, only enlarge the actions row hit targets */
+@media (max-width: 480px) {
+  .hotline-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 0.45rem;
+    padding: 0;
+  }
+
+  .hotline-bar .stake-group {
+    flex: 0 1 auto;
+  }
+
+  .hotline-bar .primary-cta {
+    flex: 1 1 auto;
+    min-height: 2.85rem;
+  }
+
+  .hotline-icon-btn {
+    height: 2.75rem;
+    padding: 0;
+  }
+
+  .hotline-icon-btn:not(.hotline-mode-btn) {
+    width: 2.75rem;
+  }
+
+  .hotline-mode-btn {
+    padding: 0 0.45rem;
+  }
+
+  .hotline-icon-btn__glyph {
+    font-size: 1rem;
+  }
+
+  .hotline-mode-btn .hotline-icon-btn__glyph {
+    font-size: 0.6rem;
   }
 }

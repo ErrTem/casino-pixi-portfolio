@@ -1,13 +1,11 @@
+import { formatMult } from "./format.js";
+
 export interface SessionStats {
   avgLabel: string;
   maxLabel: string;
 }
 
 const EMPTY: SessionStats = { avgLabel: "-", maxLabel: "n/a" };
-
-function formatMultLabel(n: number): string {
-  return `${n.toFixed(2)}x`;
-}
 
 /** avg + max crash x from history */
 export function sessionStatsFrom(history: readonly number[]): SessionStats {
@@ -26,7 +24,7 @@ export function sessionStatsFrom(history: readonly number[]): SessionStats {
 
   const avg = sum / count;
   return {
-    avgLabel: formatMultLabel(avg),
-    maxLabel: formatMultLabel(max),
+    avgLabel: formatMult(avg),
+    maxLabel: formatMult(max),
   };
 }
