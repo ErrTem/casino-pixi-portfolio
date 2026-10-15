@@ -1,0 +1,46 @@
+import { createRng, type Rng } from "../rng/createRng.js";
+
+export interface SlotEngineMath {
+  rows: number;
+  reels: number;
+  symbolWeights: Record<string, number>[];
+}
+
+export class SlotEngine {
+  private readonly rng: Rng;
+
+  constructor(
+    seed: string,
+    private readonly math: SlotEngineMath,
+  ) {
+    this.rng = createRng(seed);
+  }
+
+  /** reel-major grid, grid[reel][row] */
+  spin(): string[][] {
+    const grid: string[][] = [];
+    for (let reel = 0; reel < this.math.reels; reel++) {
+      const column: string[] = [];
+      for (let row = 0; row < this.math.rows; row++) {
+        column.push(this.pick(this.math.symbolWeights[reel]));
+      }
+      grid.push(column);
+    }
+    return grid;
+  }
+
+  private pick(weights: Record<string, number>): string {
+    const entries = Object.entries(weights);
+    const total = entries.reduce((s, [, w]) => s + w, 0);
+    let roll = this.rng.next() * total;
+    for (const [id, w] of entries) {
+      roll -= w;
+      if (roll < 0) return id;
+    }
+    return entries[entries.length - 1][0];
+  }
+}
+
+export function createSlotEngine(seed: string, math: SlotEngineMath): SlotEngine {
+  return new SlotEngine(seed, math);
+}

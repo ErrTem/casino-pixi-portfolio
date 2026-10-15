@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   fromMultHundredths,
   toMultHundredths,
-} from "../src/shared/money/cents.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
-import { multiplierAt } from "../src/games/crash/logic/MultiplierCurve.js";
+} from "../math/money/cents.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
+import { multiplierAt } from "../math/crash/MultiplierCurve.js";
 
 describe("multiplierCurve - PLAY-02 / climb pace", () => {
   const r = CRASH_CONFIG.growthRatePerMs;

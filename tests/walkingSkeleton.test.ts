@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createGame } from "../src/games/crash/logic/CrashGame.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
+import { createGame } from "../math/crash/CrashGame.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
 
 describe("walking skeleton - createGame -> placeBet -> wait -> fly -> settle", () => {
   it("seeded bet->fly->settle path with continuous auto-launch (D-14)", () => {

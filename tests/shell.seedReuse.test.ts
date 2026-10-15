@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createGame } from "../src/games/crash/logic/CrashGame.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
+import { createGame } from "../math/crash/CrashGame.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
 import {
   DEFAULT_DEMO_SEED,
   parseBootSeed,
-} from "../src/shared/boot/parseBootSeed.js";
+} from "../client/shared/boot/parseBootSeed.js";
 
 /** drive a seeded crash game with fixed ticks until three rounds land in history */
 function historyAfterThreeRounds(seed: string): number[] {

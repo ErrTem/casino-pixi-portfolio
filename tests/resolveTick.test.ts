@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { createGame } from "../src/games/crash/logic/CrashGame.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
-import { History } from "../src/games/crash/logic/History.js";
-import { resolveTick } from "../src/games/crash/logic/resolveTick.js";
+import { createGame } from "../math/crash/CrashGame.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
+import { History } from "../math/crash/History.js";
+import { resolveTick } from "../math/crash/resolveTick.js";
 import {
   emptyBetSlot,
   type BetSlot,
   type RoundState,
-} from "../src/games/crash/logic/RoundState.js";
-import { Wallet } from "../src/games/crash/logic/Wallet.js";
+} from "../math/crash/RoundState.js";
+import { Wallet } from "../math/crash/Wallet.js";
 import {
   payoutCents,
   toMultHundredths,
-} from "../src/shared/money/cents.js";
-import { createRng } from "../src/shared/rng/createRng.js";
+} from "../math/money/cents.js";
+import { createRng } from "../math/rng/createRng.js";
 
 function makeDeps(seed = "resolve-tick") {
   return {

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = join(import.meta.dirname, "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
-const css = readFileSync(join(ROOT, "src/styles/hud.css"), "utf8");
+const css = readFileSync(join(ROOT, "client/styles/hud.css"), "utf8");
 
 /** Extract inner HTML of an element with the given id (string parse - no DOM). */
 function innerById(source: string, id: string): string {

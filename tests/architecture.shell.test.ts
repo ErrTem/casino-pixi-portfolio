@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = join(import.meta.dirname, "..");
 const SHELL_SCAN_DIRS = [
-  join(ROOT, "src", "shell"),
-  join(ROOT, "src", "games", "crash", "session"),
+  join(ROOT, "client", "shell"),
+  join(ROOT, "client", "games", "crash", "session"),
 ];
 const SESSION_FILE = join(
   ROOT,
-  "src",
+  "client",
   "games",
   "crash",
   "session",
@@ -17,13 +17,13 @@ const SESSION_FILE = join(
 );
 const HOTLINE_SESSION_FILE = join(
   ROOT,
-  "src",
+  "client",
   "games",
   "hotline",
   "session",
   "mountHotlineSession.ts",
 );
-const HUD_FILE = join(ROOT, "src", "games", "crash", "hud", "CrashHud.ts");
+const HUD_FILE = join(ROOT, "client", "games", "crash", "hud", "CrashHud.ts");
 
 const INNER_HTML_USE = /\.innerHTML\b/;
 
@@ -54,7 +54,7 @@ function readRel(file: string): { rel: string; src: string; code: string } {
 }
 
 describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () => {
-  it("Gate A: no .innerHTML use under src/shell or crash session", () => {
+  it("Gate A: no .innerHTML use under client/shell or crash session", () => {
     const files = SHELL_SCAN_DIRS.flatMap(collectTsFiles);
     expect(files.length).toBeGreaterThan(0);
     const violations: string[] = [];
@@ -103,11 +103,11 @@ describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () 
     expect(code).toMatch(/play\(\s*"spin"\s*\)/);
     expect(code).toMatch(/play\(\s*"reel_stop"\s*\)/);
     const scene = readRel(
-      join(ROOT, "src", "games", "hotline", "view", "HotlineScene.ts"),
+      join(ROOT, "client", "games", "hotline", "view", "HotlineScene.ts"),
     );
     expect(scene.code).toMatch(/createReelWindow/);
     const reelFiles = collectTsFiles(
-      join(ROOT, "src", "games", "hotline", "view", "reels"),
+      join(ROOT, "client", "games", "hotline", "view", "reels"),
     );
     expect(reelFiles.length).toBeGreaterThan(0);
     const pkg = readFileSync(join(ROOT, "package.json"), "utf8");
@@ -121,12 +121,12 @@ describe("architecture - SHELL-02 leak-free leave and D-12 shell resources", () 
     const session = readRel(HOTLINE_SESSION_FILE);
     expect(session.code).toMatch(/play\(\s*"win"\s*\)/);
     const scene = readRel(
-      join(ROOT, "src", "games", "hotline", "view", "HotlineScene.ts"),
+      join(ROOT, "client", "games", "hotline", "view", "HotlineScene.ts"),
     );
     expect(scene.code).toMatch(/createWinLinesOverlay/);
     expect(scene.code).toMatch(/overlay\s*\.\s*destroy\s*\(/);
     const hud = readRel(
-      join(ROOT, "src", "games", "hotline", "hud", "HotlineHud.ts"),
+      join(ROOT, "client", "games", "hotline", "hud", "HotlineHud.ts"),
     );
     expect(hud.code).toMatch(/lastWinTweenValue|createLastWinTween/);
   });

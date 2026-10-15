@@ -6,8 +6,8 @@ import {
   plotPoint,
   plotScaleFor,
   type PlotRect,
-} from "../src/games/crash/view/pathMapping.js";
-import { VIEW_CONFIG } from "../src/games/crash/view/viewConfig.js";
+} from "../client/games/crash/view/pathMapping.js";
+import { VIEW_CONFIG } from "../client/games/crash/view/viewConfig.js";
 
 const plot: PlotRect = { x: 0, y: 0, width: 400, height: 300 };
 

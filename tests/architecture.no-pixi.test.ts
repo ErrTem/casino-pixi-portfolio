@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = join(import.meta.dirname, "..");
 const LOGIC_DIRS = [
-  join(ROOT, "src", "games", "crash", "logic"),
-  join(ROOT, "src", "games", "hotline", "logic"),
-  join(ROOT, "src", "shared"),
+  join(ROOT, "math", "crash"),
+  join(ROOT, "math", "hotline"),
+  join(ROOT, "math"),
 ];
-const VIEW_DIR = join(ROOT, "src", "games", "crash", "view");
+const VIEW_DIR = join(ROOT, "client", "games", "crash", "view");
 /** T-03-08: scene mount path must not network-load; Rocket may load via loadRocketTextures. */
 const NO_ASSETS_LOAD_FILES = [
   join(VIEW_DIR, "CrashScene.ts"),

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createGame } from "../src/games/crash/logic/CrashGame.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
-import { Wallet } from "../src/games/crash/logic/Wallet.js";
+import { createGame } from "../math/crash/CrashGame.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
+import { Wallet } from "../math/crash/Wallet.js";
 import {
   payoutCents,
   toMultHundredths,
-} from "../src/shared/money/cents.js";
+} from "../math/money/cents.js";
 describe("wallet - D-01..D-04 / WALT-01 / WALT-02", () => {
   it("starts at 500000 cents after createGame (D-01)", () => {
     const game = createGame({ seed: "wallet-start" });

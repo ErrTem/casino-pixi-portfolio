@@ -5,8 +5,8 @@ import {
   DISKETTE_URLS,
   HOTLINE_ASSET_URLS,
   SYMBOL_URLS,
-} from "../src/games/hotline/view/loadHotlineAssets.js";
-import { loadHotlineConfig } from "../src/games/hotline/config/loadHotlineConfig.js";
+} from "../client/games/hotline/view/loadHotlineAssets.js";
+import { loadHotlineConfig } from "../math/hotline/config/loadHotlineConfig.js";
 
 const ROOT = process.cwd();
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];

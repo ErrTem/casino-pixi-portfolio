@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { sampleCrashAt } from "../src/games/crash/logic/CrashRng.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
-import { createRng } from "../src/shared/rng/createRng.js";
+import { sampleCrashAt } from "../math/crash/CrashRng.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
+import { createRng } from "../math/rng/createRng.js";
 
 describe("crashRng - ARCH-01 seed replay", () => {
   it("same seed yields identical sampleCrashAt sequence", () => {
@@ -31,7 +31,7 @@ describe("crashRng - ARCH-01 seed replay", () => {
   });
 
   it("two createGame instances with same seed share crashAt on first launch", async () => {
-    const { createGame } = await import("../src/games/crash/logic/CrashGame.js");
+    const { createGame } = await import("../math/crash/CrashGame.js");
     const g1 = createGame({ seed: "demo-1" });
     const g2 = createGame({ seed: "demo-1" });
     g1.tick(5000);

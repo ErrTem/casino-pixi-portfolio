@@ -15,7 +15,8 @@
     "types": ["node", "vite/client"]
   },
   "include": [
-    "src/**/*.ts",
+    "math/**/*.ts",
+    "client/**/*.ts",
     "tests/**/*.ts",
     "vitest.config.ts",
     "vite.config.ts"

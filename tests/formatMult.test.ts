@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMult } from "../src/games/crash/hud/format.js";
+import { formatMult } from "../client/games/crash/hud/format.js";
 
 describe("formatMult - theater display strings (T-03-07)", () => {
   it("formats finite multipliers as two-decimal × strings for BitmapText.text", () => {

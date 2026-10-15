@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   computeAltitudePose,
   smoothstep,
-} from "../src/games/crash/view/altitudePose.js";
-import { VIEW_CONFIG } from "../src/games/crash/view/viewConfig.js";
+} from "../client/games/crash/view/altitudePose.js";
+import { VIEW_CONFIG } from "../client/games/crash/view/viewConfig.js";
 
 describe("smoothstep", () => {
   it("is 0 below edge0 and 1 above edge1", () => {

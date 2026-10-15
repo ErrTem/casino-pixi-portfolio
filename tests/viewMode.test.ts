@@ -3,7 +3,7 @@ import {
   createInitialViewMode,
   reduceViewMode,
   type ViewModeSnap,
-} from "../src/games/crash/view/viewMode.js";
+} from "../client/games/crash/view/viewMode.js";
 
 function snap(partial: Partial<ViewModeSnap>): ViewModeSnap {
   return {

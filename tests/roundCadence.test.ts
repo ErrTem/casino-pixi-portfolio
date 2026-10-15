@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createGame } from "../src/games/crash/logic/CrashGame.js";
-import { CRASH_CONFIG } from "../src/games/crash/logic/config.js";
-import { History } from "../src/games/crash/logic/History.js";
+import { createGame } from "../math/crash/CrashGame.js";
+import { CRASH_CONFIG } from "../math/crash/config.js";
+import { History } from "../math/crash/History.js";
 
 describe("round cadence - PLAY-01 / PLAY-05 / D-13..D-15", () => {
   it("tick totaling 5000ms in waiting with a locked bet enters flying (PLAY-01)", () => {
